@@ -2,9 +2,9 @@ package com.sendByOP.expedition.web.controller;
 
 import com.sendByOP.expedition.exception.ErrorInfo;
 import com.sendByOP.expedition.exception.SendByOpException;
-import com.sendByOP.expedition.model.Client;
-import com.sendByOP.expedition.model.Role;
-import com.sendByOP.expedition.model.User;
+import com.sendByOP.expedition.models.entities.Client;
+import com.sendByOP.expedition.models.entities.Role;
+import com.sendByOP.expedition.models.entities.User;
 import com.sendByOP.expedition.reponse.ResponseMessage;
 import com.sendByOP.expedition.services.servicesImpl.*;
 import org.springframework.beans.factory.annotation.Autowired;

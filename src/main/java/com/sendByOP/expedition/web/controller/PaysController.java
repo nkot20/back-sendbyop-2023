@@ -1,6 +1,6 @@
 package com.sendByOP.expedition.web.controller;
 
-import com.sendByOP.expedition.model.Pays;
+import com.sendByOP.expedition.models.entities.Pays;
 import com.sendByOP.expedition.reponse.ResponseMessage;
 import com.sendByOP.expedition.services.servicesImpl.PaysService;
 import org.springframework.beans.factory.annotation.Autowired;

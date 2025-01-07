@@ -1,7 +1,7 @@
 package com.sendByOP.expedition.repositories;
 
-import com.sendByOP.expedition.model.Client;
-import com.sendByOP.expedition.model.Vol;
+import com.sendByOP.expedition.models.entities.Client;
+import com.sendByOP.expedition.models.entities.Vol;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

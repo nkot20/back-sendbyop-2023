@@ -1,11 +1,11 @@
 package com.sendByOP.expedition.services.servicesImpl;
 
-import com.sendByOP.expedition.services.IServices.IAnnulationReservationService;
-import com.sendByOP.expedition.services.IServices.IReservationService;
+import com.sendByOP.expedition.services.iServices.IAnnulationReservationService;
+import com.sendByOP.expedition.services.iServices.IReservationService;
 import com.sendByOP.expedition.exception.ErrorInfo;
 import com.sendByOP.expedition.exception.SendByOpException;
-import com.sendByOP.expedition.model.AnnulationReservation;
-import com.sendByOP.expedition.model.Reservation;
+import com.sendByOP.expedition.models.entities.AnnulationReservation;
+import com.sendByOP.expedition.models.entities.Reservation;
 import com.sendByOP.expedition.repositories.IAnnulationReservationRepository;
 import com.sendByOP.expedition.utils.CHeckNull;
 import org.springframework.beans.factory.annotation.Autowired;

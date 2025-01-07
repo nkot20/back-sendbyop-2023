@@ -1,7 +1,7 @@
 package com.sendByOP.expedition.web.controller;
 
-import com.sendByOP.expedition.model.Avis;
-import com.sendByOP.expedition.model.Client;
+import com.sendByOP.expedition.models.entities.Avis;
+import com.sendByOP.expedition.models.entities.Client;
 import com.sendByOP.expedition.reponse.ResponseMessage;
 import com.sendByOP.expedition.services.servicesImpl.AvisService;
 import com.sendByOP.expedition.services.servicesImpl.Clientservice;

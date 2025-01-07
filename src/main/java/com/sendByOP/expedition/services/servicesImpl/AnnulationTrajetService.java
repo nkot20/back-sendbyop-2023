@@ -1,6 +1,7 @@
 package com.sendByOP.expedition.services.servicesImpl;
 
-import com.sendByOP.expedition.model.*;
+import com.sendByOP.expedition.models.dto.EmailDto;
+import com.sendByOP.expedition.models.entities.*;
 import com.sendByOP.expedition.repositories.IAnnulationTrajetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,7 @@ public class AnnulationTrajetService {
 
         reservations.removeIf(reservation -> reservation.getStatutPayement() == 1);
 
-        List<Email> emails = new ArrayList<>();
+        List<EmailDto> emails = new ArrayList<>();
 
         if (volUpdate == null) {
             delete(newAnnulationTrajet);
@@ -58,7 +59,7 @@ public class AnnulationTrajetService {
             reservationsARembourser.setValider(0);
             reservationsARembourserService.save(reservationsARembourser);
 
-            Email email = new Email();
+            EmailDto email = new EmailDto();
             email.setBody("La réservation que vous avez éffectuez le "+reservation.getDatere()+ " a été annullée par l'expéditeur pour cause de "+annulationTrajet.getMotif()+ ". Alors des remboursements vous serons éffectuez");
             emails.add(email);
         }

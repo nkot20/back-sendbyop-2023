@@ -1,9 +1,9 @@
 package com.sendByOP.expedition.web.controller;
 
 import com.sendByOP.expedition.exception.SendByOpException;
-import com.sendByOP.expedition.model.Client;
-import com.sendByOP.expedition.model.Paiement;
-import com.sendByOP.expedition.model.Reservation;
+import com.sendByOP.expedition.models.entities.Client;
+import com.sendByOP.expedition.models.entities.Paiement;
+import com.sendByOP.expedition.models.entities.Reservation;
 import com.sendByOP.expedition.reponse.ResponseMessage;
 import com.sendByOP.expedition.services.servicesImpl.Clientservice;
 import com.sendByOP.expedition.services.servicesImpl.PaiementService;

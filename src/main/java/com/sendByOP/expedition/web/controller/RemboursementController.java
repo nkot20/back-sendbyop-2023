@@ -1,8 +1,8 @@
 package com.sendByOP.expedition.web.controller;
 
 import com.sendByOP.expedition.exception.SendByOpException;
-import com.sendByOP.expedition.model.Remboursement;
-import com.sendByOP.expedition.model.Reservation;
+import com.sendByOP.expedition.models.entities.Remboursement;
+import com.sendByOP.expedition.models.entities.Reservation;
 import com.sendByOP.expedition.reponse.ResponseMessage;
 import com.sendByOP.expedition.services.servicesImpl.RemboursementService;
 import com.sendByOP.expedition.services.servicesImpl.ReservationService;

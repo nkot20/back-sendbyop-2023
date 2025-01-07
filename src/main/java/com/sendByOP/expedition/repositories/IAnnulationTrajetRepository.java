@@ -1,7 +1,7 @@
 package com.sendByOP.expedition.repositories;
 
-import com.sendByOP.expedition.model.AnnulationTrajet;
-import com.sendByOP.expedition.model.Vol;
+import com.sendByOP.expedition.models.entities.AnnulationTrajet;
+import com.sendByOP.expedition.models.entities.Vol;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

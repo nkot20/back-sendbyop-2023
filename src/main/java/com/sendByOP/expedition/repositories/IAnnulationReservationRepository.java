@@ -1,7 +1,7 @@
 package com.sendByOP.expedition.repositories;
 
-import com.sendByOP.expedition.model.AnnulationReservation;
-import com.sendByOP.expedition.model.Reservation;
+import com.sendByOP.expedition.models.entities.AnnulationReservation;
+import com.sendByOP.expedition.models.entities.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

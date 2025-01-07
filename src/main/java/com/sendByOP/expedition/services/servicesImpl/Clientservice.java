@@ -1,9 +1,9 @@
 package com.sendByOP.expedition.services.servicesImpl;
 
-import com.sendByOP.expedition.services.IServices.IClientServivce;
+import com.sendByOP.expedition.services.iServices.IClientServivce;
 import com.sendByOP.expedition.exception.ErrorInfo;
 import com.sendByOP.expedition.exception.SendByOpException;
-import com.sendByOP.expedition.model.Client;
+import com.sendByOP.expedition.models.entities.Client;
 import com.sendByOP.expedition.repositories.ClientReopository;
 import com.sendByOP.expedition.utils.CHeckNull;
 import org.springframework.beans.factory.annotation.Autowired;

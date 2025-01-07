@@ -1,10 +1,13 @@
 package com.sendByOP.expedition.web.controller;
 
-import com.sendByOP.expedition.services.IServices.IClientServivce;
-import com.sendByOP.expedition.services.IServices.IUserService;
+import com.sendByOP.expedition.models.entities.Client;
+import com.sendByOP.expedition.models.dto.EmailDto;
+import com.sendByOP.expedition.models.entities.User;
+import com.sendByOP.expedition.models.entities.VerifyToken;
+import com.sendByOP.expedition.services.iServices.IClientServivce;
+import com.sendByOP.expedition.services.iServices.IUserService;
 import com.sendByOP.expedition.exception.ErrorInfo;
 import com.sendByOP.expedition.exception.SendByOpException;
-import com.sendByOP.expedition.model.*;
 import com.sendByOP.expedition.reponse.ResponseMessage;
 import com.sendByOP.expedition.services.servicesImpl.*;
 import com.sendByOP.expedition.utils.AppConstants;
@@ -266,7 +269,7 @@ public class RegisterController {
            Client updateClient = clientservice.updateClient(newClient);
 
            if (updateClient == null) return new ResponseEntity<>(new ResponseMessage("Un problème est survenu"), HttpStatus.INTERNAL_SERVER_ERROR);
-           Email newemail = new Email();
+           EmailDto newemail = new EmailDto();
            newemail.setTo(email);
            newemail.setTopic("Compte valider");
            newemail.setBody("Bonjour Mr/Mme "+newClient.getNom()+" Votre compte a été valider par l'admin veuillez vous connecter si votre adresse email et mot de passe ont été vérifié");
@@ -292,7 +295,7 @@ public class RegisterController {
             newClient.setPw(null);
             newClient.setEtatInscription(1);
 
-            Email newemail = new Email();
+            EmailDto newemail = new EmailDto();
             newemail.setTo(email);
             newemail.setTopic("Inscription rejettée");
             newemail.setBody("Bonjour Mr/Mme "+newClient.getNom()+" Votre compte a été rejetter par l'admin inscrivez-vous à nouveau et entrer des informations correctes");

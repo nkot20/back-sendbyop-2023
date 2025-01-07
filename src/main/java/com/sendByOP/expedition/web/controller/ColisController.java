@@ -1,9 +1,9 @@
 package com.sendByOP.expedition.web.controller;
 
-import com.sendByOP.expedition.services.IServices.IColisService;
+import com.sendByOP.expedition.services.iServices.IColisService;
 import com.sendByOP.expedition.exception.SendByOpException;
-import com.sendByOP.expedition.model.Colis;
-import com.sendByOP.expedition.model.Reservation;
+import com.sendByOP.expedition.models.entities.Colis;
+import com.sendByOP.expedition.models.entities.Reservation;
 import com.sendByOP.expedition.reponse.ResponseMessage;
 import com.sendByOP.expedition.services.servicesImpl.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;

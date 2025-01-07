@@ -1,7 +1,7 @@
 package com.sendByOP.expedition.repositories;
 
-import com.sendByOP.expedition.model.Client;
-import com.sendByOP.expedition.model.InfoBancaire;
+import com.sendByOP.expedition.models.entities.Client;
+import com.sendByOP.expedition.models.entities.InfoBancaire;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

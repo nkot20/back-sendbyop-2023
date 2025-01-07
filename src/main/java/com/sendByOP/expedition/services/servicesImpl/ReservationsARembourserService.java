@@ -1,6 +1,6 @@
 package com.sendByOP.expedition.services.servicesImpl;
 
-import com.sendByOP.expedition.model.ReservationsARembourser;
+import com.sendByOP.expedition.models.entities.ReservationsARembourser;
 import com.sendByOP.expedition.repositories.ReservationsARembourserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

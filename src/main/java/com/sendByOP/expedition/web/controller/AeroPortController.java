@@ -1,9 +1,9 @@
 package com.sendByOP.expedition.web.controller;
 
-import com.sendByOP.expedition.services.IServices.IAeroport;
+import com.sendByOP.expedition.services.iServices.IAeroport;
 import com.sendByOP.expedition.exception.ErrorInfo;
 import com.sendByOP.expedition.exception.SendByOpException;
-import com.sendByOP.expedition.model.Aeroport;
+import com.sendByOP.expedition.models.entities.Aeroport;
 import com.sendByOP.expedition.reponse.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

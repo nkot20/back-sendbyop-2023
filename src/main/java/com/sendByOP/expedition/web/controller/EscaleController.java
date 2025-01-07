@@ -1,8 +1,8 @@
 package com.sendByOP.expedition.web.controller;
 
-import com.sendByOP.expedition.model.Escale;
-import com.sendByOP.expedition.model.Vol;
-import com.sendByOP.expedition.services.servicesImpl.EscaleService;
+import com.sendByOP.expedition.models.dto.EscaleDto;
+import com.sendByOP.expedition.models.entities.Vol;
+import com.sendByOP.expedition.services.iServices.IEscaleService;
 import com.sendByOP.expedition.services.servicesImpl.VolService;
 import com.sendByOP.expedition.web.exceptions.escale.ImpossibleEffectuerEscaleException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,34 +17,34 @@ import java.util.Optional;
 public class EscaleController {
 
     @Autowired
-    EscaleService escaleService;
+    IEscaleService escaleService;
 
     @Autowired
     VolService volService;
 
     //Ajouter un escale
     @PostMapping(value = "vols/escales/save")
-    public ResponseEntity<Escale> ajouterUnEscale(@RequestBody Escale escale){
+    public ResponseEntity<EscaleDto> ajouterUnEscale(@RequestBody EscaleDto escale){
 
-        Escale newEscale = escaleService.addEscale(escale);
+        EscaleDto newEscale = escaleService.addEscale(escale);
 
         if (newEscale == null) throw new ImpossibleEffectuerEscaleException("Impossible d'ajouter une escale veuillez réessayer");
 
-        return new ResponseEntity<Escale>(newEscale, HttpStatus.CREATED);
+        return new ResponseEntity<EscaleDto>(newEscale, HttpStatus.CREATED);
     }
 
     //Supprimer un escale
     @PostMapping(value = "/vols/escales/delete")
-    public void supprimerEscale(@RequestBody Escale escale){
-        escaleService.deleteEscale(escale);
+    public void supprimerEscale(@RequestBody Integer id){
+        escaleService.deleteEscale(id);
     }
 
     //liste des escales
     @GetMapping(value = "api/v1/vols/escales/{id}")
-    public List<Escale> escalList(@PathVariable("id") int id){
+    public List<EscaleDto> escalList(@PathVariable("id") int id){
         Optional<Vol> vol = volService.getVolById(id);
         //Vol newVol = vol;
-        List<Escale> escales = escaleService.findByIdvol(vol);
+        List<EscaleDto> escales = escaleService.findByIdvol(vol);
         return escales;
     }
 }

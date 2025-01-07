@@ -1,7 +1,7 @@
 package com.sendByOP.expedition.services.servicesImpl;
 
-import com.sendByOP.expedition.model.Role;
-import com.sendByOP.expedition.model.User;
+import com.sendByOP.expedition.models.entities.Role;
+import com.sendByOP.expedition.models.entities.User;
 import com.sendByOP.expedition.repositories.RoleRepository;
 import com.sendByOP.expedition.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

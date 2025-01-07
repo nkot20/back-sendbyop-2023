@@ -1,6 +1,6 @@
 package com.sendByOP.expedition.services.servicesImpl;
 
-import com.sendByOP.expedition.model.VerifyToken;
+import com.sendByOP.expedition.models.entities.VerifyToken;
 import com.sendByOP.expedition.repositories.VerifyTokenRepository;
 import com.sendByOP.expedition.utils.AppConstants;
 import com.sendByOP.expedition.utils.DateUse;

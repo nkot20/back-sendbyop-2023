@@ -1,6 +1,6 @@
 package com.sendByOP.expedition.web.controller;
 
-import com.sendByOP.expedition.model.Note;
+import com.sendByOP.expedition.models.entities.Note;
 import com.sendByOP.expedition.reponse.ResponseMessage;
 import com.sendByOP.expedition.services.servicesImpl.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;

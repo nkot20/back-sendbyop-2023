@@ -1,6 +1,6 @@
 package com.sendByOP.expedition.services.servicesImpl;
 
-import com.sendByOP.expedition.model.Note;
+import com.sendByOP.expedition.models.entities.Note;
 import com.sendByOP.expedition.repositories.NoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

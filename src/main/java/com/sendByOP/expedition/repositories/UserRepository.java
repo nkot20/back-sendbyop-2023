@@ -1,6 +1,6 @@
 package com.sendByOP.expedition.repositories;
 
-import com.sendByOP.expedition.model.User;
+import com.sendByOP.expedition.models.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

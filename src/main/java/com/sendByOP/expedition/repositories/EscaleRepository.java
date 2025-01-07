@@ -1,8 +1,7 @@
 package com.sendByOP.expedition.repositories;
 
-import com.sendByOP.expedition.model.Escale;
-import com.sendByOP.expedition.model.Vol;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.sendByOP.expedition.models.entities.Escale;
+import com.sendByOP.expedition.models.entities.Vol;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,8 +1,8 @@
 package com.sendByOP.expedition.services.servicesImpl;
 
-import com.sendByOP.expedition.model.Operation;
-import com.sendByOP.expedition.model.Reservation;
-import com.sendByOP.expedition.model.Typeoperation;
+import com.sendByOP.expedition.models.entities.Operation;
+import com.sendByOP.expedition.models.entities.Reservation;
+import com.sendByOP.expedition.models.entities.Typeoperation;
 import com.sendByOP.expedition.repositories.OperationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

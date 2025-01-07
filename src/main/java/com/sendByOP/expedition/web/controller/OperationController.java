@@ -1,8 +1,8 @@
 package com.sendByOP.expedition.web.controller;
 
-import com.sendByOP.expedition.model.Operation;
-import com.sendByOP.expedition.model.Reservation;
-import com.sendByOP.expedition.model.Typeoperation;
+import com.sendByOP.expedition.models.entities.Operation;
+import com.sendByOP.expedition.models.entities.Reservation;
+import com.sendByOP.expedition.models.entities.Typeoperation;
 import com.sendByOP.expedition.services.servicesImpl.OperationService;
 import com.sendByOP.expedition.services.servicesImpl.ReservationService;
 import com.sendByOP.expedition.services.servicesImpl.TypeOPerationService;

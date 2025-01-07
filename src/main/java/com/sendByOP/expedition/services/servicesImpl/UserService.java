@@ -1,9 +1,9 @@
 package com.sendByOP.expedition.services.servicesImpl;
 
-import com.sendByOP.expedition.services.IServices.IUserService;
+import com.sendByOP.expedition.services.iServices.IUserService;
 import com.sendByOP.expedition.exception.ErrorInfo;
 import com.sendByOP.expedition.exception.SendByOpException;
-import com.sendByOP.expedition.model.User;
+import com.sendByOP.expedition.models.entities.User;
 import com.sendByOP.expedition.repositories.UserRepository;
 import com.sendByOP.expedition.utils.CHeckNull;
 import org.springframework.beans.factory.annotation.Autowired;

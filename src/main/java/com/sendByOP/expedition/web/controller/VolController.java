@@ -1,7 +1,11 @@
 package com.sendByOP.expedition.web.controller;
 
 import com.sendByOP.expedition.exception.SendByOpException;
-import com.sendByOP.expedition.model.*;
+import com.sendByOP.expedition.models.dto.VolDto;
+import com.sendByOP.expedition.models.dto.VolEscaleDto;
+import com.sendByOP.expedition.models.entities.AnnulationTrajet;
+import com.sendByOP.expedition.models.entities.Client;
+import com.sendByOP.expedition.models.entities.Vol;
 import com.sendByOP.expedition.reponse.ResponseMessage;
 import com.sendByOP.expedition.services.servicesImpl.*;
 import com.sendByOP.expedition.web.exceptions.vol.ImpossibleDePublierVolException;
@@ -38,7 +42,6 @@ public class VolController {
 
     @GetMapping(value = "api/v1/vols")
     public ResponseEntity<?> getListeVol(){
-
         List<Vol> vols = (List<Vol>) volService.getAllVol();
 
         if(vols.isEmpty()) return new ResponseEntity<>(new ResponseMessage("Aucun vol présent"), HttpStatus.OK );
@@ -86,15 +89,15 @@ public class VolController {
 
     //Publier un vol
     @PostMapping(value = "vols/saveVol")
-    public ResponseEntity<?> publishFlight(@RequestBody Vol vol){
+    public ResponseEntity<?> publishFlight(@RequestBody VolEscaleDto volEscaleDTO) throws SendByOpException {
 
-        Vol addVol = volService.saveVol(vol);
+        VolDto addVol = volService.saveVolWithEscales(volEscaleDTO);
 
         if(addVol == null) {
             return new ResponseEntity<>(new ResponseMessage("Un problème est survenu"), HttpStatus.INTERNAL_SERVER_ERROR);
         };
 
-        return new ResponseEntity<Vol>(addVol ,HttpStatus.CREATED);
+        return new ResponseEntity<VolDto>(addVol ,HttpStatus.CREATED);
     }
 
     //Chercher un vol

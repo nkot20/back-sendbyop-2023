@@ -1,6 +1,6 @@
 package com.sendByOP.expedition.repositories;
 
-import com.sendByOP.expedition.model.Ville;
+import com.sendByOP.expedition.models.entities.Ville;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

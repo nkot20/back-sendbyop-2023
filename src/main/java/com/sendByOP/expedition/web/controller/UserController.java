@@ -1,8 +1,8 @@
 package com.sendByOP.expedition.web.controller;
 
 import com.sendByOP.expedition.exception.SendByOpException;
-import com.sendByOP.expedition.model.Email;
-import com.sendByOP.expedition.model.User;
+import com.sendByOP.expedition.models.dto.EmailDto;
+import com.sendByOP.expedition.models.entities.User;
 import com.sendByOP.expedition.reponse.ResponseMessage;
 import com.sendByOP.expedition.services.servicesImpl.SendMailService;
 import com.sendByOP.expedition.services.servicesImpl.UserService;
@@ -51,7 +51,7 @@ public class UserController {
 
             if(newUser == null) return new ResponseEntity<>(new ResponseMessage("Utilisateur introuvable"), HttpStatus.INTERNAL_SERVER_ERROR);
 
-            Email sendEmail = new Email();
+            EmailDto sendEmail = new EmailDto();
             sendEmail.setTo(email);
             sendEmail.setBody("Votre mot de passe a été modifié avec succès veuillez!!!");
             sendEmail.setTopic("Modification de mot de passe");

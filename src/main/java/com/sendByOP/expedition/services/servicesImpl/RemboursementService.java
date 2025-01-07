@@ -1,7 +1,7 @@
 package com.sendByOP.expedition.services.servicesImpl;
 
-import com.sendByOP.expedition.model.Remboursement;
-import com.sendByOP.expedition.model.Reservation;
+import com.sendByOP.expedition.models.entities.Remboursement;
+import com.sendByOP.expedition.models.entities.Reservation;
 import com.sendByOP.expedition.repositories.RemboursementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

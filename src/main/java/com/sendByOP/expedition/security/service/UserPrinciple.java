@@ -1,8 +1,8 @@
 package com.sendByOP.expedition.security.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sendByOP.expedition.model.Role;
-import com.sendByOP.expedition.model.User;
+import com.sendByOP.expedition.models.entities.Role;
+import com.sendByOP.expedition.models.entities.User;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

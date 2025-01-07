@@ -1,9 +1,9 @@
 package com.sendByOP.expedition.services.servicesImpl;
 
-import com.sendByOP.expedition.services.IServices.IReservationService;
+import com.sendByOP.expedition.models.entities.*;
+import com.sendByOP.expedition.services.iServices.IReservationService;
 import com.sendByOP.expedition.exception.ErrorInfo;
 import com.sendByOP.expedition.exception.SendByOpException;
-import com.sendByOP.expedition.model.*;
 import com.sendByOP.expedition.repositories.ReservationRepository;
 import com.sendByOP.expedition.utils.CHeckNull;
 import org.springframework.beans.factory.annotation.Autowired;

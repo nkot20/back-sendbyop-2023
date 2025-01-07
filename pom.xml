@@ -16,6 +16,7 @@
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>1.8</java.version>
+		<org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
 		<org.projectlombok.version>1.18.22</org.projectlombok.version>
 	</properties>
 	<dependencies>
@@ -83,17 +84,26 @@
 			<artifactId>problem-spring-web</artifactId>
 			<version>0.25.0</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.mailgun</groupId>
 			<artifactId>mailgun-java</artifactId>
 			<version>1.0.6</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>${org.mapstruct.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct-processor</artifactId>
+			<version>${org.mapstruct.version}</version>
+			<scope>provided</scope>
 		</dependency>
 
 
@@ -121,7 +131,11 @@
 					<source>1.8</source>
 					<target>1.8</target>
 					<annotationProcessorPaths>
-
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>${org.mapstruct.version}</version>
+						</path>
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>

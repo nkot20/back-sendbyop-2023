@@ -1,7 +1,7 @@
 package com.sendByOP.expedition.services.servicesImpl;
 
-import com.sendByOP.expedition.model.Client;
-import com.sendByOP.expedition.model.Email;
+import com.sendByOP.expedition.models.entities.Client;
+import com.sendByOP.expedition.models.dto.EmailDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -21,7 +21,7 @@ public class SendMailService {
     private JavaMailSender javaMailSender;
 
 
-    public Email sendEmail(@Validated Email email) {
+    public EmailDto sendEmail(@Validated EmailDto email) {
         System.out.println("sending email");
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setFrom("etiennenkot1@gmail.com");
@@ -33,8 +33,8 @@ public class SendMailService {
         return email;
     }
 
-    public void sendListEmail(List<Email> emails) {
-        for (Email email: emails
+    public void sendListEmail(List<EmailDto> emails) {
+        for (EmailDto email: emails
              ) {
             sendEmail(email);
         }

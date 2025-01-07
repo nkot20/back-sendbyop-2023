@@ -1,7 +1,7 @@
 package com.sendByOP.expedition.services.servicesImpl;
 
-import com.sendByOP.expedition.model.Avis;
-import com.sendByOP.expedition.model.Client;
+import com.sendByOP.expedition.models.entities.Avis;
+import com.sendByOP.expedition.models.entities.Client;
 import com.sendByOP.expedition.repositories.AvisRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
