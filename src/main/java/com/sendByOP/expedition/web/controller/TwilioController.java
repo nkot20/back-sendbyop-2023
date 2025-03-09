@@ -2,7 +2,7 @@ package com.sendByOP.expedition.web.controller;
 
 import com.sendByOP.expedition.exception.ErrorInfo;
 import com.sendByOP.expedition.exception.SendByOpException;
-import com.sendByOP.expedition.models.entities.Client;
+import com.sendByOP.expedition.models.entities.Customer;
 import com.sendByOP.expedition.models.entities.Role;
 import com.sendByOP.expedition.models.entities.User;
 import com.sendByOP.expedition.reponse.ResponseMessage;
@@ -11,17 +11,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
+@RequestMapping("twilio")
 public class TwilioController {
 
     @Autowired
     PhoneverificationService phonesmsservice;
 
     @Autowired
-    Clientservice clientservice;
+    CustomerService clientservice;
 
     @Autowired
     RoleService roleService;
@@ -37,7 +37,7 @@ public class TwilioController {
         return "index";
     }*/
 
-    @PostMapping("api/v1/sendotp")
+    @PostMapping("/sendotp")
     public ResponseEntity<?> sendotp(@RequestBody String phone)
     {
         VerificationResult result=phonesmsservice.startVerification(phone);
@@ -68,7 +68,7 @@ public class TwilioController {
         return new ResponseEntity<>("Something wrong/ Otp incorrect",HttpStatus.BAD_REQUEST);
     }*/
 
-    @PostMapping("api/v1/verifyotp/{phone}/")
+    @PostMapping("/verifyotp/{phone}/")
     public ResponseEntity<?> sendotp(@PathVariable("phone") String phone, @RequestBody String otp) throws SendByOpException {
         //System.out.println(otp);
 
@@ -77,7 +77,7 @@ public class TwilioController {
         {
 
             try {
-                Client client = clientservice.findByNumber(phone);
+                Customer client = clientservice.findByNumber(phone);
                 User user = new User(client.getEmail(), client.getEmail(), client.getNom(), client.getPrenom(), encoder.encode(client.getPw()));
 
                 Role role = new Role();

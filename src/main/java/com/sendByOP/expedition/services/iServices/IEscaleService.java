@@ -1,13 +1,13 @@
 package com.sendByOP.expedition.services.iServices;
 
-import com.sendByOP.expedition.models.dto.EscaleDto;
-import com.sendByOP.expedition.models.entities.Vol;
+import com.sendByOP.expedition.models.dto.StopoverDto;
+import com.sendByOP.expedition.models.entities.Flight;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface IEscaleService {
-    EscaleDto addEscale(EscaleDto escaleDTO);
+    StopoverDto addEscale(StopoverDto escaleDTO);
     void deleteEscale(Integer id);
-    List<EscaleDto> findByIdvol(Optional<Vol> vol);
+    List<StopoverDto> findByIdvol(Optional<Flight> vol);
 }

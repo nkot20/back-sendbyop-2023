@@ -4,7 +4,7 @@ import com.sendByOP.expedition.exception.SendByOpException;
 import com.sendByOP.expedition.message.LoginForm;
 import com.sendByOP.expedition.message.SignUpForm;
 import com.sendByOP.expedition.models.dto.EmailDto;
-import com.sendByOP.expedition.models.entities.Client;
+import com.sendByOP.expedition.models.entities.Customer;
 import com.sendByOP.expedition.models.entities.Role;
 import com.sendByOP.expedition.models.entities.User;
 import com.sendByOP.expedition.reponse.JwtResponse;
@@ -14,8 +14,9 @@ import com.sendByOP.expedition.services.iServices.IAuthService;
 import com.sendByOP.expedition.services.iServices.IClientServivce;
 import com.sendByOP.expedition.services.iServices.IRoleService;
 import com.sendByOP.expedition.services.iServices.IUserService;
-import com.sendByOP.expedition.services.servicesImpl.SendMailService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,37 +25,23 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class AuthServiceImpl implements IAuthService {
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private IUserService userService;
-
-    @Autowired
-    private IRoleService roleService;
-
-    @Autowired
-    private PasswordEncoder encoder;
-
-    @Autowired
-    private JwtProvider jwtProvider;
-
-    @Autowired
-    private SendMailService sendMailService;
-
-    @Autowired
-    private IClientServivce clientService;
+    private final AuthenticationManager authenticationManager;
+    private final IUserService userService;
+    private final IRoleService roleService;
+    private final PasswordEncoder encoder;
+    private final JwtProvider jwtProvider;
+    private final SendMailService sendMailService;
+    private final IClientServivce clientService;
 
     @Override
-    public JwtResponse authenticateUser(@Valid LoginForm loginRequest) throws SendByOpException, MessagingException, UnsupportedEncodingException {
+    public JwtResponse authenticateUser(@Valid LoginForm loginRequest) throws SendByOpException {
         if (loginRequest.getUsername() == null) {
             throw new SendByOpException("email is null", HttpStatus.OK);
         }
@@ -68,13 +55,19 @@ public class AuthServiceImpl implements IAuthService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtProvider.generateJwtToken(authentication);
+        log.info("@@--- JWT Token {}",  jwt);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
         // Check if the user has the "client" role and handle accordingly
         if (userDetails.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("client"))) {
-            Client client = clientService.getCustomerByEmail(userDetails.getUsername());
+            Customer client = clientService.getCustomerByEmail(userDetails.getUsername());
+
             if (client.getValidEmail() != 1 && client.getValidNumber() != 1) {
-                sendVerificationEmail(client);
+                try {
+                    sendVerificationEmail(client);
+                } catch (MessagingException | UnsupportedEncodingException  e) {
+                    throw new SendByOpException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+                }
                 throw new SendByOpException("Please verify your email and number", HttpStatus.UNAUTHORIZED);
             }
             return new JwtResponse(jwt, userDetails.getUsername(), client, userDetails.getAuthorities());
@@ -159,7 +152,7 @@ public class AuthServiceImpl implements IAuthService {
         }
     }
 
-    private void sendVerificationEmail(Client client) throws MessagingException, UnsupportedEncodingException {
+    private void sendVerificationEmail(Customer client) throws MessagingException, UnsupportedEncodingException {
         // Implement sending email logic for client verification
         sendMailService.sendVerificationEmail(client, "http://localhost:4200/verification", "token", "/verify?code=", "Validation de compte", "Email content here");
     }

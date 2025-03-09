@@ -1,70 +1,65 @@
 package com.sendByOP.expedition.services.servicesImpl;
 
 import com.sendByOP.expedition.exception.SendByOpException;
-import com.sendByOP.expedition.mappers.AeroportMapper;
-import com.sendByOP.expedition.mappers.EscaleMapper;
-import com.sendByOP.expedition.mappers.VolMapper;
-import com.sendByOP.expedition.models.dto.VolDto;
+import com.sendByOP.expedition.mappers.AirportMapper;
+import com.sendByOP.expedition.mappers.StopoverMapper;
+import com.sendByOP.expedition.mappers.FlightMapper;
+import com.sendByOP.expedition.models.dto.CustomerDto;
+import com.sendByOP.expedition.models.dto.FlightDto;
 import com.sendByOP.expedition.models.dto.VolEscaleDto;
-import com.sendByOP.expedition.models.entities.Client;
-import com.sendByOP.expedition.models.entities.Vol;
+import com.sendByOP.expedition.models.entities.Flight;
 import com.sendByOP.expedition.repositories.VolRepository;
 import com.sendByOP.expedition.services.iServices.IVolService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class VolService implements IVolService {
-    @Autowired
-    VolRepository volRepository;
-    @Autowired
-    VolMapper volMapper;
-    @Autowired
-    AeroportMapper aeroportMapper;
-
-    @Autowired
-    EscaleMapper escaleMapper;
-
-    @Autowired
-    EscaleService escaleService;
-
-    @Autowired
-    AeroportService aeroportService;
+    private final VolRepository volRepository;
+    private final FlightMapper volMapper;
+    private final AirportMapper aeroportMapper;
+    private final StopoverMapper escaleMapper;
+    private final EscaleService escaleService;
+    private final AeroportService aeroportService;
 
     @Override
-    public Optional<Vol> getVolById(int id){
-        return volRepository.findById(id);
+    public FlightDto getVolById(int id){
+        Flight vol = volRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return volMapper.toDto(vol);
     }
 
     @Override
-    public Iterable<Vol> getAllVol(){
-        return volRepository.findAllByOrderByDatedepartDesc();
+    public List<FlightDto> getAllVol(){
+        List<Flight> vols = volRepository.findAllByOrderByDatedepartDesc();
+        return volMapper.toDtoList(vols);
     }
 
     @Override
     // 1 pour valider et 2 pour rejetter
-    public Iterable<Vol> getAllVolValid(int i){
-        return volRepository.findByEtatvalidation(i);
+    public List<FlightDto> getAllVolValid(int i){
+        return volMapper.toDtoList(volRepository.findByEtatvalidation(i));
     }
 
     @Override
-    public Vol saveVol(Vol vol){ return volRepository.save(vol); }
+    public FlightDto saveVol(FlightDto vol){
+        return volMapper.toDto(volRepository.save(volMapper.toEntity(vol)));
+    }
 
     @Override
-    public VolDto saveVolWithEscales(VolEscaleDto volEscaleDTO) throws SendByOpException {
+    public FlightDto saveVolWithEscales(VolEscaleDto volEscaleDTO) throws SendByOpException {
         // Convert VolEscaleDTO to Vol entity and save it
-        Vol volEntity = volMapper.toEntity(volEscaleDTO.getVol());
+        Flight volEntity = volMapper.toEntity(volEscaleDTO.getVol());
         volEntity.setIdaeroDepart(aeroportService.getAirport(volEscaleDTO.getVol().getIdaeroDepart().getIdaero()));
         volEntity.setIdAeroArrive(aeroportService.getAirport(volEscaleDTO.getVol().getIdAeroArrive().getIdaero()));
-        Vol savedVolEntity = saveVol(volEntity);
+
+        FlightDto savedVolDTO = saveVol(volMapper.toDto(volEntity));
 
         // Convert the saved Vol entity to VolDTO
-        VolDto savedVolDTO = volMapper.toDto(savedVolEntity);
 
         // If there are escales, process each one
         if (volEscaleDTO.getEscales() != null && !volEscaleDTO.getEscales().isEmpty()) {
@@ -79,22 +74,25 @@ public class VolService implements IVolService {
 
 
     @Override
-    public void deleteVol(Vol vol){
-        volRepository.delete(vol);
+    public void deleteVol(int id){
+        volRepository.deleteById(id);
     }
 
     @Override
-    public Vol updateVol(Vol vol){
-        return volRepository.save(vol);
+    public FlightDto updateVol(FlightDto vol){
+        return volMapper.toDto(volRepository.save(volMapper.toEntity(vol)));
     }
 
     @Override
-    public List<Vol> getByIdClient(Client idClient){ return volRepository.findByIdclientOrderByDatepublicationDesc(idClient); }
+    public List<FlightDto> getByIdClient(CustomerDto idClient){
+        return volMapper.toDtoList(volRepository
+                .findByIdclientOrderByDatepublicationDesc(idClient.getIdp()));
+    }
 
     @Override
-    public int nbVolClient(Client idClient){
+    public int nbVolClient(CustomerDto idClient){
 
-        List<Vol> vols = volRepository.findByIdclientOrderByDatepublicationDesc(idClient);
+        List<Flight> vols = volRepository.findByIdclientOrderByDatepublicationDesc(idClient.getIdp());
 
 
         vols.removeIf(vol -> vol.getEtatvalidation() != 1);
@@ -103,7 +101,7 @@ public class VolService implements IVolService {
     }
 
     @Override
-    public Vol getVolByIdVol(int id){
-        return volRepository.findByIdvol(id);
+    public FlightDto getVolByIdVol(int id){
+        return volMapper.toDto(volRepository.findByIdvol(id).orElseThrow(EntityNotFoundException::new));
     }
 }

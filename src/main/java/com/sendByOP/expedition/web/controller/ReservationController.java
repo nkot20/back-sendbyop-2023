@@ -1,9 +1,12 @@
 package com.sendByOP.expedition.web.controller;
 
-import com.sendByOP.expedition.models.entities.AnnulationReservation;
-import com.sendByOP.expedition.models.entities.Client;
-import com.sendByOP.expedition.models.entities.Refus;
-import com.sendByOP.expedition.models.entities.Reservation;
+import com.sendByOP.expedition.models.dto.CancellationReservationDto;
+import com.sendByOP.expedition.models.dto.CustomerDto;
+import com.sendByOP.expedition.models.dto.BookingDto;
+import com.sendByOP.expedition.models.entities.CancellationReservation;
+import com.sendByOP.expedition.models.entities.Customer;
+import com.sendByOP.expedition.models.entities.Rejection;
+import com.sendByOP.expedition.models.entities.Booking;
 import com.sendByOP.expedition.services.iServices.IAnnulationReservationService;
 import com.sendByOP.expedition.services.iServices.IClientServivce;
 import com.sendByOP.expedition.services.iServices.IReservationService;
@@ -11,16 +14,16 @@ import com.sendByOP.expedition.exception.ErrorInfo;
 import com.sendByOP.expedition.exception.SendByOpException;
 import com.sendByOP.expedition.reponse.ResponseMessage;
 import com.sendByOP.expedition.services.servicesImpl.*;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 @RestController
+@RequestMapping("booking")
 public class ReservationController {
 
     @Autowired
@@ -30,7 +33,7 @@ public class ReservationController {
     RefusService refusService;
 
     @Autowired
-    PaiementService paiementService;
+    PaymentService paiementService;
 
     @Autowired
     IClientServivce clientservice;
@@ -48,10 +51,10 @@ public class ReservationController {
      * @return
      * @throws SendByOpException
      */
-    @PostMapping(value = "reservations/save")
-    public ResponseEntity<?> addReservation(@RequestBody Reservation reservation) throws SendByOpException {
+    @PostMapping(value = "/save")
+    public ResponseEntity<?> addReservation(@RequestBody BookingDto reservation) throws SendByOpException {
         try {
-            Reservation newReservation = reservationService.saveReservationWithColis(reservation);
+            BookingDto newReservation = reservationService.saveReservationWithColis(reservation);
 
             if (newReservation == null) throw new SendByOpException(ErrorInfo.INTRERNAL_ERROR);
 
@@ -68,10 +71,10 @@ public class ReservationController {
      * @return
      * @throws SendByOpException
      */
-    @PutMapping(value = "reservations/update")
-    public ResponseEntity<?> update(@RequestBody Reservation reservation) throws SendByOpException {
+    @PutMapping(value = "/update")
+    public ResponseEntity<?> update(@RequestBody BookingDto reservation) throws SendByOpException {
         try {
-            Reservation newReservation = reservationService.updateReservation(reservation);
+            BookingDto newReservation = reservationService.updateReservation(reservation);
 
             if (newReservation == null) throw new SendByOpException(ErrorInfo.INTRERNAL_ERROR);
 
@@ -87,13 +90,10 @@ public class ReservationController {
      * @return
      * @throws SendByOpException
      */
-    @PostMapping(value = "reservations/annuler")
-    public ResponseEntity<?> annuler(@RequestBody AnnulationReservation annulationReservation) throws SendByOpException {
-
-
-
+    @PostMapping(value = "/annuler")
+    public ResponseEntity<?> annuler(@RequestBody CancellationReservation annulationReservation) throws SendByOpException {
         try {
-            Reservation reservation = annulationReservationService.saveWithReservation(annulationReservation);
+            Booking reservation = annulationReservationService.saveWithReservation(annulationReservation);
             if (reservation == null) {
                 throw  new SendByOpException(ErrorInfo.INTRERNAL_ERROR);
             }
@@ -111,9 +111,9 @@ public class ReservationController {
      * Liste des réservations
      * @return
      */
-    @GetMapping(value = "reservations")
+    @GetMapping(value = "/")
     public ResponseEntity<?> getAll(){
-        List<Reservation> reservations = reservationService.reservationList();
+        List<BookingDto> reservations = reservationService.reservationList();
         return  new ResponseEntity<>(reservations, HttpStatus.OK);
     }
 
@@ -122,11 +122,9 @@ public class ReservationController {
      * @param id
      * @return
      */
-    @GetMapping(value = "api/v1/reservations/{id}")
+    @GetMapping(value = "/{id}")
     public ResponseEntity<?> getAllOfFly(@PathVariable("id") int id){
-
-
-        List<Reservation> allReservations = reservationService.reservationList();
+        List<BookingDto> allReservations = reservationService.reservationList();
         allReservations.removeIf(reservation -> reservation.getVol().getIdvol() != id);
         return  new ResponseEntity<>(allReservations, HttpStatus.OK);
     }
@@ -136,13 +134,13 @@ public class ReservationController {
      * @param email
      * @return
      */
-    @GetMapping(value = "reservations/destinator/{id}")
+    @GetMapping(value = "/destinator/{id}")
     public ResponseEntity<?> getAllOfCustomerDestinator(@PathVariable("id") String email){
 
         try {
-            Client client = clientservice.getCustomerByEmail(email);
+            CustomerDto client = clientservice.getCustomerByEmail(email);
 
-            List<Reservation> allReservations = reservationService.clientDestinatorReservationList(client);
+            List<BookingDto> allReservations = reservationService.clientDestinatorReservationList(client.getIdp());
 
             return  new ResponseEntity<>(allReservations, HttpStatus.OK);
 
@@ -156,12 +154,12 @@ public class ReservationController {
      * @param email
      * @return
      */
-    @GetMapping(value = "reservations/expeditor/{id}")
+    @GetMapping(value = "/expeditor/{id}")
     public ResponseEntity<?> getAllOfCustomerDestinato(@PathVariable("id") String email){
         try {
-            Client client = clientservice.getCustomerByEmail(email);
+            CustomerDto client = clientservice.getCustomerByEmail(email);
 
-            List<Reservation> allReservations = reservationService.reservationList();
+            List<BookingDto> allReservations = reservationService.reservationList();
 
             allReservations.removeIf(reservation -> reservation.getVol().getIdclient().getEmail() != client.getEmail());
 
@@ -178,12 +176,12 @@ public class ReservationController {
      * @return
      * @throws SendByOpException
      */
-    @GetMapping(value = "/reservations/delete/{id}")
+    @GetMapping(value = "/delete/{id}")
     public ResponseEntity<?> deleteReservation(@PathVariable("id") int id) throws SendByOpException {
         try {
-            Reservation reservation = reservationService.getReservation(id);
+            BookingDto reservation = reservationService.getReservation(id);
 
-            reservationService.deleteReservation(reservation);
+            reservationService.deleteReservation(reservation.getIdRe());
             return new ResponseEntity<>(new ResponseMessage("Suppresion réussie"), HttpStatus.OK);
 
         } catch (SendByOpException e) {
@@ -197,11 +195,11 @@ public class ReservationController {
      * @return
      * @throws SendByOpException
      */
-    @GetMapping(value = "reservations/details/{id}")
+    @GetMapping(value = "/details/{id}")
     public ResponseEntity<?> getReservatioins(@PathVariable("id") int id) throws SendByOpException {
 
         try {
-            Reservation reservation = reservationService.getReservation(id);
+            BookingDto reservation = reservationService.getReservation(id);
 
             return new ResponseEntity<>(reservation, HttpStatus.OK);
 
@@ -216,14 +214,14 @@ public class ReservationController {
      * valider réservation (1 pour valider)
      * @param id
      * @return
-     * @throws MessagingException
+     * @throws jakarta.mail.MessagingException
      * @throws UnsupportedEncodingException
      * @throws SendByOpException
      */
-    @PutMapping(value = "reservations/valider/")
+    @PutMapping(value = "/valider/")
     public ResponseEntity<?> validerReservation(@RequestBody int id) throws MessagingException, UnsupportedEncodingException, SendByOpException {
         try {
-            Reservation reservation = reservationService.getReservation(id);
+            BookingDto reservation = reservationService.getReservation(id);
 
             if (reservation == null){
                 return new ResponseEntity<>(new ResponseMessage("Réservation introuvale!"),
@@ -232,7 +230,7 @@ public class ReservationController {
 
             reservation.setStatutReExpe(1);
 
-            Reservation newReservation = reservationService.updateReservation(reservation);
+            BookingDto newReservation = reservationService.updateReservation(reservation);
 
             String content = "Bonjour [[name]],<br>"
 
@@ -257,18 +255,18 @@ public class ReservationController {
      * @throws UnsupportedEncodingException
      * @throws SendByOpException
      */
-    @PutMapping(value = "/reservations/refuser/{id}")
-    public ResponseEntity<?> refuserReservation(@PathVariable("id") int id, @RequestBody Refus refus) throws MessagingException, UnsupportedEncodingException, SendByOpException {
+    @PutMapping(value = "/refuser/{id}")
+    public ResponseEntity<?> refuserReservation(@PathVariable("id") int id, @RequestBody Rejection refus) throws MessagingException, UnsupportedEncodingException, SendByOpException {
 
       try {
-          Reservation reservation = reservationService.getReservation(id);
+          BookingDto reservation = reservationService.getReservation(id);
 
           if (reservation == null){
               return new ResponseEntity<>(new ResponseMessage("Réservation introuvale!"),
                       HttpStatus.NOT_FOUND);
           }
 
-          Reservation newReservation = reservationService.refuserReservation(reservation, refus);
+          Booking newReservation = reservationService.refuserReservation(reservation, refus);
 
           return new ResponseEntity<>(newReservation, HttpStatus.CREATED);
       } catch (SendByOpException e) {
@@ -282,11 +280,11 @@ public class ReservationController {
      * @return
      * @throws SendByOpException
      */
-    @GetMapping(value = "/reservations/paiement/{id}")
+    @GetMapping(value = "/paiement/{id}")
     public ResponseEntity<?> payementReservation(@PathVariable("id") int id) throws SendByOpException {
         try {
-            Reservation reservation = paiementService.calculMontantFacture(id);
-            return new ResponseEntity<Reservation>(reservation, HttpStatus.CREATED);
+            Booking reservation = paiementService.calculMontantFacture(id);
+            return new ResponseEntity<Booking>(reservation, HttpStatus.CREATED);
         } catch (SendByOpException e) {
             return new ResponseEntity<>(new ResponseMessage(e.getMessage()), e.getHttpStatus());
         }
@@ -301,14 +299,14 @@ public class ReservationController {
     @GetMapping(value = "/lien/expediteur/{id}")
     public ResponseEntity<?> getLinkExp(@PathVariable("id") int idReser) throws SendByOpException {
         try {
-            Reservation reservation = reservationService.getReservation(idReser);
+            BookingDto reservation = reservationService.getReservation(idReser);
 
             if (reservation.getStatutPayement() == 0){
                 return new ResponseEntity<>(new ResponseMessage("Réservation impayée!"),
                         HttpStatus.NOT_FOUND);
             }
 
-            Client client = clientservice.getClientById(reservation.getVol().getIdclient().getIdp());
+            Customer client = clientservice.getClientById(reservation.getVol().getIdclient().getIdp());
 
             return new ResponseEntity<>(client.getLien(),
                     HttpStatus.CREATED);
@@ -331,7 +329,7 @@ public class ReservationController {
     public ResponseEntity<?> writeOpinion(@PathVariable("id") int id, @RequestBody String opinion) throws MessagingException, UnsupportedEncodingException, SendByOpException {
 
         try {
-            Reservation reservation = reservationService.getReservation(id);
+            BookingDto reservation = reservationService.getReservation(id);
 
             if (reservation.getEtatReceptionExp() == 0){
                 return new ResponseEntity<>(new ResponseMessage("Colis de la réservation non recu!"),
@@ -340,7 +338,7 @@ public class ReservationController {
 
             reservation.setAvisClient(opinion);
 
-            Reservation newReservation = reservationService.updateReservation(reservation);
+            BookingDto newReservation = reservationService.updateReservation(reservation);
 
             if (newReservation == null) throw new SendByOpException(ErrorInfo.INTRERNAL_ERROR);
 
@@ -364,7 +362,7 @@ public class ReservationController {
     public ResponseEntity<?> writeResponse(@PathVariable("id") int id, @RequestBody String response) throws MessagingException, UnsupportedEncodingException, SendByOpException {
 
        try {
-           Reservation reservation = reservationService.getReservation(id);
+           BookingDto reservation = reservationService.getReservation(id);
 
            if (reservation.getEtatReceptionExp() == 0){
                return new ResponseEntity<>(new ResponseMessage("Colis de la réservation non recu!"),
@@ -373,7 +371,7 @@ public class ReservationController {
 
            reservation.setAvisClient(response);
 
-           Reservation newReservation = reservationService.updateReservation(reservation);
+           BookingDto newReservation = reservationService.updateReservation(reservation);
 
            if (newReservation == null) throw new SendByOpException(ErrorInfo.INTRERNAL_ERROR);
 
@@ -393,9 +391,9 @@ public class ReservationController {
     }
 
 
-    @GetMapping(value = "reservations/annulation/get/{id}")
+    @GetMapping(value = "/annulation/get/{id}")
     public ResponseEntity<?> getAnnultionOfReservation(@PathVariable("id") int id) throws SendByOpException {
-        Reservation reservation = reservationService.getReservation(id);
+        BookingDto reservation = reservationService.getReservation(id);
 
         if (reservation == null){
             return new ResponseEntity<>("Réservation introuvale!",
@@ -403,7 +401,7 @@ public class ReservationController {
         }
 
         try {
-            AnnulationReservation annulationReservation = annulationReservationService.findByReservation(reservation);
+            CancellationReservationDto annulationReservation = annulationReservationService.findByReservation(reservation.getIdRe());
             return new ResponseEntity<>(annulationReservation, HttpStatus.OK);
         } catch (SendByOpException e) {
             return new ResponseEntity<>(new ResponseMessage(e.getMessage()), HttpStatus.NOT_FOUND);

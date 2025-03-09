@@ -12,6 +12,6 @@ import java.util.List;
 @Getter
 @Setter
 public class VolEscaleDto {
-    private VolDto vol;
-    private List<EscaleDto> escales;
+    private FlightDto vol;
+    private List<StopoverDto> escales;
 }

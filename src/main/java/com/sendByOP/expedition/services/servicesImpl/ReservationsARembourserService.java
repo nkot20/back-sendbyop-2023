@@ -1,25 +1,27 @@
 package com.sendByOP.expedition.services.servicesImpl;
 
-import com.sendByOP.expedition.models.entities.ReservationsARembourser;
+import com.sendByOP.expedition.models.entities.RefundableBooking;
 import com.sendByOP.expedition.repositories.ReservationsARembourserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.sendByOP.expedition.services.iServices.IReservationsARembourserService;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
 @Transactional
-public class ReservationsARembourserService {
+@RequiredArgsConstructor
+public class ReservationsARembourserService implements IReservationsARembourserService {
 
-    @Autowired
-    ReservationsARembourserRepository reservationsARembourserRepository;
+    private final ReservationsARembourserRepository reservationsARembourserRepository;
 
-    public ReservationsARembourser save(ReservationsARembourser reservationsARembourser) {
+    @Override
+    public RefundableBooking save(RefundableBooking reservationsARembourser) {
         return reservationsARembourserRepository.save(reservationsARembourser);
     }
 
-    public List<ReservationsARembourser> findAll() {
+    @Override
+    public List<RefundableBooking> findAll() {
         return reservationsARembourserRepository.findAll();
     }
 

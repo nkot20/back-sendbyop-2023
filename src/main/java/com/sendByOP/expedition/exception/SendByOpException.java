@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * The Class HotelTechnicalException.
+ * The Class SendByOpException.
  */
 public class SendByOpException extends Exception {
 

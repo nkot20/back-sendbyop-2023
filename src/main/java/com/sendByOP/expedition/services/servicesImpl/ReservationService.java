@@ -1,16 +1,18 @@
 package com.sendByOP.expedition.services.servicesImpl;
 
-import com.sendByOP.expedition.models.entities.*;
+import com.sendByOP.expedition.mappers.CustomerMapper;
+import com.sendByOP.expedition.mappers.ReceiverMapper;
+import com.sendByOP.expedition.mappers.BookingMapper;
+import com.sendByOP.expedition.models.dto.*;
 import com.sendByOP.expedition.services.iServices.IReservationService;
 import com.sendByOP.expedition.exception.ErrorInfo;
 import com.sendByOP.expedition.exception.SendByOpException;
 import com.sendByOP.expedition.repositories.ReservationRepository;
 import com.sendByOP.expedition.utils.CHeckNull;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.mail.MessagingException;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import javax.mail.MessagingException;
-import javax.transaction.Transactional;
 import java.io.UnsupportedEncodingException;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -18,31 +20,26 @@ import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ReservationService implements IReservationService {
-    @Autowired
-    ReservationRepository reservationRepository;
-
-    @Autowired
-    ColisService colisService;
-
-    @Autowired
-    ReceveurService receveurService;
-
-    @Autowired
-    private SendMailService sendEmailService;
-
-
-    @Autowired
-    RefusService refusService;
+    private final ReservationRepository reservationRepository;
+    private final ColisService colisService;
+    private final ReceveurService receveurService;
+    private final SendMailService sendEmailService;
+    private final RefusService refusService;
+    private final BookingMapper reservationMapper;
+    private final ReceiverMapper receiverMapper;
+    private final CustomerMapper customerMapper;
 
     @Override
-    public Reservation saveReservation(Reservation reservation) throws SendByOpException {
+    public BookingDto saveReservation(BookingDto reservation) throws SendByOpException {
        CHeckNull.checkNumero(reservation.getReserveur().getIdp());
-        return reservationRepository.save(reservation);
+        return reservationMapper
+                .toDto(reservationRepository.save(reservationMapper.toEntity(reservation)));
     }
 
     @Override
-    public Reservation saveReservationWithColis(Reservation reservation) throws SendByOpException {
+    public BookingDto saveReservationWithColis(BookingDto reservation) throws SendByOpException {
         reservation.setStatutPayement(0);
         reservation.setEtatReceptionExp(0);
         reservation.setAvisClient("");
@@ -51,16 +48,15 @@ public class ReservationService implements IReservationService {
         reservation.setAnnuler(0);
         reservation.setStastutPaimentTransporteur(0);
         reservation.setStatutReExpe(0);
-        Receveur receveur = receveurService.save(reservation.getReceveur());
+        ReceiverDto receveur = receveurService.save(receiverMapper.toEntity(reservation.getReceveur()));
         reservation.setReceveur(receveur);
-        List<Colis> colisList = new ArrayList<Colis>();
+        List<ParcelDto> colisList = new ArrayList<ParcelDto>();
 
         reservation.getColisList().forEach(colis -> {
-            colis.setIdcol(null);
             colisList.add(colis);
         });
         reservation.setColisList(colisList);
-        Reservation newReservation = saveReservation(reservation);
+        BookingDto newReservation = saveReservation(reservation);
 
 
         reservation.getColisList().forEach(colis -> {
@@ -75,41 +71,47 @@ public class ReservationService implements IReservationService {
     }
 
     @Override
-    public Reservation updateReservation(Reservation reservation) throws SendByOpException {
+    public BookingDto updateReservation(BookingDto reservation) throws SendByOpException {
         return saveReservation(reservation);
     }
 
     @Override
-    public void deleteReservation(Reservation reservation){
-        reservationRepository.delete(reservation);
+    public void deleteReservation(int id){
+        reservationRepository.deleteById(id);
     }
 
     @Override
-    public Reservation getReservation(int id) throws SendByOpException {
-        return reservationRepository.findByIdRe(id).orElseThrow(() -> new SendByOpException(ErrorInfo.RESSOURCE_NOT_FOUND));
+    public BookingDto getReservation(int id) throws SendByOpException {
+        return reservationMapper.toDto(reservationRepository.findByIdRe(id)
+                .orElseThrow(() -> new SendByOpException(ErrorInfo.RESSOURCE_NOT_FOUND)));
     }
 
     @Override
-    public List<Reservation> reservationList(){
-        return (List<Reservation>) reservationRepository.findAllByOrderByDatereDesc();
+    public List<BookingDto> reservationList(){
+        return reservationMapper.toDtoList(reservationRepository.findAllByOrderByDatereDesc());
     }
 
     @Override
-    public List<Reservation> clientDestinatorReservationList(Client idClient){
-        return reservationRepository.findByReserveurOrderByDatereDesc(idClient);
+    public List<BookingDto> clientDestinatorReservationList(CustomerDto idClient){
+        return reservationMapper.toDtoList(reservationRepository.findByReserveurOrderByDatereDesc(
+                customerMapper.toEntity(idClient)
+        ));
     }
 
     @Override
-    public List<Reservation> getReservationByDate(Date date) { return reservationRepository.findByDatere(date); }
+    public List<BookingDto> getReservationByDate(Date date) {
+        return reservationMapper.toDtoList(reservationRepository.findByDatere(date));
+    }
 
     @Override
-    public Reservation refuserReservation(Reservation reservation, Refus refus) throws MessagingException, UnsupportedEncodingException, SendByOpException {
+    public BookingDto refuserReservation(BookingDto reservation, RejectionDto refus)
+            throws MessagingException, UnsupportedEncodingException, SendByOpException {
 
 
         reservation.setStatutReExpe(2);
 
-        Reservation newReservation = updateReservation(reservation);
-        refus.setIdRe(reservation);
+        BookingDto newReservation = updateReservation(reservation);
+        refus.setIdRe(reservation.getIdRe());
         if (newReservation != null){
             refusService.saveRefus(refus);
         } else {

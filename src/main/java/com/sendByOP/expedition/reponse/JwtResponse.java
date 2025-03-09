@@ -1,6 +1,7 @@
 package com.sendByOP.expedition.reponse;
 
-import com.sendByOP.expedition.models.entities.Client;
+import com.sendByOP.expedition.models.dto.CustomerDto;
+import com.sendByOP.expedition.models.entities.Customer;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
@@ -11,9 +12,9 @@ public class JwtResponse {
     private String username;
     private Collection<? extends GrantedAuthority> authorities;
 
-    private Client client;
+    private CustomerDto client;
 
-    public JwtResponse(String accessToken, String username, Client client, Collection<? extends GrantedAuthority> authorities) {
+    public JwtResponse(String accessToken, String username, CustomerDto client, Collection<? extends GrantedAuthority> authorities) {
         this.token = accessToken;
         this.username = username;
         this.authorities = authorities;
@@ -48,7 +49,7 @@ public class JwtResponse {
         return authorities;
     }
 
-    public Client getClient() {
+    public Customer getClient() {
         return client;
     }
 }

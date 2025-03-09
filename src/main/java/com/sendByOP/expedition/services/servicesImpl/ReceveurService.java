@@ -1,21 +1,23 @@
 package com.sendByOP.expedition.services.servicesImpl;
 
-import com.sendByOP.expedition.models.entities.Receveur;
+import com.sendByOP.expedition.mappers.ReceiverMapper;
+import com.sendByOP.expedition.models.dto.ReceiverDto;
+import com.sendByOP.expedition.models.entities.Receiver;
 import com.sendByOP.expedition.repositories.ReceveurRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ReceveurService {
 
-    @Autowired
-    ReceveurRepository receveurRepository;
+    private final ReceveurRepository receveurRepository;
+    private final ReceiverMapper receiverMapper;
 
-    public Receveur save(Receveur receveur){
-        return receveurRepository.save(receveur);
+    public ReceiverDto save(Receiver receveur){
+        return receiverMapper.toDto(receveurRepository.save(receveur));
     }
 
 }

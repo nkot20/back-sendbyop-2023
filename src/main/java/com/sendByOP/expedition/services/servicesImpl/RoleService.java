@@ -3,10 +3,9 @@ package com.sendByOP.expedition.services.servicesImpl;
 import com.sendByOP.expedition.models.entities.Role;
 import com.sendByOP.expedition.repositories.RoleRepository;
 import com.sendByOP.expedition.services.iServices.IRoleService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 
 @Service
 @Transactional

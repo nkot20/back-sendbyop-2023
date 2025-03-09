@@ -1,19 +1,21 @@
 package com.sendByOP.expedition.services.servicesImpl;
 
-import com.sendByOP.expedition.models.entities.Refus;
+import com.sendByOP.expedition.mappers.RejectionMapper;
+import com.sendByOP.expedition.models.dto.RejectionDto;
 import com.sendByOP.expedition.repositories.RefusRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class RefusService {
-    @Autowired
-    RefusRepository refusRepository;
+    private final RefusRepository refusRepository;
+    private final RejectionMapper refusMapper;
 
-    public Refus saveRefus(Refus refus){
-        return refusRepository.save(refus);
+    public RejectionDto saveRefus(RejectionDto refus){
+        return refusMapper.toDto(refusRepository.save(refusMapper.toEntity(refus)));
     }
 }

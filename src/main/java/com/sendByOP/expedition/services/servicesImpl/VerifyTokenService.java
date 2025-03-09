@@ -4,11 +4,10 @@ import com.sendByOP.expedition.models.entities.VerifyToken;
 import com.sendByOP.expedition.repositories.VerifyTokenRepository;
 import com.sendByOP.expedition.utils.AppConstants;
 import com.sendByOP.expedition.utils.DateUse;
-import net.bytebuddy.utility.RandomString;
+import jakarta.transaction.Transactional;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 import java.util.Date;
 
 @Service
@@ -19,7 +18,7 @@ public class VerifyTokenService {
     VerifyTokenRepository verifyTokenRepository;
 
     @Autowired
-    Clientservice clientservice;
+    CustomerService clientservice;
 
     public VerifyToken save(String email) {
         VerifyToken verifyToken = new VerifyToken();
@@ -27,7 +26,7 @@ public class VerifyTokenService {
 
         verifyToken.setEmail(email);
         verifyToken.setExpiratedToken(DateUse.calculateExpiryDate(1440));
-        verifyToken.setToken(RandomString.make(64));
+        verifyToken.setToken(RandomStringUtils.random(64));
 
         return verifyTokenRepository.save(verifyToken);
 

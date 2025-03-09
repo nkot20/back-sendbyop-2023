@@ -1,6 +1,6 @@
 package com.sendByOP.expedition.web.controller;
 
-import com.sendByOP.expedition.models.entities.Client;
+import com.sendByOP.expedition.models.entities.Customer;
 import com.sendByOP.expedition.models.dto.EmailDto;
 import com.sendByOP.expedition.models.entities.User;
 import com.sendByOP.expedition.models.entities.VerifyToken;
@@ -11,21 +11,19 @@ import com.sendByOP.expedition.exception.SendByOpException;
 import com.sendByOP.expedition.reponse.ResponseMessage;
 import com.sendByOP.expedition.services.servicesImpl.*;
 import com.sendByOP.expedition.utils.AppConstants;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import javax.mail.MessagingException;
-import javax.transaction.Transactional;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 
 @RestController
+@RequestMapping("/customer")
 public class RegisterController {
-    public static final String apiBase = "api/v1/";
     @Autowired
     IClientServivce clientservice;
 
@@ -45,19 +43,19 @@ public class RegisterController {
     VerifyTokenService verifyTokenService;
 
 
-    @GetMapping(value = "clients")
-    public List<Client> listeClient(){
+    @GetMapping(value = "/")
+    public List<Customer> listeClient(){
         return clientservice.getListClient();
     }
 
 
 
-    @PostMapping(value = ""+apiBase+"customer/register")
-    public ResponseEntity<?> registerCustomer(@RequestBody Client client) throws MessagingException, UnsupportedEncodingException, SendByOpException {
+    @PostMapping(value = "/register")
+    public ResponseEntity<?> registerCustomer(@RequestBody Customer client) throws MessagingException, UnsupportedEncodingException, SendByOpException {
         try {
             if (clientservice.customerIsExist(client.getEmail())) throw new SendByOpException("Adresse email déja utilisée!", HttpStatus.BAD_REQUEST);
 
-            Client newClient = clientservice.saveClient(client);
+            Customer newClient = clientservice.saveClient(client);
             if (newClient == null) {
                 throw new SendByOpException("Un problème est survenu veuillez réessayer!",HttpStatus.INTERNAL_SERVER_ERROR);
             } else {
@@ -84,10 +82,10 @@ public class RegisterController {
         }
     }
 
-    @PutMapping("custumer/update")
-    public ResponseEntity<?> updateCustomer(@RequestBody Client client) throws SendByOpException {
+    @PutMapping("/update")
+    public ResponseEntity<?> updateCustomer(@RequestBody Customer client) throws SendByOpException {
         try {
-            Client newClient = clientservice.updateClient(client);
+            Customer newClient = clientservice.updateClient(client);
             if (newClient.equals(null)) throw new SendByOpException(ErrorInfo.INTRERNAL_ERROR);
             return new ResponseEntity<>(newClient,HttpStatus.OK);
         } catch (SendByOpException e) {
@@ -95,11 +93,11 @@ public class RegisterController {
         }
     }
 
-    @PostMapping("api/v1/resend/email/{email}")
+    @PostMapping("/resend/email/{email}")
     public ResponseEntity<?> resendEmail(@PathVariable("email") String email) throws MessagingException, UnsupportedEncodingException {
 
         try {
-            Client client = clientservice.getCustomerByEmail(email);
+            Customer client = clientservice.getCustomerByEmail(email);
             VerifyToken verifyToken = verifyTokenService.save(email);
             String content = "Bonjour [[name]],<br>"
                     + "Nous devons vérifier votre adresse e-mail et numéro de téléphone avant que vous puissez accéder à <br>"
@@ -118,20 +116,20 @@ public class RegisterController {
 
     }
 
-    @PostMapping("api/v1/verify/getcustomer/{token}")
+    @PostMapping("/verify/getcustomer/{token}")
     public ResponseEntity<?> getCustomerByToken(@PathVariable("token") String token) throws SendByOpException {
         try {
             String result = verifyTokenService.verifyToken(token);
 
             VerifyToken verifyToken = verifyTokenService.getByTokent(token);
-            Client client = clientservice.getCustomerByEmail(verifyToken.getEmail());
+            Customer client = clientservice.getCustomerByEmail(verifyToken.getEmail());
             return new ResponseEntity<>(client, HttpStatus.OK);
         } catch (SendByOpException e) {
             return new ResponseEntity<>(new ResponseMessage(e.getMessage()), e.getHttpStatus());
         }
     }
 
-    @PostMapping("api/v1/verify/email/{token}")
+    @PostMapping("/verify/email/{token}")
     public ResponseEntity<?> verifyEmail(@PathVariable("token") String token) throws SendByOpException {
         try {
             String result = verifyTokenService.verifyToken(token);
@@ -140,9 +138,9 @@ public class RegisterController {
             if(result == AppConstants.TOKEN_INVALID) throw new SendByOpException(AppConstants.TOKEN_INVALID, HttpStatus.BAD_REQUEST);
             if(result == AppConstants.TOKEN_VALID) {
                 VerifyToken verifyToken = verifyTokenService.getByTokent(token);
-                Client client = clientservice.getCustomerByEmail(verifyToken.getEmail());
+                Customer client = clientservice.getCustomerByEmail(verifyToken.getEmail());
                 client.setValidEmail(1);
-                Client newClient = clientservice.saveClient(client);
+                Customer newClient = clientservice.saveClient(client);
                 if(newClient == null) {
                     return new ResponseEntity<>(new ResponseMessage("Un problème est survenu"), HttpStatus.INTERNAL_SERVER_ERROR);
                 }
@@ -159,11 +157,10 @@ public class RegisterController {
 
     //***** mot de passe ****//
     //envoi de l'email du mot de passe oublié
-    @Transactional
-    @PostMapping("api/v1/forgotpw/sendemail/")
+    @PostMapping("/forgotpw/sendemail/")
     public ResponseEntity<?> sendEmailToForgotPw(@RequestBody String email) throws MessagingException, UnsupportedEncodingException {
         try {
-            Client client = clientservice.getCustomerByEmail(email);
+            Customer client = clientservice.getCustomerByEmail(email);
             if(client == null) {
                 throw new SendByOpException("Aucun utilisateur ne correspond à cette adresse email", HttpStatus.NOT_FOUND);
             }
@@ -187,7 +184,7 @@ public class RegisterController {
         }
     }
 
-    @PostMapping("api/v1/verify/forgot-pw/verif-token/")
+    @PostMapping("/verify/forgot-pw/verif-token/")
     public ResponseEntity<?> verifyTokenToForgotPw(@RequestBody String token){
 
         String result = verifyTokenService.verifyToken(token);
@@ -206,7 +203,7 @@ public class RegisterController {
     }
 
 
-    @PostMapping("api/v1/verify/forgot-pw/change/{email}")
+    @PostMapping("/verify/forgot-pw/change/{email}")
     public ResponseEntity<?> changePw(@PathVariable("email") String email, @RequestBody String pw) throws SendByOpException {
         try {
             User user = userService.findByEmail(email);
@@ -228,7 +225,7 @@ public class RegisterController {
     }
 
 
-    @GetMapping("api/v1/verify/forgot-pw/change/getemail/{code}")
+    @GetMapping("/verify/forgot-pw/change/getemail/{code}")
     public ResponseEntity<?> getemail(@PathVariable("code") String code) {
         String email = verifyTokenService.getByTokent(code).getEmail();
 
@@ -240,11 +237,11 @@ public class RegisterController {
 
 
     //Récupérer l'état d'inscription qui sera utiliser lors de la connexion
-    @PostMapping(value = apiBase+"customer/etatinscription")
+    @PostMapping(value = "/etatinscription")
     public ResponseEntity<?> findCustomer(@RequestBody String email) throws SendByOpException {
 
         try {
-            Client client = clientservice.getCustomerByEmail(email);
+            Customer client = clientservice.getCustomerByEmail(email);
             return new ResponseEntity<>(client,
                     HttpStatus.OK);
         } catch (SendByOpException e) {
@@ -256,7 +253,7 @@ public class RegisterController {
     @PostMapping(value = "/register/valider/inscription")
     public ResponseEntity<?> validerInscription(@RequestBody String email) throws SendByOpException{
        try {
-           Client newClient = clientservice.getCustomerByEmail(email);
+           Customer newClient = clientservice.getCustomerByEmail(email);
 
            //Vérification de l'état d'inscription
            if(newClient.getEtatInscription() == 1){
@@ -266,7 +263,7 @@ public class RegisterController {
 
            newClient.setPw(null);
            newClient.setEtatInscription(1);
-           Client updateClient = clientservice.updateClient(newClient);
+           Customer updateClient = clientservice.updateClient(newClient);
 
            if (updateClient == null) return new ResponseEntity<>(new ResponseMessage("Un problème est survenu"), HttpStatus.INTERNAL_SERVER_ERROR);
            EmailDto newemail = new EmailDto();
@@ -285,7 +282,7 @@ public class RegisterController {
     @PostMapping(value = "/register/rejetter/inscription")
     public ResponseEntity<?> rejetterInscription(@RequestBody String email){
         try {
-            Client newClient = clientservice.getCustomerByEmail(email);
+            Customer newClient = clientservice.getCustomerByEmail(email);
             //Vérification de l'état d'inscription
             if(newClient.getEtatInscription() == 1){
                 return new ResponseEntity<>(new ResponseMessage("L'inscription a déja été validée!"),
@@ -312,15 +309,15 @@ public class RegisterController {
     }
 
     //Liste des clients
-    @GetMapping(value = "api/v1/client/list/")
+    @GetMapping(value = "/list/")
     public ResponseEntity<?> getNbRegister(){
         return new ResponseEntity<>(clientservice.getAllRegister(), HttpStatus.OK);
     }
 
-    @PostMapping(value = "api/v1/customer/details")
+    @PostMapping(value = "/details")
     public ResponseEntity<?> getDetailsCustomer(@RequestBody String email) throws SendByOpException {
         try {
-            Client client = clientservice.getCustomerByEmail(email);
+            Customer client = clientservice.getCustomerByEmail(email);
             return new ResponseEntity<>(client,
                     HttpStatus.OK);
         }catch (SendByOpException e) {
@@ -328,10 +325,10 @@ public class RegisterController {
         }
     }
 
-    @PostMapping(value = apiBase+"customer/details-any")
+    @PostMapping(value = "/details-any")
     public ResponseEntity<?> getDetailsCustomerWithMoveAnyDetails(@RequestBody String email) throws SendByOpException {
         try {
-            Client client = clientservice.getCustomerByEmailRemoveAnyDetails(email);
+            Customer client = clientservice.getCustomerByEmailRemoveAnyDetails(email);
             return new ResponseEntity<>(client,
                     HttpStatus.OK);
         } catch (SendByOpException e) {
@@ -339,10 +336,10 @@ public class RegisterController {
         }
     }
 
-    @GetMapping(value = "api/v1/customer/details-any/{id}")
+    @GetMapping(value = "/details-any/{id}")
     public ResponseEntity<?> getDetailsCustomerWithMoveAnyDetailsWithId(@PathVariable int id) throws SendByOpException {
       try {
-          Client client = clientservice.getCustomerById(id);
+          Customer client = clientservice.getCustomerById(id);
           return new ResponseEntity<>(client,
                   HttpStatus.OK);
       } catch (SendByOpException e) {
@@ -350,10 +347,10 @@ public class RegisterController {
       }
     }
 
-    @PostMapping(value = "api/v1/customer/validate/email")
+    @PostMapping(value = "/validate/email")
     public ResponseEntity<?> validerEmail(@RequestBody String email) throws SendByOpException{
        try {
-           Client client = clientservice.getCustomerByEmail(email);
+           Customer client = clientservice.getCustomerByEmail(email);
            //Vérification de l'état d'inscription
            if(client.getValidEmail() == 1){
                return new ResponseEntity<>(new ResponseMessage("L'email est déja validé!"),
@@ -361,17 +358,17 @@ public class RegisterController {
            }
 
            client.setValidEmail(1);
-           Client newClient = clientservice.updateClient(client);
+           Customer newClient = clientservice.updateClient(client);
            return new ResponseEntity<>(newClient, HttpStatus.OK);
        } catch (SendByOpException e) {
            return new ResponseEntity<>(new ResponseMessage(e.getMessage()),e.getHttpStatus());
        }
     }
 
-    @PostMapping(value = "customer/validate/number")
+    @PostMapping(value = "/validate/number")
     public ResponseEntity<?> validerNumber(@RequestBody String email) throws SendByOpException {
         try {
-            Client client = clientservice.getCustomerByEmail(email);
+            Customer client = clientservice.getCustomerByEmail(email);
             //Vérification de l'état d'inscription
             if(client.getValidEmail() == 1){
                 return new ResponseEntity<>(new ResponseMessage("L'email est déja validé!"),
@@ -379,7 +376,7 @@ public class RegisterController {
             }
 
             client.setValidEmail(1);
-            Client newClient = clientservice.updateClient(client);
+            Customer newClient = clientservice.updateClient(client);
 
             if (newClient == null) return new ResponseEntity<>(new ResponseMessage("Veuillez réesayer plutard"), HttpStatus.INTERNAL_SERVER_ERROR);
 
@@ -390,13 +387,13 @@ public class RegisterController {
     }
 
     //enregistrer une photo de profil
-    @PutMapping(value = "customer/update/image/{email}")
+    @PutMapping(value = "/update/image/{email}")
     public ResponseEntity<?> updateImgeProfil(@RequestBody String image, @PathVariable("email") String email) throws SendByOpException {
         try {
-            Client client = clientservice.getCustomerByEmail(email);
+            Customer client = clientservice.getCustomerByEmail(email);
             client.setPhotoProfil(image);
 
-            Client newClient = clientservice.updateClient(client);
+            Customer newClient = clientservice.updateClient(client);
             if (newClient == null) return new ResponseEntity<>(new ResponseMessage("Veuillez réesayer plutard"), HttpStatus.INTERNAL_SERVER_ERROR);
 
             return new ResponseEntity<>(newClient, HttpStatus.OK);
@@ -406,15 +403,15 @@ public class RegisterController {
     }
 
     // Enregistrer une CNI pour faire valider
-    @PutMapping(value = "customer/update/cni/{email}")
+    @PutMapping(value = "/update/cni/{email}")
     public ResponseEntity<?> updateCNI(@RequestBody String image, @PathVariable("email") String email) throws SendByOpException {
 
         try {
-            Client client = clientservice.getCustomerByEmail(email);
+            Customer client = clientservice.getCustomerByEmail(email);
             client.setPieceid(image);
             client.setCniisupload(1);
 
-            Client newClient = clientservice.updateClient(client);
+            Customer newClient = clientservice.updateClient(client);
 
             if (newClient == null) return new ResponseEntity<>(new ResponseMessage("Veuillez réesayer plutard"), HttpStatus.INTERNAL_SERVER_ERROR);
 
@@ -425,13 +422,13 @@ public class RegisterController {
     }
 
     // Valider piece d'identité 1 pour valider et 2 rejetter
-    @PutMapping(value = "customer/valid/cni/{value}")
+    @PutMapping(value = "/valid/cni/{value}")
     public ResponseEntity<?> validateCNI(@RequestBody int value, @PathVariable("value") String email) throws MessagingException, UnsupportedEncodingException, SendByOpException {
         try {
-            Client client = clientservice.getCustomerByEmail(email);
+            Customer client = clientservice.getCustomerByEmail(email);
             client.setPieceidisvalid(value);
 
-            Client newClient = clientservice.updateClient(client);
+            Customer newClient = clientservice.updateClient(client);
             if (newClient == null) return new ResponseEntity<>(new ResponseMessage("Veuillez réesayer plutard"), HttpStatus.INTERNAL_SERVER_ERROR);
 
             String response = "";

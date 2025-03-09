@@ -16,9 +16,8 @@ import java.util.List;
 
 
 @RestController
+@RequestMapping("/user")
 public class UserController {
-
-    public static final String apiBase = "api/v1/";
     @Autowired
     UserService userService;
     @Autowired

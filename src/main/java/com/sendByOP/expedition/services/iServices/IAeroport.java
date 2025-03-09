@@ -1,12 +1,12 @@
 package com.sendByOP.expedition.services.iServices;
 
 import com.sendByOP.expedition.exception.SendByOpException;
-import com.sendByOP.expedition.models.entities.Aeroport;
+import com.sendByOP.expedition.models.entities.Airport;
 
 import java.util.List;
 
 public interface IAeroport {
-    public Aeroport saveAeroPort(Aeroport aeroport) throws SendByOpException;
-    public List<Aeroport> getAllAeroports();
-    public Aeroport getAirport(int id) throws SendByOpException;
+    public Airport saveAeroPort(Airport aeroport) throws SendByOpException;
+    public List<Airport> getAllAeroports();
+    public Airport getAirport(int id) throws SendByOpException;
 }

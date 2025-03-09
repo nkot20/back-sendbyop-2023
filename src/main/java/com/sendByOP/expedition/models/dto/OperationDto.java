@@ -1,15 +1,17 @@
 package com.sendByOP.expedition.models.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.Date;
 
 @AllArgsConstructor
 @Data
+@Builder
 public class OperationDto {
-    private Integer idOpe;
-    private Date date;
-    private Integer idTypeOperation;  // Id du type d'opération
-    private Integer idReser;  // Id de la réservation
+    private Integer id;
+    private Date operationDate;
+    private Integer operationTypeId; // Only the ID of the operation type
+    private Integer reservationId;
 }

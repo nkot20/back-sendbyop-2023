@@ -1,11 +1,11 @@
 package com.sendByOP.expedition.services.iServices;
 
 import com.sendByOP.expedition.exception.SendByOpException;
-import com.sendByOP.expedition.models.dto.InfoBancaireDto;
+import com.sendByOP.expedition.models.dto.BankInfoDto;
 
 public interface IInfoBancaireService {
 
-    public InfoBancaireDto save(InfoBancaireDto infoBancaire) throws SendByOpException;
-    public InfoBancaireDto getInfoBancaire(int idCli) throws SendByOpException;
+    public BankInfoDto save(BankInfoDto infoBancaire) throws SendByOpException;
+    public BankInfoDto getInfoBancaire(int idCli) throws SendByOpException;
 
 }

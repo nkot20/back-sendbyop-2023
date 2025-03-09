@@ -4,19 +4,17 @@ import com.sendByOP.expedition.models.entities.Role;
 import com.sendByOP.expedition.models.entities.User;
 import com.sendByOP.expedition.repositories.RoleRepository;
 import com.sendByOP.expedition.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class LoginService {
-    @Autowired
-    private UserRepository repo;
-    @Autowired
-    private RoleRepository reporole;
+    private final UserRepository repo;
+    private final RoleRepository reporole;
 
 
     public User saveUser(User user) {

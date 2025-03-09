@@ -1,25 +1,23 @@
 package com.sendByOP.expedition.services.servicesImpl;
 
-import com.sendByOP.expedition.models.entities.Client;
+import com.sendByOP.expedition.models.dto.CustomerDto;
+import com.sendByOP.expedition.models.entities.Customer;
 import com.sendByOP.expedition.models.dto.EmailDto;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class SendMailService {
-
-    @Autowired
-    private JavaMailSender javaMailSender;
-
+    private final JavaMailSender javaMailSender;
 
     public EmailDto sendEmail(@Validated EmailDto email) {
         System.out.println("sending email");
@@ -40,7 +38,7 @@ public class SendMailService {
         }
     }
 
-    public void sendVerificationEmail(Client user, String siteURL, String token, String header, String subject, String content)
+    public void sendVerificationEmail(Customer user, String siteURL, String token, String header, String subject, String content)
             throws MessagingException, UnsupportedEncodingException {
         String toAddress = user.getEmail();
         String fromAddress = "etiennenkot1@gmail.com";
@@ -68,7 +66,7 @@ public class SendMailService {
 
     }
 
-    public void simpleHtmlMessage(Client user, String content, String subject) throws MessagingException, UnsupportedEncodingException {
+    public void simpleHtmlMessage(CustomerDto user, String content, String subject) throws MessagingException, UnsupportedEncodingException {
         String toAddress = user.getEmail();
         String fromAddress = "etiennenkot1@gmail.com";
         String senderName = "SendByOp";

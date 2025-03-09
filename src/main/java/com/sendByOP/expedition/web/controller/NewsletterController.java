@@ -1,40 +1,35 @@
 package com.sendByOP.expedition.web.controller;
 
+import com.sendByOP.expedition.exception.SendByOpException;
 import com.sendByOP.expedition.models.entities.Newsletter;
 import com.sendByOP.expedition.reponse.ResponseMessage;
 import com.sendByOP.expedition.services.servicesImpl.NewslettrerService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/newletter")
+@RequiredArgsConstructor
 public class NewsletterController {
+    private final NewslettrerService newslettrerService;
 
-    @Autowired
-    NewslettrerService newslettrerService;
-
-    @PostMapping("api/v1/newsletter/save")
-    public ResponseEntity<?> save(@RequestBody Newsletter newsletter) {
-
-        if(newslettrerService.getNewsLetterByEmail(newsletter.getEmail()).isPresent()) {
-            return new ResponseEntity<>(new ResponseMessage("Vous ête déja inscrit dans notre newletter"), HttpStatus.FOUND);
-        }
+    @PostMapping("/save")
+    public ResponseEntity<?> save(@RequestBody Newsletter newsletter) throws SendByOpException {
 
         Newsletter newsletter1 = newslettrerService.save(newsletter);
 
-        if (newsletter == null) {
-            return new ResponseEntity<>(new ResponseMessage("Une problème est survenu veuillez réessayer plutard"), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        return new ResponseEntity<>(newsletter, HttpStatus.CREATED);
+        return new ResponseEntity<>(newsletter1, HttpStatus.CREATED);
     }
 
-    @PostMapping("api/v1/newsletter/get")
+    @PostMapping("/")
     public ResponseEntity<?> getAll(@RequestBody Newsletter newsletter) {
         List<Newsletter> newsletters = newslettrerService.getAll();
 

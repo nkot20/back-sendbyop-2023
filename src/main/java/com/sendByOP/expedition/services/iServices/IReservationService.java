@@ -1,26 +1,25 @@
 package com.sendByOP.expedition.services.iServices;
 
 import com.sendByOP.expedition.exception.SendByOpException;
-import com.sendByOP.expedition.models.entities.Client;
-import com.sendByOP.expedition.models.entities.Refus;
-import com.sendByOP.expedition.models.entities.Reservation;
-
-import javax.mail.MessagingException;
+import com.sendByOP.expedition.models.dto.RejectionDto;
+import com.sendByOP.expedition.models.dto.BookingDto;
+import jakarta.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
 import java.sql.Date;
 import java.util.List;
 
 public interface IReservationService {
 
-    public Reservation saveReservation(Reservation reservation) throws SendByOpException;
-    public Reservation saveReservationWithColis(Reservation reservation) throws SendByOpException;
-    public void deleteReservation(Reservation reservation);
-    public Reservation updateReservation(Reservation reservation) throws SendByOpException;
-    public Reservation getReservation(int id) throws SendByOpException;
-    public List<Reservation> reservationList();
-    public List<Reservation> clientDestinatorReservationList(Client idClient);
-    public List<Reservation> getReservationByDate(Date date);
-    public Reservation refuserReservation(Reservation reservation, Refus refus) throws MessagingException, UnsupportedEncodingException, SendByOpException;
+    public BookingDto saveReservation(BookingDto reservation) throws SendByOpException;
+    public BookingDto saveReservationWithColis(BookingDto reservation) throws SendByOpException;
+    public void deleteReservation(int id);
+    public BookingDto updateReservation(BookingDto reservation) throws SendByOpException;
+    public BookingDto getReservation(int id) throws SendByOpException;
+    public List<BookingDto> reservationList();
+    public List<BookingDto> clientDestinatorReservationList(int idClient);
+    public List<BookingDto> getReservationByDate(Date date);
+    public BookingDto refuserReservation(BookingDto reservation, RejectionDto refus)
+            throws MessagingException, UnsupportedEncodingException, SendByOpException;
 
 
 }

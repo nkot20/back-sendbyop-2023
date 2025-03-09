@@ -1,6 +1,6 @@
 package com.sendByOP.expedition.web.controller;
 
-import com.sendByOP.expedition.models.entities.Note;
+import com.sendByOP.expedition.models.entities.Rating;
 import com.sendByOP.expedition.reponse.ResponseMessage;
 import com.sendByOP.expedition.services.servicesImpl.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,27 +11,28 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/note")
 public class NoteController {
 
     @Autowired
     NoteService noteService;
 
-    @PostMapping(value = "note/add")
-    public ResponseEntity<?> addNote(@RequestBody Note note){
-        Note newNote = noteService.saveNote(note);
+    @PostMapping(value = "/save")
+    public ResponseEntity<?> addNote(@RequestBody Rating note){
+        Rating newNote = noteService.saveNote(note);
 
         if( newNote == null ){
             return new ResponseEntity<>(new ResponseMessage("Un problème est survenu!"),
                     HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<Note>(newNote,
+        return new ResponseEntity<Rating>(newNote,
                 HttpStatus.OK);
     }
 
-    @GetMapping(value = "note/{id}")
+    @GetMapping(value = "/{id}")
     public ResponseEntity<?> getNote(@PathVariable int id){
-        List<Note> notes = noteService.getNoteOfExpedi(id);
+        List<Rating> notes = noteService.getNoteOfExpedi(id);
 
         return new ResponseEntity<>(notes,
                 HttpStatus.OK);

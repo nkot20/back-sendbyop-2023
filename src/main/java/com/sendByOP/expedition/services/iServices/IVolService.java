@@ -2,32 +2,30 @@ package com.sendByOP.expedition.services.iServices;
 
 
 import com.sendByOP.expedition.exception.SendByOpException;
-import com.sendByOP.expedition.models.dto.VolDto;
+import com.sendByOP.expedition.models.dto.CustomerDto;
+import com.sendByOP.expedition.models.dto.FlightDto;
 import com.sendByOP.expedition.models.dto.VolEscaleDto;
-import com.sendByOP.expedition.models.entities.Client;
-import com.sendByOP.expedition.models.entities.Vol;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IVolService {
-    Optional<Vol> getVolById(int id);
+    FlightDto getVolById(int id);
 
-    Iterable<Vol> getAllVol();
+    Iterable<FlightDto> getAllVol();
 
-    Iterable<Vol> getAllVolValid(int i);
+    Iterable<FlightDto> getAllVolValid(int i);
 
-    Vol saveVol(Vol vol);
+    FlightDto saveVol(FlightDto vol);
 
-    VolDto saveVolWithEscales(VolEscaleDto volEscaleDTO) throws SendByOpException;
+    FlightDto saveVolWithEscales(VolEscaleDto volEscaleDTO) throws SendByOpException;
 
-    void deleteVol(Vol vol);
+    void deleteVol(int id);
 
-    Vol updateVol(Vol vol);
+    FlightDto updateVol(FlightDto vol);
 
-    List<Vol> getByIdClient(Client idClient);
+    List<FlightDto> getByIdClient(CustomerDto idClient);
 
-    int nbVolClient(Client idClient);
+    int nbVolClient(CustomerDto idClient);
 
-    Vol getVolByIdVol(int id);
+    FlightDto getVolByIdVol(int id);
 }

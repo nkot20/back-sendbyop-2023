@@ -10,7 +10,9 @@ public enum ErrorInfo {
     REFERENCE_RESSOURCE_REQUIRED("Ce champ est obligatoire", HttpStatus.BAD_REQUEST),
     RESSOURCE_NOT_FOUND("Ressource introuvable", HttpStatus.NOT_FOUND),
     REFERENCE_RESSOURCE_ALREADY_USED("L'élément est déja utilisé", HttpStatus.BAD_REQUEST),
-    INTRERNAL_ERROR("Un problème est survenu veillez réessayer plutard", HttpStatus.INTERNAL_SERVER_ERROR);
+    INTRERNAL_ERROR("Un problème est survenu veillez réessayer plutard", HttpStatus.INTERNAL_SERVER_ERROR),
+    COLIS_CREATION_FAILED("Impossible d'ajouter les colis", HttpStatus.INTERNAL_SERVER_ERROR),
+    UNEXPECTED_ERROR("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
 
     private final String message;
     private final HttpStatus httpStatus;

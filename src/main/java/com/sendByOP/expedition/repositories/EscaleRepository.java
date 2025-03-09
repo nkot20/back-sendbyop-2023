@@ -1,7 +1,7 @@
 package com.sendByOP.expedition.repositories;
 
-import com.sendByOP.expedition.models.entities.Escale;
-import com.sendByOP.expedition.models.entities.Vol;
+import com.sendByOP.expedition.models.entities.Stopover;
+import com.sendByOP.expedition.models.entities.Flight;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface EscaleRepository extends CrudRepository<Escale, Integer> {
+public interface EscaleRepository extends CrudRepository<Stopover, Integer> {
 
-    public List<Escale> findByIdvol(Optional<Vol> idVol);
+    public List<Stopover> findByIdvol(Optional<Flight> idVol);
 
 
 }
