@@ -5,7 +5,7 @@ import com.sendByOP.expedition.models.dto.CustomerDto;
 import com.sendByOP.expedition.exception.ErrorInfo;
 import com.sendByOP.expedition.exception.SendByOpException;
 import com.sendByOP.expedition.models.entities.Customer;
-import com.sendByOP.expedition.repositories.ClientReopository;
+import com.sendByOP.expedition.repositories.CustomerRepository;
 import com.sendByOP.expedition.services.iServices.IClientServivce;
 import com.sendByOP.expedition.utils.CHeckNull;
 import jakarta.transaction.Transactional;
@@ -16,18 +16,22 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class CustomerService implements IClientServivce {
 
-    private final ClientReopository clientRepository;
+    private final CustomerRepository clientRepository;
     private final CustomerMapper customerMapper;
 
     @Override
     public List<CustomerDto> getListClient() {
-        return customerMapper.toDtoList(clientRepository.findAll());
+        return clientRepository.findAll()
+                .stream()
+                .map(customerMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -42,11 +46,11 @@ public class CustomerService implements IClientServivce {
             CustomerDto clientDto, MultipartFile imageProfil, MultipartFile imageCni) throws SendByOpException {
         Customer client = customerMapper.toEntity(clientDto);
         CHeckNull.checkEmail(client.getEmail());
-        CHeckNull.checkNumero(client.getNumcni());
-        CHeckNull.checkIntitule(client.getTel());
-        client.setEtatInscription(0);
-        client.setPhotoProfil(transformImage(imageProfil));
-        client.setPieceid(transformImage(imageCni));
+        CHeckNull.checkNumero(client.getNationalIdNumber());
+        CHeckNull.checkIntitule(client.getPhoneNumber());
+        client.setRegistrationStatus(0);
+        client.setProfilePicture(transformImage(imageProfil));
+        client.setIdentityDocument(transformImage(imageCni));
         Customer savedClient = clientRepository.save(client);
         return customerMapper.toDto(savedClient);
     }
@@ -55,24 +59,24 @@ public class CustomerService implements IClientServivce {
     public CustomerDto saveClient(CustomerDto clientDto) throws SendByOpException {
         Customer client = customerMapper.toEntity(clientDto);
         CHeckNull.checkEmail(client.getEmail());
-        CHeckNull.checkNumero(client.getNumcni());
-        CHeckNull.checkIntitule(client.getTel());
-        client.setEtatInscription(0);
-        client.setValidEmail(0);
-        client.setValidNumber(0);
-        client.setIdp(null);
+        CHeckNull.checkNumero(client.getNationalIdNumber());
+        CHeckNull.checkIntitule(client.getPhoneNumber());
+        client.setRegistrationStatus(0);
+        client.setEmailVerified(0);
+        client.setPhoneVerified(0);
+        client.setId(null);
         Customer savedClient = clientRepository.save(client);
         return customerMapper.toDto(savedClient);
     }
 
     @Override
     public CustomerDto updateClient(CustomerDto clientDto) throws SendByOpException {
-        Customer existingClient = clientRepository.findById(clientDto.getIdp())
+        Customer existingClient = clientRepository.findById(clientDto.getId())
                 .orElseThrow(() -> new RuntimeException("Client not found"));
         customerMapper.copy(clientDto, existingClient);
         CHeckNull.checkEmail(existingClient.getEmail());
-        CHeckNull.checkNumero(existingClient.getNumcni());
-        CHeckNull.checkIntitule(existingClient.getTel());
+        CHeckNull.checkNumero(existingClient.getNationalIdNumber());
+        CHeckNull.checkIntitule(existingClient.getPhoneNumber());
         Customer updatedClient = clientRepository.save(existingClient);
         return customerMapper.toDto(updatedClient);
     }
@@ -112,10 +116,6 @@ public class CustomerService implements IClientServivce {
     public CustomerDto getCustomerByEmailRemoveAnyDetails(String email) throws SendByOpException {
         Customer client = clientRepository.findByEmail(email)
                 .orElseThrow(() -> new SendByOpException(ErrorInfo.RESSOURCE_NOT_FOUND));
-        client.setPw(null);
-        client.setDatenais(null);
-        client.setIban(null);
-        client.setNumcni(0);
         return customerMapper.toDto(client);
     }
 
@@ -123,16 +123,13 @@ public class CustomerService implements IClientServivce {
     public CustomerDto getCustomerById(int id) throws SendByOpException {
         Customer client = clientRepository.findById(id)
                 .orElseThrow(() -> new SendByOpException(ErrorInfo.RESSOURCE_NOT_FOUND));
-        client.setPw(null);
-        client.setDatenais(null);
-        client.setIban(null);
-        client.setNumcni(0);
         return customerMapper.toDto(client);
     }
 
     @Override
     public List<CustomerDto> getAllRegister() {
-        return customerMapper.toDtoList(clientRepository.findAll());
+        return clientRepository.findAll().stream().map(customerMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -3,23 +3,28 @@ package com.sendByOP.expedition.exception;
 import org.springframework.http.HttpStatus;
 import org.zalando.problem.Status;
 
+import lombok.Data;
+
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * The Class SendByOpException.
  */
+@Data
 public class SendByOpException extends Exception {
 
     private static final long serialVersionUID = 1L;
     private final HttpStatus httpStatus;
     private List<String> messages;
+    private ErrorInfo errorInfo;
 
 
     public SendByOpException(ErrorInfo errorInfo, String... messages) {
         super(errorInfo.getMessage());
         this.httpStatus = errorInfo.getHttpStatus();
         this.messages = Arrays.asList(messages);
+        this.errorInfo = errorInfo;
     }
 
     /**

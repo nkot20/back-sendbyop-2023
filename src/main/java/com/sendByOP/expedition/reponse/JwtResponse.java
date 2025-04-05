@@ -1,7 +1,6 @@
 package com.sendByOP.expedition.reponse;
 
 import com.sendByOP.expedition.models.dto.CustomerDto;
-import com.sendByOP.expedition.models.entities.Customer;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
@@ -49,7 +48,7 @@ public class JwtResponse {
         return authorities;
     }
 
-    public Customer getClient() {
+    public CustomerDto getClient() {
         return client;
     }
 }

@@ -11,7 +11,7 @@ public interface CityMapper {
 
     CityMapper INSTANCE = Mappers.getMapper(CityMapper.class);
 
-    @Mapping(source = "c&ountry.countryId", target = "countryId")
+    @Mapping(source = "country.countryId", target = "countryId")
     CityDto toDto(City city);
 
     @Mapping(source = "countryId", target = "country.countryId")

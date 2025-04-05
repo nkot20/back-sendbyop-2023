@@ -2,14 +2,17 @@ package com.sendByOP.expedition.models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
 import java.io.Serializable;
 import java.util.Date;
 
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "flight")
 public class Flight extends BaseEntity implements Serializable {
         @Id

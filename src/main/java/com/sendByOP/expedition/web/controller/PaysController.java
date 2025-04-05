@@ -2,7 +2,7 @@ package com.sendByOP.expedition.web.controller;
 
 import com.sendByOP.expedition.models.entities.Country;
 import com.sendByOP.expedition.reponse.ResponseMessage;
-import com.sendByOP.expedition.services.iServices.IPaysService;
+import com.sendByOP.expedition.services.iServices.ICountryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/country")
 public class PaysController {
 
-    private final IPaysService paysService;
+    private final ICountryService paysService;
 
     @PostMapping(value = "/save")
     public ResponseEntity<?> saveCountry(@RequestBody Country pays) {

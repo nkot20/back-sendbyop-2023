@@ -11,4 +11,5 @@ public class AirportDto {
     private Integer cityId;
     private String createdBy;
     private String updatedBy;
+    private String iataCode;
 }

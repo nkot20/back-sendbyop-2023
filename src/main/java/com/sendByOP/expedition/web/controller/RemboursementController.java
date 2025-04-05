@@ -4,7 +4,7 @@ import com.sendByOP.expedition.exception.SendByOpException;
 import com.sendByOP.expedition.models.entities.Refund;
 import com.sendByOP.expedition.models.entities.Booking;
 import com.sendByOP.expedition.reponse.ResponseMessage;
-import com.sendByOP.expedition.services.servicesImpl.RemboursementService;
+import com.sendByOP.expedition.services.servicesImpl.RefundService;
 import com.sendByOP.expedition.services.servicesImpl.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ import java.util.List;
 public class RemboursementController {
 
     @Autowired
-    RemboursementService remboursementService;
+    RefundService remboursementService;
 
     @Autowired
     ReservationService reservationService;
@@ -34,7 +34,7 @@ public class RemboursementController {
 
     @GetMapping(value = "/list")
     public ResponseEntity<?> get(){
-        List<Refund> remboursements = remboursementService.getRemboursement();
+        List<Refund> remboursements = remboursementService.getRefunds();
 
         return new ResponseEntity<>(remboursements, HttpStatus.CREATED);
     }

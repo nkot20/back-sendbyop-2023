@@ -21,7 +21,7 @@ public interface BookingMapper {
     @Mapping(source = "flightId", target = "flight.id")
     @Mapping(source = "customerId", target = "customer.id")
     @Mapping(source = "parcelIds", target = "parcels", ignore = true) // Gestion spéciale côté service
-    Booking toEntity(Booking bookingDTO);
+    Booking toEntity(BookingDto bookingDTO);
 
     @Named("mapParcelsToIds")
     default List<Integer> mapParcelsToIds(List<Parcel> parcels) {

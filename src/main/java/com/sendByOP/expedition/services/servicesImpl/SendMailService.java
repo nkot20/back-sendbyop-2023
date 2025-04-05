@@ -38,7 +38,7 @@ public class SendMailService {
         }
     }
 
-    public void sendVerificationEmail(Customer user, String siteURL, String token, String header, String subject, String content)
+    public void sendVerificationEmail(CustomerDto user, String siteURL, String token, String header, String subject, String content)
             throws MessagingException, UnsupportedEncodingException {
         String toAddress = user.getEmail();
         String fromAddress = "etiennenkot1@gmail.com";
@@ -51,7 +51,7 @@ public class SendMailService {
         helper.setTo(toAddress);
         helper.setSubject(subject);
 
-        content = content.replace("[[name]]", user.getNom() + user.getPrenom());
+        content = content.replace("[[name]]", user.getLastName() + user.getFirstName());
         String verifyURL = siteURL + header + token;
 
         content = content.replace("[[URL]]", verifyURL);
@@ -78,7 +78,7 @@ public class SendMailService {
         helper.setTo(toAddress);
         helper.setSubject(subject);
 
-        content = content.replace("[[name]]", user.getNom() + user.getPrenom());
+        content = content.replace("[[name]]", user.getLastName() + user.getFirstName());
 
         content = content.replace("[[URLSENDBYOP]]", "www.sendbyop.com");
 

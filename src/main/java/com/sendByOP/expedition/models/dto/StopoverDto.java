@@ -6,8 +6,7 @@ import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+@Data
 @Builder
 public class StopoverDto {
     private Integer id;

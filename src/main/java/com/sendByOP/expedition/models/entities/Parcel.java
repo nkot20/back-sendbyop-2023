@@ -6,7 +6,11 @@ import lombok.*;
 
 import java.io.Serializable;
 
-@Data
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "parcel")
 public class Parcel implements Serializable {

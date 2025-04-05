@@ -23,10 +23,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReservationService implements IReservationService {
     private final ReservationRepository reservationRepository;
-    private final ColisService colisService;
+    private final ParcelService colisService;
     private final ReceveurService receveurService;
     private final SendMailService sendEmailService;
-    private final RefusService refusService;
+    private final RejectionService refusService;
     private final BookingMapper reservationMapper;
     private final ReceiverMapper receiverMapper;
     private final CustomerMapper customerMapper;
@@ -62,7 +62,7 @@ public class ReservationService implements IReservationService {
         reservation.getColisList().forEach(colis -> {
             colis.setIdre(newReservation);
             try {
-                colisService.saveColis(colis);
+                colisService.saveParcel(colis);
             } catch (SendByOpException e) {
                 e.printStackTrace();
             }
@@ -113,7 +113,7 @@ public class ReservationService implements IReservationService {
         BookingDto newReservation = updateReservation(reservation);
         refus.setIdRe(reservation.getIdRe());
         if (newReservation != null){
-            refusService.saveRefus(refus);
+            refusService.saveRejection(refus);
         } else {
             return null;
         }

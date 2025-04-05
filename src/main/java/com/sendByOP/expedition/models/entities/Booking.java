@@ -7,7 +7,11 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "booking")
 public class Booking extends BaseEntity implements Serializable {

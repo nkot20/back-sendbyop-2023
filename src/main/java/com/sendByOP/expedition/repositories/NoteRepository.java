@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface NoteRepository extends JpaRepository<Rating, Integer> {
 
-    @Query("SELECT n FROM Rating n WHERE n.idexp.idp = :idexp")
-    List<Rating> findByIdexp(int idexp);
+    @Query("SELECT n FROM Rating n WHERE n.sender.id = :id")
+    List<Rating> findBySender(int id);
 }

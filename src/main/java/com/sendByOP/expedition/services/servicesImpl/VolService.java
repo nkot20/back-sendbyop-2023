@@ -8,7 +8,7 @@ import com.sendByOP.expedition.models.dto.CustomerDto;
 import com.sendByOP.expedition.models.dto.FlightDto;
 import com.sendByOP.expedition.models.dto.VolEscaleDto;
 import com.sendByOP.expedition.models.entities.Flight;
-import com.sendByOP.expedition.repositories.VolRepository;
+import com.sendByOP.expedition.repositories.FlightRepository;
 import com.sendByOP.expedition.services.iServices.IVolService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -20,12 +20,12 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 public class VolService implements IVolService {
-    private final VolRepository volRepository;
+    private final FlightRepository volRepository;
     private final FlightMapper volMapper;
     private final AirportMapper aeroportMapper;
     private final StopoverMapper escaleMapper;
-    private final EscaleService escaleService;
-    private final AeroportService aeroportService;
+    private final StopoverService escaleService;
+    private final AirportService aeroportService;
 
     @Override
     public FlightDto getVolById(int id){
@@ -65,7 +65,7 @@ public class VolService implements IVolService {
         if (volEscaleDTO.getEscales() != null && !volEscaleDTO.getEscales().isEmpty()) {
             volEscaleDTO.getEscales().forEach(escaleDTO -> {
                 escaleDTO.setIdvol(savedVolDTO);
-                escaleService.addEscale(escaleDTO); // Save the escale entity
+                escaleService.addStopover(escaleDTO); // Save the escale entity
             });
         }
 

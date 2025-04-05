@@ -1,12 +1,9 @@
 package com.sendByOP.expedition.web.controller;
 
-import com.sendByOP.expedition.services.iServices.IReservationsARembourserService;
-import com.sendByOP.expedition.services.servicesImpl.ReservationsARembourserService;
+import com.sendByOP.expedition.services.iServices.IRefundableBookingService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/people-reimbursed")
 public class PersonneARembourserController {
-    private final IReservationsARembourserService reservationsARembourserService;
+    private final IRefundableBookingService reservationsARembourserService;
 
     @GetMapping(value = "/reservations/remboursements")
     public ResponseEntity<?> getAll() {

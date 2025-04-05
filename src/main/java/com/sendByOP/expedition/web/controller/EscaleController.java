@@ -3,7 +3,7 @@ package com.sendByOP.expedition.web.controller;
 import com.sendByOP.expedition.exception.ErrorInfo;
 import com.sendByOP.expedition.models.dto.StopoverDto;
 import com.sendByOP.expedition.models.entities.Flight;
-import com.sendByOP.expedition.services.iServices.IEscaleService;
+import com.sendByOP.expedition.services.iServices.IStopoverService;
 import com.sendByOP.expedition.services.servicesImpl.VolService;
 import com.sendByOP.expedition.web.exceptions.escale.ImpossibleEffectuerEscaleException;
 import lombok.RequiredArgsConstructor;
@@ -19,13 +19,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EscaleController {
 
-    private final IEscaleService escaleService;
+    private final IStopoverService escaleService;
     private final VolService volService;
 
     // Ajouter une escale
     @PostMapping(value = "/vols/save")
     public ResponseEntity<StopoverDto> ajouterUnEscale(@RequestBody StopoverDto escale) {
-        StopoverDto newEscale = escaleService.addEscale(escale);
+        StopoverDto newEscale = escaleService.addStopover(escale);
         if (newEscale == null) {
             throw new ImpossibleEffectuerEscaleException(ErrorInfo.INTRERNAL_ERROR.getMessage());
         }
@@ -35,7 +35,7 @@ public class EscaleController {
     // Supprimer une escale
     @PostMapping(value = "/vols/delete")
     public ResponseEntity<?> supprimerEscale(@RequestBody Integer id) {
-        escaleService.deleteEscale(id);
+        escaleService.deleteStopover(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -46,7 +46,7 @@ public class EscaleController {
         if (!vol.isPresent()) {
             throw new ImpossibleEffectuerEscaleException("Vol non trouvé pour l'ID : " + id);
         }
-        List<StopoverDto> escales = escaleService.findByIdvol(vol);
+        List<StopoverDto> escales = escaleService.findByFlightId(vol.get().getFlightId());
         return new ResponseEntity<>(escales, HttpStatus.OK);
     }
 }

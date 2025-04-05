@@ -1,0 +1,34 @@
+package com.sendByOP.expedition.models.entities;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import java.io.Serializable;
+
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+@Entity
+@Table(name = "note")
+public class Note implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id_note")
+    private Integer idNote;
+
+    @Basic(optional = false)
+    @Column(name = "nb")
+    private int nb;
+
+    @JoinColumn(name = "id_expe", referencedColumnName = "idp")
+    @ManyToOne(optional = false)
+    private Customer idexp;
+
+    @JoinColumn(name = "id_client", referencedColumnName = "idp")
+    @ManyToOne(optional = false)
+    private Customer idClient;
+}

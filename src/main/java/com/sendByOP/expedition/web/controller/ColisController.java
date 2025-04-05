@@ -1,7 +1,7 @@
 package com.sendByOP.expedition.web.controller;
 
 import com.sendByOP.expedition.exception.ErrorInfo;
-import com.sendByOP.expedition.services.iServices.IColisService;
+import com.sendByOP.expedition.services.iServices.IParcelService;
 import com.sendByOP.expedition.exception.SendByOpException;
 import com.sendByOP.expedition.models.entities.Parcel;
 import com.sendByOP.expedition.models.entities.Booking;
@@ -17,12 +17,12 @@ import javax.validation.Valid;
 @RequestMapping("/package")
 @RequiredArgsConstructor
 public class ColisController {
-    private final IColisService colisService;
+    private final IParcelService colisService;
     private final ReservationService reservationService;
 
     @PostMapping(value = "/save")
     public ResponseEntity<Parcel> saveColis(@Valid @RequestBody Parcel colis) throws SendByOpException {
-        Parcel newColis = colisService.saveColis(colis);
+        Parcel newColis = colisService.saveParcel(colis);
         if (newColis == null) {
             throw new SendByOpException(ErrorInfo.INTRERNAL_ERROR);
         }
@@ -31,7 +31,7 @@ public class ColisController {
 
     @PostMapping(value = "/delete")
     public ResponseEntity<?> deleteColis(@RequestBody Parcel colis) {
-        colisService.deleteColis(colis);
+        colisService.deleteParcel(colis);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -41,6 +41,6 @@ public class ColisController {
         if (reservation == null) {
             throw new SendByOpException(ErrorInfo.UNEXPECTED_ERROR);
         }
-        return new ResponseEntity<>(colisService.findAllColisByForReservation(reservation), HttpStatus.OK);
+        return new ResponseEntity<>(colisService.findAllParcelsByBooking(reservation), HttpStatus.OK);
     }
 }

@@ -1,7 +1,9 @@
 package com.sendByOP.expedition.models.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
+
 import java.util.Date;
 
 @Data
@@ -11,7 +13,9 @@ public class CustomerDto {
     private Integer nationalIdNumber;
     private String firstName;
     private String lastName;
+    @JsonIgnore
     private Date birthDate;
+    @JsonIgnore
     private String identityDocument;
     private String phoneNumber;
     private String email;
@@ -24,6 +28,7 @@ public class CustomerDto {
     private String country;
     private int identityUploaded;
     private int identityVerified;
+    @JsonIgnore
     private String iban;
     private String address;
 }

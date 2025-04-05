@@ -1,6 +1,7 @@
 package com.sendByOP.expedition.models.entities;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,6 +11,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
+@Builder
 @Entity
 @Table(name = "airport")
 public class Airport extends BaseEntity implements Serializable {
@@ -24,4 +26,7 @@ public class Airport extends BaseEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "city_id", referencedColumnName = "city_id")
     private City city;
+
+    @Column(name = "iata", nullable = false)
+    private String iataCode;
 }

@@ -6,11 +6,11 @@ import com.sendByOP.expedition.models.dto.*;
 import com.sendByOP.expedition.models.dto.InvoiceDto;
 import com.sendByOP.expedition.models.dto.ParcelDto;
 import com.sendByOP.expedition.models.entities.*;
-import com.sendByOP.expedition.services.iServices.IColisService;
+import com.sendByOP.expedition.services.iServices.IParcelService;
 import com.sendByOP.expedition.services.iServices.IPaymentService;
 import com.sendByOP.expedition.services.iServices.IReservationService;
 import com.sendByOP.expedition.exception.SendByOpException;
-import com.sendByOP.expedition.repositories.FactureRepository;
+import com.sendByOP.expedition.repositories.BillRepository;
 import com.sendByOP.expedition.repositories.PaiementRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +23,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PaymentService implements IPaymentService {
 
-    private final IColisService colisService;
+    private final IParcelService colisService;
     private final IReservationService reservationService;
     private final VolService volService;
-    private final FactureRepository factureRepository;
+    private final BillRepository factureRepository;
     private final PaiementRepository paiementRepository;
     private final CustomerService clientservice;
     private final FactureMapper factureMapper;
@@ -46,7 +46,7 @@ public class PaymentService implements IPaymentService {
 
                 //System.out.println(montantRe);
                 //Liste des colis de la réservation
-                List<ParcelDto> colisList = colisService.findAllColisByForReservation(reservation);
+                List<ParcelDto> colisList = colisService.findAllParcelsByBooking(reservation);
 
                 float montantTotal = 0;
 

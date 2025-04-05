@@ -30,7 +30,7 @@ public class ReservationController {
     IReservationService reservationService;
 
     @Autowired
-    RefusService refusService;
+    RejectionService refusService;
 
     @Autowired
     PaymentService paiementService;

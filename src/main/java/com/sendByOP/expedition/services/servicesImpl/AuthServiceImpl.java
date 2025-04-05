@@ -3,6 +3,7 @@ package com.sendByOP.expedition.services.servicesImpl;
 import com.sendByOP.expedition.exception.SendByOpException;
 import com.sendByOP.expedition.message.LoginForm;
 import com.sendByOP.expedition.message.SignUpForm;
+import com.sendByOP.expedition.models.dto.CustomerDto;
 import com.sendByOP.expedition.models.dto.EmailDto;
 import com.sendByOP.expedition.models.entities.Customer;
 import com.sendByOP.expedition.models.entities.Role;
@@ -28,9 +29,9 @@ import org.springframework.stereotype.Service;
 import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 
+@RequiredArgsConstructor
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class AuthServiceImpl implements IAuthService {
     private final AuthenticationManager authenticationManager;
     private final IUserService userService;
@@ -42,35 +43,34 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public JwtResponse authenticateUser(@Valid LoginForm loginRequest) throws SendByOpException {
-        if (loginRequest.getUsername() == null) {
-            throw new SendByOpException("email is null", HttpStatus.OK);
+        if (loginRequest.getUsername() == null || loginRequest.getPassword() == null) {
+            throw new SendByOpException("Email or password cannot be null", HttpStatus.BAD_REQUEST);
         }
+
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-        if (!authentication.isAuthenticated()) {
-            throw new SendByOpException("Incorrect email or password", HttpStatus.UNAUTHORIZED);
-        }
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtProvider.generateJwtToken(authentication);
-        log.info("@@--- JWT Token {}",  jwt);
+        log.debug("JWT Token generated for user: {}", loginRequest.getUsername());
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+
 
         // Check if the user has the "client" role and handle accordingly
         if (userDetails.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("client"))) {
-            Customer client = clientService.getCustomerByEmail(userDetails.getUsername());
+            CustomerDto customer = clientService.getCustomerByEmail(userDetails.getUsername());
 
-            if (client.getValidEmail() != 1 && client.getValidNumber() != 1) {
+            if (customer.getEmailVerified() != 1 && customer.getPhoneVerified() != 1) {
                 try {
-                    sendVerificationEmail(client);
+                    sendVerificationEmail(customer);
                 } catch (MessagingException | UnsupportedEncodingException  e) {
                     throw new SendByOpException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
                 }
                 throw new SendByOpException("Please verify your email and number", HttpStatus.UNAUTHORIZED);
             }
-            return new JwtResponse(jwt, userDetails.getUsername(), client, userDetails.getAuthorities());
+            return new JwtResponse(jwt, userDetails.getUsername(), customer, userDetails.getAuthorities());
         }
 
         return new JwtResponse(jwt, userDetails.getUsername(), null, userDetails.getAuthorities());
@@ -78,44 +78,64 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public ResponseMessage registerUser(@Valid SignUpForm signUpRequest) throws SendByOpException {
+        validateSignUpRequest(signUpRequest);
+
         try {
             if (userService.userIsExist(signUpRequest.getUsername())) {
-                throw new SendByOpException("Adresse email déjà utilisée, connectez-vous", HttpStatus.BAD_REQUEST);
+                throw new SendByOpException("Email address already in use", HttpStatus.CONFLICT);
             }
 
             String encodedPassword = encoder.encode(signUpRequest.getPw());
             Role role = roleService.getRoleInfo(signUpRequest.getRole());
 
             if (role == null) {
-                throw new SendByOpException("Aucun droit ne correspond à ce que vous avez entré", HttpStatus.NOT_FOUND);
+                throw new SendByOpException("Invalid role specified", HttpStatus.BAD_REQUEST);
             }
-
-            User user = new User(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getName(), signUpRequest.getLastName(), encodedPassword);
-            user.setRole(role);
+            User user = User.builder()
+                .firstName(signUpRequest.getName())
+                .email(signUpRequest.getEmail())
+                .lastName(signUpRequest.getLastName())
+                .username(signUpRequest.getUsername())
+                .password(encodedPassword)
+                .role(role)
+            .build();
             userService.saveUser(user);
+            log.info("New user registered: {}", signUpRequest.getUsername());
 
             return new ResponseMessage("User registered successfully!");
-        } catch (SendByOpException e) {
-            throw e;  // Rethrow exception to be handled by controller
+        } catch (Exception e) {
+            log.error("Error during user registration: {}", e.getMessage());
+            throw new SendByOpException("Registration failed: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
     public ResponseMessage changePassword(String email, String oldPw, String newPw) throws SendByOpException {
+        if (email == null || oldPw == null || newPw == null) {
+            throw new SendByOpException("All fields are required", HttpStatus.BAD_REQUEST);
+        }
+
         try {
             User user = userService.findByEmail(email);
-            if (!user.getPw().equals(oldPw)) {
-                throw new SendByOpException("Fail -> Mot de passe incorrect", HttpStatus.BAD_REQUEST);
+            if (user == null) {
+                throw new SendByOpException("User not found", HttpStatus.NOT_FOUND);
             }
 
-            user.setPw(newPw);
+            if (!encoder.matches(oldPw, user.getPassword())) {
+                throw new SendByOpException("Incorrect current password", HttpStatus.UNAUTHORIZED);
+            }
+
+            validatePassword(newPw);
+            user.setPassword(encoder.encode(newPw));
             userService.saveUser(user);
 
-            // Send email notification for password change
             sendPasswordChangeEmail(email);
-            return new ResponseMessage("Mot de passe modifié avec succès");
-        } catch (SendByOpException e) {
-            throw e;  // Rethrow exception to be handled by controller
+            log.info("Password changed successfully for user: {}", email);
+            return new ResponseMessage("Password changed successfully");
+        } catch (Exception e) {
+            log.error("Error during password change: {}", e.getMessage());
+            throw new SendByOpException("Password change failed: " + e.getMessage(), 
+                                      HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -152,9 +172,46 @@ public class AuthServiceImpl implements IAuthService {
         }
     }
 
-    private void sendVerificationEmail(Customer client) throws MessagingException, UnsupportedEncodingException {
-        // Implement sending email logic for client verification
-        sendMailService.sendVerificationEmail(client, "http://localhost:4200/verification", "token", "/verify?code=", "Validation de compte", "Email content here");
+    private void validateSignUpRequest(SignUpForm signUpRequest) throws SendByOpException {
+        if (signUpRequest.getUsername() == null || signUpRequest.getEmail() == null || 
+            signUpRequest.getPw() == null || signUpRequest.getName() == null || 
+            signUpRequest.getLastName() == null) {
+            throw new SendByOpException("All fields are required", HttpStatus.BAD_REQUEST);
+        }
+        validatePassword(signUpRequest.getPw());
+    }
+
+    private void validatePassword(String password) throws SendByOpException {
+        if (password.length() < 8) {
+            throw new SendByOpException("Password must be at least 8 characters long", 
+                                      HttpStatus.BAD_REQUEST);
+        }
+        if (!password.matches(".*[A-Z].*")) {
+            throw new SendByOpException("Password must contain at least one uppercase letter", 
+                                      HttpStatus.BAD_REQUEST);
+        }
+        if (!password.matches(".*[a-z].*")) {
+            throw new SendByOpException("Password must contain at least one lowercase letter", 
+                                      HttpStatus.BAD_REQUEST);
+        }
+        if (!password.matches(".*\\d.*")) {
+            throw new SendByOpException("Password must contain at least one number", 
+                                      HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void sendVerificationEmail(CustomerDto client) throws MessagingException, UnsupportedEncodingException, SendByOpException {
+        try {
+            String verificationUrl = "http://localhost:4200/verification";
+            sendMailService.sendVerificationEmail(client, verificationUrl, "token", 
+                                                "/verify?code=", "Account Verification", 
+                                                "Please verify your account");
+            log.info("Verification email sent to: {}", client.getEmail());
+        } catch (Exception e) {
+            log.error("Failed to send verification email: {}", e.getMessage());
+            throw new SendByOpException("Failed to send verification email", 
+                                      HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     private void sendPasswordChangeEmail(String email) {

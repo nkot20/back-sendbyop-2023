@@ -1,0 +1,22 @@
+package com.sendByOP.expedition.repositories;
+
+import com.sendByOP.expedition.models.entities.Client;
+import com.sendByOP.expedition.models.entities.Vol;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface VolRepository extends CrudRepository<Vol, Integer> {
+
+    public List<Vol> findAllByOrderByDatedepartDesc();
+
+    public List<Vol> findByIdclientOrderByDatepublicationDesc(int idClient);
+
+    public List<Vol> findByEtatvalidation(int etat);
+
+    public Optional<Vol> findByIdvol(int id);
+
+}

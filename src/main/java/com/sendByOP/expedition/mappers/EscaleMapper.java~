@@ -1,0 +1,16 @@
+package com.sendByOP.expedition.mappers;
+
+import com.sendByOP.expedition.models.dto.EscaleDto;
+import com.sendByOP.expedition.models.entities.Stopover;
+import org.mapstruct.*;
+
+ // Utilisation des autres mappers
+public interface EscaleMapper {
+
+
+    Stopover toEntity(EscaleDto escaleDTO);
+
+    EscaleDto toDto(Stopover escale);
+
+    void copy(EscaleDto escaleDTO, @MappingTarget Stopover escale);
+}

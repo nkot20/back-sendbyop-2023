@@ -2,10 +2,8 @@ package com.sendByOP.expedition.web.controller;
 
 import com.sendByOP.expedition.exception.SendByOpException;
 import com.sendByOP.expedition.models.entities.Newsletter;
-import com.sendByOP.expedition.reponse.ResponseMessage;
-import com.sendByOP.expedition.services.servicesImpl.NewslettrerService;
+import com.sendByOP.expedition.services.servicesImpl.NewsLetterService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +17,7 @@ import java.util.List;
 @RequestMapping("/newletter")
 @RequiredArgsConstructor
 public class NewsletterController {
-    private final NewslettrerService newslettrerService;
+    private final NewsLetterService newslettrerService;
 
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody Newsletter newsletter) throws SendByOpException {
