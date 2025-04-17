@@ -8,7 +8,9 @@ import java.util.List;
 
 public interface IParcelService {
     public ParcelDto saveParcel(ParcelDto colis) throws SendByOpException;
-    public void deleteParcel(ParcelDto colis) ;
+    public void deleteParcel(ParcelDto colis) throws SendByOpException;
     public ParcelDto findParcelById(int id) throws SendByOpException;
-    public List<ParcelDto> findAllParcelsByBooking(BookingDto idRe);
+    public List<ParcelDto> findAllParcelsByBooking(BookingDto idRe) throws SendByOpException;
+    public void deleteParcelById(int id) throws SendByOpException;
+    public List<ParcelDto> findAllParcelsByBookingId(int bookingId) throws SendByOpException;
 }

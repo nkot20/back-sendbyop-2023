@@ -9,11 +9,11 @@ import java.util.Date;
 
 @AllArgsConstructor
 @Getter
-@Setter
 @ToString
 @Entity
 @Table(name = "annulation_trajet")
 @NoArgsConstructor
+@Builder
 public class CancellationTrip extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +28,7 @@ public class CancellationTrip extends BaseEntity implements Serializable {
     private Date cancellationDate;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "trip_id", referencedColumnName = "flight_id")
+    @JoinColumn(name = "trip_id", referencedColumnName = "id")
     private Flight trip;
 
     @Column(name = "viewed")

@@ -23,11 +23,11 @@ public class Rating extends BaseEntity implements Serializable {
     @Column(name = "score")
     private int score;
 
-    @JoinColumn(name = "sender_id", referencedColumnName = "idp")
+    @JoinColumn(name = "sender_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Customer sender;
 
-    @JoinColumn(name = "customer_id", referencedColumnName = "idp")
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Customer customer;
 }

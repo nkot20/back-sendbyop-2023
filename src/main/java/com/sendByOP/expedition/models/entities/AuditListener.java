@@ -1,6 +1,5 @@
 package com.sendByOP.expedition.models.entities;
 
-import com.sendByOP.expedition.models.entities.BaseEntity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;

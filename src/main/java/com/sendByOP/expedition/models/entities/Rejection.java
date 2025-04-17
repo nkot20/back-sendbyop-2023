@@ -23,6 +23,6 @@ public class Rejection extends BaseEntity implements Serializable {@Id
     private String reason;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "reservation_id", referencedColumnName = "id_re")
+    @JoinColumn(name = "reservation_id", referencedColumnName = "id")
     private Booking reservation;
 }

@@ -10,16 +10,21 @@ import java.util.List;
 
 public interface IReservationService {
 
-    public BookingDto saveReservation(BookingDto reservation) throws SendByOpException;
-    public BookingDto saveReservationWithColis(BookingDto reservation) throws SendByOpException;
-    public void deleteReservation(int id);
-    public BookingDto updateReservation(BookingDto reservation) throws SendByOpException;
-    public BookingDto getReservation(int id) throws SendByOpException;
-    public List<BookingDto> reservationList();
-    public List<BookingDto> clientDestinatorReservationList(int idClient);
-    public List<BookingDto> getReservationByDate(Date date);
-    public BookingDto refuserReservation(BookingDto reservation, RejectionDto refus)
+    public BookingDto saveBooking(BookingDto booking) throws SendByOpException;
+    public BookingDto saveBookingWithParcels(BookingDto booking) throws SendByOpException;
+    public void deleteBooking(int id) throws SendByOpException;
+    public BookingDto updateBooking(BookingDto booking) throws SendByOpException;
+    public BookingDto getBooking(int id) throws SendByOpException;
+    public List<BookingDto> getAllBookings() throws SendByOpException;
+    public List<BookingDto> getBookingsByReceiverId(int receiverId) throws SendByOpException;
+    public List<BookingDto> getBookingsByDate(Date date) throws SendByOpException;
+    public BookingDto rejectBooking(BookingDto booking, RejectionDto rejection)
             throws MessagingException, UnsupportedEncodingException, SendByOpException;
-
+    public BookingDto validateBooking(int bookingId) throws SendByOpException;
+    public BookingDto addCustomerReview(int bookingId, String review) throws SendByOpException;
+    public BookingDto addSenderResponse(int bookingId, String response) throws SendByOpException;
+    public BookingDto cancelBooking(int bookingId, String reason) throws SendByOpException;
+    public String getSenderWhatsAppLink(int bookingId) throws SendByOpException;
+    public BookingDto processPayment(int bookingId) throws SendByOpException;
 
 }

@@ -1,0 +1,43 @@
+package com.sendByOP.expedition.web.controller;
+
+import com.sendByOP.expedition.models.dto.VisitorDto;
+import com.sendByOP.expedition.mappers.VisitorMapper;
+import com.sendByOP.expedition.reponse.ResponseMessage;
+import com.sendByOP.expedition.services.iServices.IVisiteService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
+
+@RestController
+@RequestMapping("api/v1/visitors")
+@RequiredArgsConstructor
+@Slf4j
+public class VisitorController {
+
+    private final IVisiteService visiteService;
+    private final VisitorMapper visitorMapper;
+
+    @PostMapping
+    public ResponseEntity<?> addVisitor(@Valid @RequestBody VisitorDto visitorDto) {
+        log.debug("Adding new visitor");
+        visitorDto.setId(null);
+        var savedVisitor = visiteService.addVisitor(visitorMapper.toEntity(visitorDto));
+        return new ResponseEntity<>(visitorMapper.toDto(savedVisitor), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Integer> getVisitorCount() {
+        log.debug("Getting visitor count");
+        return new ResponseEntity<>(visiteService.getVisitorCount(), HttpStatus.OK);
+    }
+
+}

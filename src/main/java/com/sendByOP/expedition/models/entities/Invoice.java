@@ -29,7 +29,7 @@ public class Invoice implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date paymentDate;
 
-    @JoinColumn(name = "reservation_id", referencedColumnName = "reservation_id")
+    @JoinColumn(name = "reservation_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Booking reservation;
 

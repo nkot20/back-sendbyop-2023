@@ -27,7 +27,7 @@ public class CancellationReservation extends BaseEntity implements Serializable 
     private Date cancellationDate;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "reservation_id", referencedColumnName = "reservation_id")
+    @JoinColumn(name = "reservation_id", referencedColumnName = "id")
     private Booking reservation;
 
     @Column(name = "viewed")

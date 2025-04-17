@@ -3,7 +3,6 @@ package com.sendByOP.expedition.mappers;
 import com.sendByOP.expedition.models.dto.UserDto;
 import com.sendByOP.expedition.models.entities.User;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(uses = {RoleMapper.class})

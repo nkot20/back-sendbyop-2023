@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface CancelReservationRepository extends JpaRepository<CancellationReservation, Integer> {
 
-    public Optional<CancellationReservation> findByIdreservation(Booking idreservatrion);
+    public Optional<CancellationReservation> findByReservation(Booking booking);
 
 
 }

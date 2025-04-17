@@ -11,21 +11,21 @@ import java.util.List;
 public interface IVolService {
     FlightDto getVolById(int id);
 
-    Iterable<FlightDto> getAllVol();
+    List<FlightDto> getAllVol();
 
-    Iterable<FlightDto> getAllVolValid(int i);
+    List<FlightDto> getAllVolValid(int i);
 
     FlightDto saveVol(FlightDto vol);
 
     FlightDto saveVolWithEscales(VolEscaleDto volEscaleDTO) throws SendByOpException;
 
-    void deleteVol(int id);
+    void deleteVol(int id) throws SendByOpException;
 
-    FlightDto updateVol(FlightDto vol);
+    FlightDto updateVol(FlightDto vol) throws SendByOpException;
 
-    List<FlightDto> getByIdClient(CustomerDto idClient);
+    List<FlightDto> getByIdClient(CustomerDto idClient) throws SendByOpException;
 
-    int nbVolClient(CustomerDto idClient);
+    int nbVolClient(CustomerDto idClient) throws SendByOpException;
 
     FlightDto getVolByIdVol(int id);
 }

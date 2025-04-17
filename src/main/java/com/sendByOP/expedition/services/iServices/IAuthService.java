@@ -6,8 +6,6 @@ import com.sendByOP.expedition.message.SignUpForm;
 import com.sendByOP.expedition.reponse.JwtResponse;
 import com.sendByOP.expedition.reponse.ResponseMessage;
 import com.sendByOP.expedition.models.entities.User;
-import jakarta.mail.MessagingException;
-import java.io.UnsupportedEncodingException;
 
 public interface IAuthService {
     JwtResponse authenticateUser(LoginForm loginRequest) throws SendByOpException;

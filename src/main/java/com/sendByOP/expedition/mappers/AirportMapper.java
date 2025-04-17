@@ -4,16 +4,17 @@ import com.sendByOP.expedition.models.dto.AirportDto;
 import com.sendByOP.expedition.models.entities.Airport;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(componentModel = "spring",
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface AirportMapper {
-
-    AirportMapper INSTANCE = Mappers.getMapper(AirportMapper.class);
-
-    @Mapping(source = "city.id", target = "cityId")
+    @Mapping(source = "city.cityId", target = "cityId")
     AirportDto toDto(Airport airport);
 
-    @Mapping(source = "cityId", target = "city.id")
+    @Mapping(source = "cityId", target = "city.cityId")
     Airport toEntity(AirportDto airportDTO);
 }

@@ -11,7 +11,7 @@ import java.util.List;
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
 
-    public List<Review> findByTransporteurOrderByDateAsc(Customer transporteur);
+    public List<Review> findByTransporterOrderByDateAsc(Customer customer);
 
-    public List<Review> findByExpediteurOrderByDateAsc(Customer transporteur);
+    public List<Review> findByShipperOrderByDateAsc(Customer customer);
 }

@@ -5,17 +5,17 @@ import com.sendByOP.expedition.models.entities.Stopover;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
-// Utilisation des autres mappers
+@Mapper(componentModel = "spring")
 public interface StopoverMapper {
 
 
      StopoverMapper INSTANCE = Mappers.getMapper(StopoverMapper.class);
 
-     @Mapping(source = "airport.id", target = "airportId")
-     @Mapping(source = "flight.id", target = "flightId")
+     @Mapping(source = "airport.airportId", target = "airportId")
+     @Mapping(source = "flight.flightId", target = "flightId")
      StopoverDto toDto(Stopover stopover);
 
-     @Mapping(source = "airportId", target = "airport.id")
-     @Mapping(source = "flightId", target = "flight.id")
+     @Mapping(source = "airportId", target = "airport.airportId")
+     @Mapping(source = "flightId", target = "flight.flightId")
      Stopover toEntity(StopoverDto stopoverDTO);
 }

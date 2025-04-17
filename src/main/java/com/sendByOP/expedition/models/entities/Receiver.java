@@ -17,7 +17,7 @@ import java.io.Serializable;
 public class Receiver extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "receiver_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Integer id;
 
     @Column(name = "first_name", nullable = false)

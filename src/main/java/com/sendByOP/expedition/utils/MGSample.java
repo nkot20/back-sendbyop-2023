@@ -4,8 +4,6 @@ import com.mailgun.api.v3.MailgunMessagesApi;
 import com.mailgun.client.MailgunClient;
 import com.mailgun.model.message.Message;
 import com.mailgun.model.message.MessageResponse;
-import com.fasterxml.jackson.databind.JsonNode;
-import org.apache.http.HttpResponse;
 
 public class MGSample {
 

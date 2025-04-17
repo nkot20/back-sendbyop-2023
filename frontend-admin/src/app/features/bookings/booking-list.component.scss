@@ -1,0 +1,50 @@
+.container {
+    padding: 20px;
+    h2 {
+        margin-bottom: 24px;
+        color: #333;
+    }
+    .mat-form-field {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    .mat-elevation-z8 {
+        border-radius: 8px;
+        overflow: hidden;
+        table {
+            width: 100%;
+            th {
+                font-weight: 600;
+                color: #444;
+            }
+            td {
+                &.mat-cell {
+                    padding: 16px 8px;
+                }
+            }
+            .status-cell {
+                font-weight: 500;
+                &.cancelled {
+                    color: #f44336;
+                }
+                &.confirmed {
+                    color: #4caf50;
+                }
+            }
+        }
+        .mat-paginator {
+            border-top: 1px solid rgba(0, 0, 0, 0.12);
+        }
+    }
+    .actions-cell {
+        button {
+            margin: 0 4px;
+            &:first-child {
+                margin-left: 0;
+            }
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+    }
+}

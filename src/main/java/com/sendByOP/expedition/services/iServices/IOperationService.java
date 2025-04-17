@@ -11,8 +11,7 @@ public interface IOperationService {
     public OperationDto searchOperation (int id) throws SendByOpException;
     public void deleteOperation(OperationDto operation) throws SendByOpException;
     public void deleteOperation(int operationId) throws SendByOpException;
-    public List<OperationDto> findOperationByType(OperationDto operation) throws SendByOpException;
-    public BookingDto enregistrerDepotParExpediteur (int id) throws Exception;
-    public BookingDto saveDepotParClient(int id) throws Exception;
+    public BookingDto registerSenderDeposit(int id) throws Exception;
+    public BookingDto registerCustomerDeposit(int id) throws Exception;
 
 }

@@ -5,7 +5,6 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 @Getter
 @Setter
@@ -18,7 +17,7 @@ public class Booking extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "booking_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Integer id;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -64,7 +63,4 @@ public class Booking extends BaseEntity implements Serializable {
     @Column(name = "transporter_payment_status")
     private int transporterPaymentStatus;
 
-    @OneToMany(mappedBy = "booking", fetch = FetchType.EAGER)
-    @ToString.Exclude
-    private List<Parcel> parcels;
 }

@@ -31,7 +31,7 @@ public class Stopover extends BaseEntity implements Serializable {
     @ManyToOne(optional = false)
     private Airport airport;
 
-    @JoinColumn(name = "flight_id", referencedColumnName = "flight_id")
+    @JoinColumn(name = "flight_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Flight flight;
 }

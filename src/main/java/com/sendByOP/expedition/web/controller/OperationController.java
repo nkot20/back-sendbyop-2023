@@ -1,7 +1,8 @@
 package com.sendByOP.expedition.web.controller;
 
-import com.sendByOP.expedition.models.entities.Operation;
-import com.sendByOP.expedition.models.entities.Booking;
+import com.sendByOP.expedition.exception.SendByOpException;
+import com.sendByOP.expedition.models.dto.OperationDto;
+import com.sendByOP.expedition.models.dto.BookingDto;
 import com.sendByOP.expedition.services.iServices.IOperationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,26 +16,32 @@ public class OperationController {
 
     private final IOperationService operationService;
 
-    @PostMapping(value = "/save/{id}")
-    public ResponseEntity<Operation> saveOperation(@RequestBody Operation operation, @PathVariable("id") int id) {
-        Operation newOperation = operationService.saveOperation(operation, id);
+    @PostMapping(value = "/save/{typeId}")
+    public ResponseEntity<OperationDto> saveOperation(@RequestBody OperationDto operation, @PathVariable("typeId") int typeId) throws SendByOpException {
+        OperationDto newOperation = operationService.saveOperation(operation, typeId);
         return ResponseEntity.status(HttpStatus.CREATED).body(newOperation);
     }
 
-    @PostMapping(value = "/reservation/depot/expediteur/")
-    public ResponseEntity<Booking> enregistrerDepotParExpediteur(@RequestBody int id) throws Exception {
-        Booking newReservation = operationService.enregistrerDepotParExpediteur(id);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newReservation);
+    @GetMapping("/{id}")
+    public ResponseEntity<OperationDto> getOperation(@PathVariable("id") int id) throws SendByOpException {
+        OperationDto operation = operationService.searchOperation(id);
+        return ResponseEntity.ok(operation);
     }
 
-    @PostMapping(value = "/reservation/depot/client/")
-    public ResponseEntity<Booking> enregistrerDepotParClient(@RequestBody int id) throws Exception {
-        Booking newReservation = operationService.saveDepotParClient(id);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newReservation);
+    @PostMapping(value = "/booking/deposit/sender")
+    public ResponseEntity<BookingDto> registerSenderDeposit(@RequestBody int id) throws Exception {
+        BookingDto newBooking = operationService.registerSenderDeposit(id);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newBooking);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteOperation(@PathVariable("id") int id) {
+    @PostMapping(value = "/booking/deposit/customer")
+    public ResponseEntity<BookingDto> registerCustomerDeposit(@RequestBody int id) throws Exception {
+        BookingDto newBooking = operationService.registerCustomerDeposit(id);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newBooking);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteOperation(@PathVariable("id") int id) throws SendByOpException {
         operationService.deleteOperation(id);
         return ResponseEntity.noContent().build();
     }

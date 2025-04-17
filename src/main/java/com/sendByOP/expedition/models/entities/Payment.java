@@ -29,13 +29,13 @@ public class Payment extends BaseEntity implements Serializable {
     private Date paymentDate;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "client_id", referencedColumnName = "idp")
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private Customer client;
 
     @Column(name = "amount")
     private Double amount;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "payment_type_id", referencedColumnName = "id_type")
+    @JoinColumn(name = "payment_type_id", referencedColumnName = "payment_type_id")
     private PaymentType paymentType;
 }

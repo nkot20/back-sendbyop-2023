@@ -1,0 +1,68 @@
+<div class="container">
+    <h2>Booking Management</h2>
+
+    <mat-form-field>
+        <mat-label>Filter</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Search bookings..." #input>
+    </mat-form-field>
+
+    <div class="mat-elevation-z8">
+        <table mat-table [dataSource]="dataSource">
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef> ID </th>
+                <td mat-cell *matCellDef="let booking"> {{booking.id}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="userId">
+                <th mat-header-cell *matHeaderCellDef> User ID </th>
+                <td mat-cell *matCellDef="let booking"> {{booking.userId}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="flightId">
+                <th mat-header-cell *matHeaderCellDef> Flight ID </th>
+                <td mat-cell *matCellDef="let booking"> {{booking.flightId}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef> Status </th>
+                <td mat-cell *matCellDef="let booking"> {{booking.status}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="bookingDate">
+                <th mat-header-cell *matHeaderCellDef> Booking Date </th>
+                <td mat-cell *matCellDef="let booking"> {{booking.bookingDate | date}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="passengerCount">
+                <th mat-header-cell *matHeaderCellDef> Passengers </th>
+                <td mat-cell *matCellDef="let booking"> {{booking.passengerCount}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="totalPrice">
+                <th mat-header-cell *matHeaderCellDef> Total Price </th>
+                <td mat-cell *matCellDef="let booking"> {{booking.totalPrice | currency}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef> Actions </th>
+                <td mat-cell *matCellDef="let booking">
+                    <button mat-icon-button color="primary" (click)="viewDetails(booking)">
+            <mat-icon>visibility</mat-icon>
+          </button>
+                    <button mat-icon-button color="warn" (click)="cancelBooking(booking)" [disabled]="booking.status === 'CANCELLED'">
+            <mat-icon>cancel</mat-icon>
+          </button>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="8">No data matching the filter "{{input.value}}"</td>
+            </tr>
+        </table>
+
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of bookings"></mat-paginator>
+    </div>
+</div>

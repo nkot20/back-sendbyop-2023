@@ -1,0 +1,42 @@
+package com.sendByOP.expedition.web.controller;
+
+import com.sendByOP.expedition.exception.ErrorInfo;
+import com.sendByOP.expedition.models.dto.StopoverDto;
+import com.sendByOP.expedition.models.entities.Flight;
+import com.sendByOP.expedition.services.iServices.IStopoverService;
+import com.sendByOP.expedition.services.impl.FlightService;
+import com.sendByOP.expedition.web.exceptions.escale.ImpossibleEffectuerEscaleException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/stopover")
+@RequiredArgsConstructor
+public class StopoverController {
+
+    private final IStopoverService stopoverService;
+    private final FlightService flightService;
+
+    @PostMapping
+    public ResponseEntity<StopoverDto> createStopover(@RequestBody StopoverDto stopover) {
+        StopoverDto newStopover = stopoverService.addStopover(stopover);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newStopover);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteStopover(@PathVariable Integer id) {
+        stopoverService.deleteStopover(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/flight/{id}")
+    public ResponseEntity<List<StopoverDto>> getStopoversByFlightId(@PathVariable("id") int id) {
+        List<StopoverDto> stopovers = stopoverService.findByFlightId(id);
+        return ResponseEntity.ok(stopovers);
+    }
+}

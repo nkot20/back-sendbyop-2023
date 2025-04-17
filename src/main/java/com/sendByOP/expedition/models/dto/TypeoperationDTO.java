@@ -1,20 +1,19 @@
 package com.sendByOP.expedition.models.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO for transferring Typeoperation data.
- */
+@Schema(description = "DTO for operation type information")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class TypeoperationDTO {
 
-    // Identifier of the type operation
+    @Schema(description = "Unique identifier for the operation type", example = "1")
     private Integer idTypeOperation;
 
-    // Title or name of the type operation
+    @Schema(description = "Title or name of the operation type", example = "Delivery")
     private String intitule;
 }

@@ -2,8 +2,6 @@ package com.sendByOP.expedition.security.service;
 
 import com.sendByOP.expedition.models.entities.User;
 import com.sendByOP.expedition.repositories.UserRepository;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

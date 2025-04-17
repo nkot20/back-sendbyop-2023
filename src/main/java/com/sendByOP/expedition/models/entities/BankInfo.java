@@ -19,7 +19,7 @@ public class BankInfo implements Serializable {
     private Integer id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "id_client", referencedColumnName = "idp", nullable = false)
+    @JoinColumn(name = "id_client", referencedColumnName = "id", nullable = false)
     private Customer customer;
 
     @Column(name = "iban", nullable = false, unique = true)

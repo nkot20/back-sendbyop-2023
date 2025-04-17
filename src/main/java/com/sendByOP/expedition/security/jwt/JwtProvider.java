@@ -2,8 +2,6 @@ package com.sendByOP.expedition.security.jwt;
 
 import com.sendByOP.expedition.security.service.UserPrinciple;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -17,23 +15,39 @@ import org.springframework.security.core.Authentication;
 public class JwtProvider {
 
 
-    @Value("${grokonez.app.jwtSecret}")
+    @Value("${app.jwt.secret}")
     private String jwtSecret;
 
-    @Value("${grokonez.app.jwtExpiration}")
+    @Value("${app.jwt.expiration}")
     private int jwtExpiration;
 
-    public String generateJwtToken(Authentication authentication) {
-        log.info("###@@ jwtSecret ### {}");
-        UserPrinciple userPrincipal = (UserPrinciple) authentication.getPrincipal();
+    @Value("${app.jwt.refreshExpiration}")
+    private int refreshTokenExpiration;
 
+    public String generateJwtToken(Authentication authentication) {
+        UserPrinciple userPrincipal = (UserPrinciple) authentication.getPrincipal();
+        return generateTokenFromUsername(userPrincipal.getUsername());
+    }
+
+    public String generateTokenFromUsername(String username) {
         return Jwts.builder()
-                .setSubject((userPrincipal.getUsername()))
+                .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + jwtExpiration*1000))
+                .setExpiration(new Date((new Date()).getTime() + jwtExpiration * 1000))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
+
+    public String generateRefreshToken(Authentication authentication) {
+        UserPrinciple userPrincipal = (UserPrinciple) authentication.getPrincipal();
+        return Jwts.builder()
+                .setSubject(userPrincipal.getUsername())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + refreshTokenExpiration * 1000))
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .compact();
+    }
+
 
     public boolean validateJwtToken(String authToken) {
         try {

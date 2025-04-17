@@ -31,12 +31,12 @@ public class Review extends BaseEntity implements Serializable {
     private Date date = new Date();
 
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @JoinColumn(name = "transporter_id", referencedColumnName = "idp")
+    @JoinColumn(name = "transporter_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Customer transporter;
 
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @JoinColumn(name = "shipper_id", referencedColumnName = "idp")
+    @JoinColumn(name = "shipper_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Customer shipper;
 

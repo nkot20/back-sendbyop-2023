@@ -21,5 +21,5 @@ public class Refund extends BaseEntity implements Serializable {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "reservation_id", referencedColumnName = "id_re")
-    private Reservation reservation;
+    private Booking reservation;
 }

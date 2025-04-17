@@ -1,7 +1,6 @@
 package com.sendByOP.expedition.exception;
 
 import org.springframework.http.HttpStatus;
-import org.zalando.problem.Status;
 
 import lombok.Data;
 

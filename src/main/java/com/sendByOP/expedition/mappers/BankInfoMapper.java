@@ -8,9 +8,9 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface BankInfoMapper {
 
-    @Mapping(source = "client.id", target = "clientId")
+    @Mapping(source = "customer.id", target = "clientId")
     BankInfoDto toDto(BankInfo bankInfo);
 
-    @Mapping(source = "clientId", target = "client.id")
+    @Mapping(source = "clientId", target = "customer.id")
     BankInfo toEntity(BankInfoDto bankInfoDTO);
 }

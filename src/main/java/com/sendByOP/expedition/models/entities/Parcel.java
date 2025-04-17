@@ -31,7 +31,7 @@ public class Parcel implements Serializable {
     private String parcelType;
 
     @JsonIgnore
-    @JoinColumn(name = "reservation_id", referencedColumnName = "reservation_id")
+    @JoinColumn(name = "reservation_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Booking reservation;
 }

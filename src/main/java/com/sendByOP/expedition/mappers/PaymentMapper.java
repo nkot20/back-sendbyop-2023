@@ -11,11 +11,11 @@ public interface PaymentMapper {
 
     PaymentMapper INSTANCE = Mappers.getMapper(PaymentMapper.class);
 
-    @Mapping(source = "client.idp", target = "clientId")
-    @Mapping(source = "paymentType.idType", target = "paymentTypeId")
+    @Mapping(source = "client.id", target = "clientId")
+    @Mapping(source = "paymentType.paymentTypeId", target = "paymentTypeId")
     PaymentDto toDto(Payment payment);
 
-    @Mapping(source = "clientId", target = "client.idp")
-    @Mapping(source = "paymentTypeId", target = "paymentType.idType")
+    @Mapping(source = "clientId", target = "client.id")
+    @Mapping(source = "paymentTypeId", target = "paymentType.paymentTypeId")
     Payment toEntity(PaymentDto paymentDTO);
 }

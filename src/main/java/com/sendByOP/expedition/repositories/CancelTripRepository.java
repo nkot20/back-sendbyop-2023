@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface CancelTripRepository extends JpaRepository<CancellationTrip, Integer> {
 
-    public Optional<CancellationTrip> findByIdtrajet(Flight vol);
+    public Optional<CancellationTrip> findByTrip(Flight vol);
 
 }

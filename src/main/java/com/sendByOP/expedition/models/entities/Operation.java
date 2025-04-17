@@ -25,11 +25,11 @@ public class Operation extends BaseEntity implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date operationDate;
 
-    @JoinColumn(name = "operation_type_id", referencedColumnName = "id_type_operation")
+    @JoinColumn(name = "operation_type_id", referencedColumnName = "operation_type_id")
     @ManyToOne(optional = false)
     private OperationType operationType;
 
-    @JoinColumn(name = "reservation_id", referencedColumnName = "id_re")
+    @JoinColumn(name = "reservation_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Booking reservation;;
 }

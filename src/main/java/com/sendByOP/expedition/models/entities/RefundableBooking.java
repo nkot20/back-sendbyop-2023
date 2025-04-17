@@ -19,7 +19,7 @@ public class RefundableBooking extends BaseEntity implements Serializable {
     private Integer id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "reservation_id", referencedColumnName = "booking_id", nullable = false)
+    @JoinColumn(name = "reservation_id", referencedColumnName = "id", nullable = false)
     private Booking booking;
 
     @Column(name = "validated", nullable = false)

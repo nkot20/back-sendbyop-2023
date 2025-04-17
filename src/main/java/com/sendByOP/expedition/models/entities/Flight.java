@@ -18,7 +18,7 @@ public class Flight extends BaseEntity implements Serializable {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Basic(optional = false)
-        @Column(name = "flight_id")
+        @Column(name = "id")
         private Integer flightId;
 
         @Column(name = "arrival_date")
@@ -49,10 +49,10 @@ public class Flight extends BaseEntity implements Serializable {
         @ManyToOne(optional = false)
         private Airport arrivalAirport;
 
-        @JoinColumn(name = "client_id", referencedColumnName = "client_id")
+        @JoinColumn(name = "customer_id", referencedColumnName = "id")
         @ManyToOne
         @JsonIgnoreProperties(value = {"applications", "hibernateLazyInitializer"})
-        private Customer client;
+        private Customer customer;
 
         @Basic(optional = false)
         @Column(name = "validation_status")
