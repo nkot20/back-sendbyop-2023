@@ -1,74 +1,49 @@
 package com.sendByOP.expedition.web.controller;
 
-import com.sendByOP.expedition.model.Operation;
-import com.sendByOP.expedition.model.Reservation;
-import com.sendByOP.expedition.model.Typeoperation;
-import com.sendByOP.expedition.services.servicesImpl.OperationService;
-import com.sendByOP.expedition.services.servicesImpl.ReservationService;
-import com.sendByOP.expedition.services.servicesImpl.TypeOPerationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.sendByOP.expedition.exception.SendByOpException;
+import com.sendByOP.expedition.models.dto.OperationDto;
+import com.sendByOP.expedition.models.dto.BookingDto;
+import com.sendByOP.expedition.services.iServices.IOperationService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/operation")
+@RequiredArgsConstructor
 public class OperationController {
 
-    @Autowired
-    OperationService operationService;
+    private final IOperationService operationService;
 
-    @Autowired
-    TypeOPerationService typeOPerationService;
-
-    @Autowired
-    ReservationService reservationService;
-
-    @PostMapping(value = "/oparations/save/{id}")
-    public ResponseEntity<Operation> saveOperation(@RequestBody Operation operation, @PathVariable("id") int id) throws Exception {
-
-        Typeoperation typeoperation = typeOPerationService.findTypeById(id);
-
-        operation.setIdTypeOperation(typeoperation);
-
-        Operation newOperation = operationService.saveOperation(operation);
-
-        if (newOperation == null) throw new Exception("Problème survenu lors de l'enregistrement");
-
-        return new ResponseEntity<Operation>(newOperation, HttpStatus.CREATED);
+    @PostMapping(value = "/save/{typeId}")
+    public ResponseEntity<OperationDto> saveOperation(@RequestBody OperationDto operation, @PathVariable("typeId") int typeId) throws SendByOpException {
+        OperationDto newOperation = operationService.saveOperation(operation, typeId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newOperation);
     }
 
-    @PostMapping(value = "oparations/reservation/depot/expediteur/")
-    public ResponseEntity<Reservation> enregistrerDepotParExpdeiteur(@RequestBody int id) throws Exception {
-
-        Reservation newReservation = operationService.enregistrerDepotParExpdeiteur(id);
-
-        return new ResponseEntity<Reservation>(newReservation, HttpStatus.CREATED);
-
+    @GetMapping("/{id}")
+    public ResponseEntity<OperationDto> getOperation(@PathVariable("id") int id) throws SendByOpException {
+        OperationDto operation = operationService.searchOperation(id);
+        return ResponseEntity.ok(operation);
     }
 
-    @PostMapping(value = "oparations/reservation/depot/client/")
-    public ResponseEntity<Reservation> enregistrerDepotParClient(@RequestBody int id) throws Exception {
-
-        Reservation newReservation  = operationService.enregistrerDepotParClient(id);
-
-        //Ativer le payement de l'expéditeur
-
-        return new ResponseEntity<Reservation>(newReservation, HttpStatus.CREATED);
+    @PostMapping(value = "/booking/deposit/sender")
+    public ResponseEntity<BookingDto> registerSenderDeposit(@RequestBody int id) throws Exception {
+        BookingDto newBooking = operationService.registerSenderDeposit(id);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newBooking);
     }
 
-    @GetMapping("/operations/delete/{id}")
-    public void deleteOpereation(@PathVariable("id") int id) throws Exception {
- 
-        Operation operation = operationService.searchOperation(id);
+    @PostMapping(value = "/booking/deposit/customer")
+    public ResponseEntity<BookingDto> registerCustomerDeposit(@RequestBody int id) throws Exception {
+        BookingDto newBooking = operationService.registerCustomerDeposit(id);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newBooking);
+    }
 
-        if (operation != null) {
-            operationService.deleteOperation(operation);
-        } else {
-            throw new Exception("Un problème est survenu");
-        }
-
-
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteOperation(@PathVariable("id") int id) throws SendByOpException {
+        operationService.deleteOperation(id);
+        return ResponseEntity.noContent().build();
     }
 
 

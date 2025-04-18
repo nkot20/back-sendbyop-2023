@@ -1,179 +1,74 @@
 package com.sendByOP.expedition.web.controller;
-
 import com.sendByOP.expedition.exception.SendByOpException;
 import com.sendByOP.expedition.message.LoginForm;
 import com.sendByOP.expedition.message.SignUpForm;
-import com.sendByOP.expedition.model.Email;
-import com.sendByOP.expedition.model.Role;
-import com.sendByOP.expedition.model.User;
+import com.sendByOP.expedition.models.dto.EmailDto;
+import com.sendByOP.expedition.models.entities.User;
 import com.sendByOP.expedition.reponse.JwtResponse;
 import com.sendByOP.expedition.reponse.ResponseMessage;
-import com.sendByOP.expedition.security.jwt.JwtProvider;
-import com.sendByOP.expedition.services.servicesImpl.Clientservice;
-import com.sendByOP.expedition.services.servicesImpl.RoleService;
-import com.sendByOP.expedition.services.servicesImpl.SendMailService;
-import com.sendByOP.expedition.services.servicesImpl.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import com.sendByOP.expedition.reponse.ResponseMessages;
+import com.sendByOP.expedition.services.iServices.IAuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 
-
-
 @RestController
+@RequestMapping("/auth")
+@RequiredArgsConstructor
+@Slf4j
+@Tag(name = "Authentication", description = "APIs for user authentication and management")
 public class AuthRestAPIsController {
 
-    @Autowired
-    AuthenticationManager authenticationManager;
+    private final IAuthService authService;
 
-    @Autowired
-    UserService userService;
-
-    @Autowired
-    RoleService roleService;
-
-    @Autowired
-    PasswordEncoder encoder;
-
-
-    @Autowired
-    JwtProvider jwtProvider;
-
-    @Autowired
-    SendMailService sendMailService;
-
-    @Autowired
-    Clientservice clientservice;
-
-    @PostMapping("/api/v1/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginForm loginRequest) {
-
-        System.out.println(loginRequest.getUsername());
-
-        if(loginRequest.getUsername() == null  ) {
-            return new ResponseEntity<>(new ResponseMessage("email is null"),
-                    HttpStatus.OK);
-        }
-        //Client client = clientservice.getCustomerByEmail(loginRequest.getUsername());
-
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String jwt = jwtProvider.generateJwtToken(authentication);
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getUsername(), userDetails.getAuthorities()));
+    @Operation(summary = "Authenticate user", description = "Authenticates a user and returns a JWT token")
+    @ApiResponse(responseCode = "200", description = "Successfully authenticated")
+    @ApiResponse(responseCode = "401", description = "Invalid credentials")
+    @PostMapping("/login")
+    public ResponseEntity<JwtResponse> authenticateUser(@Valid @RequestBody LoginForm loginRequest) throws SendByOpException {
+        log.info("###@@ ---------- LOGIN---------------- {}", loginRequest.toString());
+        JwtResponse response = authService.authenticateUser(loginRequest);
+        return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/api/v1/signup/admin")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpForm signUpRequest) throws SendByOpException {
-        try {
-            if (userService.userIsExist(signUpRequest.getUsername())) {
-                return new ResponseEntity<>(new ResponseMessage("Adresse email déja utilisée connectez-vous"),
-                        HttpStatus.BAD_REQUEST);
-            }
-
-            encoder.encode(signUpRequest.getPw());
-            // Creating user's account
-            User user = new User(signUpRequest.getUsername(), signUpRequest.getEmail(), signUpRequest.getName(), signUpRequest.getLastName(), encoder.encode(signUpRequest.getPw()));
-            String strRoles = signUpRequest.getRole();
-
-            Role roles = new Role();
-
-            //RoleName administrateur = RoleName.administrateur;
-            roles = roleService.getRoleInfo(strRoles);
-            if (roles == null) {
-                return new ResponseEntity<>(new ResponseMessage("Aucun droit ne correspond à ce que vous avez entré"), HttpStatus.NOT_FOUND);
-            }
-            user.setRole(roles);
-            userService.saveUser(user);
-
-            return new ResponseEntity<>(new ResponseMessage("User registered successfully!"), HttpStatus.OK);
-        } catch (SendByOpException e) {
-            return new ResponseEntity<>(new ResponseMessage(e.getMessage()), e.getHttpStatus());
-        }
+    @Operation(summary = "Register new admin user", description = "Creates a new admin user account")
+    @ApiResponse(responseCode = "200", description = "User registered successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid user data")
+    @PostMapping("/signup/admin")
+    public ResponseEntity<ResponseMessage> registerUser(@Valid @RequestBody SignUpForm signUpRequest) throws SendByOpException {
+        authService.registerUser(signUpRequest);
+        return ResponseEntity.ok(new ResponseMessage(ResponseMessages.USER_REGISTERED_SUCCESSFULLY.getMessage()));
     }
 
-    //change password
-    @PostMapping(value = "api/v1/changepw")
-    public ResponseEntity<?> changePw(@RequestBody String email, @RequestBody String oldPw, @RequestBody String newPw) throws SendByOpException {
-        try {
-            User user = userService.findByEmail(email);
-
-            if (!user.getPw().equals(oldPw)){
-                return new ResponseEntity<>(new ResponseMessage("Fail -> Mot de passe incorrecte"),
-                        HttpStatus.BAD_REQUEST);
-            }
-
-            user.setPw(newPw);
-
-            User newUser = userService.saveUser(user);
-
-            if (newUser == null){
-                return new ResponseEntity<>(new ResponseMessage("Fail -> Un problème est survenu"),
-                        HttpStatus.BAD_REQUEST);
-            } else {
-                Email sendEmail = new Email();
-                sendEmail.setTo(email);
-                sendEmail.setBody("Votre mot de passe a été modifié avec succès veuillez!!!");
-                sendEmail.setTopic("Modification de mot de passe");
-                sendMailService.sendEmail(sendEmail);
-            }
-
-            return new ResponseEntity<>(new ResponseMessage("User registered successfully!"), HttpStatus.OK);
-        } catch (SendByOpException e) {
-            return new ResponseEntity<>(new ResponseMessage(e.getMessage()), e.getHttpStatus());
-        }
-
+    @Operation(summary = "Change password", description = "Initiates password change process")
+    @ApiResponse(responseCode = "200", description = "Password change initiated successfully")
+    @ApiResponse(responseCode = "404", description = "User not found")
+    @PostMapping("/changepw")
+    public ResponseEntity<ResponseMessage> changePassword(@RequestBody EmailDto emailDto) throws SendByOpException {
+        authService.changePassword(emailDto.getTo(), emailDto.getBody(), emailDto.getTopic());
+        return ResponseEntity.ok(new ResponseMessage(ResponseMessages.PASSWORD_UPDATED_SUCCESSFULLY.getMessage()));
     }
 
-    //Mot de passe oublié.
-
-
-    @PostMapping(value = "user/delete")
-    public ResponseEntity<?> deleteUser(@RequestBody String email) throws SendByOpException {
-        try {
-            User user = userService.findByEmail(email);
-            userService.deleteuser(user);
-            return new ResponseEntity<>(new ResponseMessage("User deleted successfully!"), HttpStatus.OK);
-        } catch (SendByOpException e) {
-            return new ResponseEntity<>(new ResponseMessage(e.getMessage()), e.getHttpStatus());
-        }
+    @PostMapping("/delete")
+    public ResponseEntity<ResponseMessage> deleteUser(@RequestBody String email) throws SendByOpException {
+        authService.deleteUser(email);
+        return ResponseEntity.ok(new ResponseMessage(ResponseMessages.USER_DELETED_SUCCESSFULLY.getMessage()));
     }
 
-    @PostMapping(value = "user/update")
-    public ResponseEntity<?> updateUser(@RequestBody User user) throws SendByOpException {
-        try {
-            User newUser = userService.updateUser(user);
-            if(newUser == null) {
-                throw new SendByOpException("Un problème est survenu", HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(newUser, HttpStatus.OK);
-        } catch (SendByOpException e) {
-            return new ResponseEntity<>(new ResponseMessage(e.getMessage()), e.getHttpStatus());
-        }
+    @PostMapping("/update")
+    public ResponseEntity<User> updateUser(@RequestBody User user) throws SendByOpException {
+        User updatedUser = authService.updateUser(user);
+        return ResponseEntity.ok(updatedUser);
     }
 
-
-    @GetMapping(value = "getuser/email/{email}")
-    public ResponseEntity<?> getUser(@PathVariable("email") String email) throws SendByOpException {
-        try {
-            User user = userService.findByEmail(email);
-            return new ResponseEntity<>(user,
-                    HttpStatus.OK);
-        } catch (SendByOpException e) {
-            return new ResponseEntity<>(new ResponseMessage(e.getMessage()), e.getHttpStatus());
-        }
+    @GetMapping("/email/{email}")
+    public ResponseEntity<User> getUserByEmail(@PathVariable String email) throws SendByOpException {
+        User user = authService.getUserByEmail(email);
+        return ResponseEntity.ok(user);
     }
-
 }

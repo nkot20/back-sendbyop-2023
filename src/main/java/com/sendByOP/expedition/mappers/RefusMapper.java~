@@ -1,0 +1,23 @@
+package com.sendByOP.expedition.mappers;
+
+import com.sendByOP.expedition.models.dto.RefusDto;
+import com.sendByOP.expedition.models.entities.Rejection;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+
+import java.util.List;
+
+@Mapper(componentModel = "spring",
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+public interface RefusMapper {
+    Rejection toEntity(RefusDto refusDto);
+
+    RefusDto toDto(Rejection refus);
+
+    void copy(RefusDto refusDto, @MappingTarget Rejection refus);
+
+    List<RefusDto> toDtoList(List<Rejection> refuses);
+}

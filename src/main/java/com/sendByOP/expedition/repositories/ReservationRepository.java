@@ -1,8 +1,6 @@
 package com.sendByOP.expedition.repositories;
 
-import com.sendByOP.expedition.model.Client;
-import com.sendByOP.expedition.model.Reservation;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.sendByOP.expedition.models.entities.Booking;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,17 +9,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ReservationRepository extends CrudRepository<Reservation, Integer> {
+public interface ReservationRepository extends CrudRepository<Booking, Integer> {
 
-    public List<Reservation> findByReserveurOrderByDatereDesc(Client iclient);
+    List<Booking> findByCustomerIdOrderByBookingDateDesc(Integer customerId);
 
-    public List<Reservation> findByStatutReExpe(int value);
+    List<Booking> findByExpeditionStatus(int value);
 
-    public List<Reservation> findByDatere(Date dateRe);
+    List<Booking> findByBookingDate(Date bookingDate);
 
-    public Optional<Reservation> findByIdRe(int idRe);
+    Optional<Booking> findById(Integer id);
 
-    public List<Reservation> findAllByOrderByDatereDesc();
+    List<Booking> findAllByOrderByBookingDateDesc();
 
 
 

@@ -1,0 +1,25 @@
+package com.sendByOP.expedition.mappers;
+
+import com.sendByOP.expedition.models.dto.NoteDto;
+import com.sendByOP.expedition.models.entities.Rating;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
+
+@Mapper
+public interface NoteMapper {
+
+    NoteMapper INSTANCE = Mappers.getMapper(NoteMapper.class);
+
+    @Mapping(source = "idNote", target = "idNote")
+    @Mapping(source = "nb", target = "nb")
+    @Mapping(source = "idExpe", target = "idExpe")
+    @Mapping(source = "idClient", target = "idClient")
+    NoteDto toDto(Rating note);
+
+    @Mapping(source = "idNote", target = "idNote")
+    @Mapping(source = "nb", target = "nb")
+    @Mapping(source = "idExpe", target = "idExpe")
+    @Mapping(source = "idClient", target = "idClient")
+    Rating toEntity(NoteDto noteDto);
+}

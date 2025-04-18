@@ -1,0 +1,21 @@
+package com.sendByOP.expedition.mappers;
+
+import com.sendByOP.expedition.models.dto.AvisDto;
+import com.sendByOP.expedition.models.entities.Review;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
+
+@Mapper(uses = {CustomerMapper.class}) // Utilisation de ClientMapper pour mapper les objets Client
+public interface AvisMapper {
+
+    AvisMapper INSTANCE = Mappers.getMapper(AvisMapper.class);
+
+    @Mapping(source = "transporteur", target = "transporteur")
+    @Mapping(source = "expediteur", target = "expediteur")
+    AvisDto toDto(Review avis);
+
+    @Mapping(source = "transporteur", target = "transporteur")
+    @Mapping(source = "expediteur", target = "expediteur")
+    Review toEntity(AvisDto avisDto);
+}
