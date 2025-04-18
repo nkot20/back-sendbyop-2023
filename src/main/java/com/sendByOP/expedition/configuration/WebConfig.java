@@ -20,12 +20,13 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .maxAge(3600L)
                 .allowedHeaders("Content-Type", "Authorization", "X-Requested-With")
-                .exposedHeaders("Authorization", "X-Rate-Limit-Remaining", "X-Rate-Limit-Retry-After-Seconds")
+                .exposedHeaders("Authorization")
                 .allowCredentials(true);
     }
 
+
     @Override
-    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         converters.add(new MappingJackson2HttpMessageConverter());
     }
 
