@@ -8,15 +8,17 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Entity
-@Table(name = "user")
+@Table(name = "app_user")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class User implements Serializable {
 
     @Id
-    @Basic(optional = false)
-    @Column(name = "username")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(name = "username", unique = true, nullable = false)
     private String username;
 
     @Basic(optional = false)
