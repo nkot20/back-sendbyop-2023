@@ -7,8 +7,8 @@ import java.util.Objects;
 
 public class CHeckNull {
 
-    public static void checkNumero(Integer numero) throws SendByOpException {
-        if (Objects.isNull(numero)) {
+    public static void checkPhoneNumber(String phoneNumber) throws SendByOpException {
+        if (Objects.isNull(phoneNumber)) {
             throw new SendByOpException(ErrorInfo.REFERENCE_RESOURCE_REQUIRED);
         }
     }

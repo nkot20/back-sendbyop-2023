@@ -4,12 +4,16 @@ import com.sendByOP.expedition.exception.ErrorInfo;
 import com.sendByOP.expedition.exception.SendByOpException;
 import com.sendByOP.expedition.models.dto.CustomerDto;
 import com.sendByOP.expedition.models.dto.CustomerRegistrationDto;
+import com.sendByOP.expedition.models.entities.User;
 import com.sendByOP.expedition.models.entities.VerifyToken;
+import com.sendByOP.expedition.models.enums.RoleEnum;
 import com.sendByOP.expedition.services.iServices.IClientServivce;
 import com.sendByOP.expedition.utils.AppConstants;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,8 +29,13 @@ public class UserRegistrationService {
     private final VerifyTokenService verifyTokenService;
     private final SendMailService emailService;
     private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
+
+    @Value("${base.url}")
+    private String baseUrl;
 
     public CustomerDto registerNewCustomer(CustomerRegistrationDto registrationDto) throws SendByOpException {
+        log.info("user registration {}", registrationDto);
         if (customerService.customerIsExist(registrationDto.getEmail())) {
             throw new SendByOpException(ErrorInfo.EMAIL_ALREADY_EXISTS);
         }
@@ -41,6 +50,15 @@ public class UserRegistrationService {
             .build();
 
         CustomerDto savedCustomer = customerService.saveClient(customer);
+        userService.saveUser(User.builder()
+                        .email(customer.getEmail())
+                        .firstName(customer.getFirstName())
+                        .lastName(customer.getLastName())
+                        .username(customer.getFirstName())
+                        .password(passwordEncoder.encode(registrationDto.getPassword()))
+                        .role(RoleEnum.CUSTOMER.name())
+                .build());
+
         if (savedCustomer == null) {
             throw new SendByOpException(ErrorInfo.INTERNAL_ERROR);
         }
@@ -49,7 +67,8 @@ public class UserRegistrationService {
         return savedCustomer;
     }
 
-    private void sendVerificationEmail(CustomerDto customer) throws SendByOpException {
+    @Async
+    public void sendVerificationEmail(CustomerDto customer) throws SendByOpException {
         VerifyToken verifyToken = verifyTokenService.save(customer.getEmail());
         String content = "Hello [[name]],<br>"
                 + "We need to verify your email address and phone number before you can access <br>"
@@ -62,7 +81,7 @@ public class UserRegistrationService {
                 + "This is an automated email<br>";
 
         try {
-            emailService.sendVerificationEmail(customer, "http://localhost:4200/verification", 
+            emailService.sendVerificationEmail(customer, baseUrl+"/verification",
                 verifyToken.getToken(), "/verify?code=", "Account Verification", content);
         } catch (MessagingException e) {
             throw new SendByOpException(ErrorInfo.EMAIL_SEND_ERROR);

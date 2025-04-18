@@ -7,6 +7,7 @@ import com.sendByOP.expedition.models.dto.CustomerDto;
 import com.sendByOP.expedition.models.dto.EmailDto;
 import com.sendByOP.expedition.models.entities.Role;
 import com.sendByOP.expedition.models.entities.User;
+import com.sendByOP.expedition.models.enums.RoleEnum;
 import com.sendByOP.expedition.reponse.JwtResponse;
 import com.sendByOP.expedition.reponse.ResponseMessage;
 import com.sendByOP.expedition.security.jwt.JwtProvider;
@@ -58,19 +59,7 @@ public class AuthServiceImpl implements IAuthService {
 
 
         // Check if the user has the "client" role and handle accordingly
-        if (userDetails.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("client"))) {
-            CustomerDto customer = clientService.getCustomerByEmail(userDetails.getUsername());
-
-            if (customer.getEmailVerified() != 1 && customer.getPhoneVerified() != 1) {
-                try {
-                    sendVerificationEmail(customer);
-                } catch (MessagingException | UnsupportedEncodingException  e) {
-                    throw new SendByOpException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-                }
-                throw new SendByOpException("Please verify your email and number", HttpStatus.UNAUTHORIZED);
-            }
-            return new JwtResponse(jwt, userDetails.getUsername(), customer, userDetails.getAuthorities());
-        }
+        userDetails.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals(RoleEnum.CUSTOMER));
 
         return new JwtResponse(jwt, userDetails.getUsername(), null, userDetails.getAuthorities());
     }
@@ -92,11 +81,11 @@ public class AuthServiceImpl implements IAuthService {
             }
             User user = User.builder()
                 .firstName(signUpRequest.getName())
-                .email(signUpRequest.getEmail())
+                .email(signUpRequest.getUsername())
                 .lastName(signUpRequest.getLastName())
                 .username(signUpRequest.getUsername())
                 .password(encodedPassword)
-                .role(role)
+                .role(RoleEnum.ADMIN.name())
             .build();
             userService.saveUser(user);
             log.info("New user registered: {}", signUpRequest.getUsername());
@@ -172,7 +161,7 @@ public class AuthServiceImpl implements IAuthService {
     }
 
     private void validateSignUpRequest(SignUpForm signUpRequest) throws SendByOpException {
-        if (signUpRequest.getUsername() == null || signUpRequest.getEmail() == null || 
+        if (signUpRequest.getUsername() == null ||
             signUpRequest.getPw() == null || signUpRequest.getName() == null || 
             signUpRequest.getLastName() == null) {
             throw new SendByOpException("All fields are required", HttpStatus.BAD_REQUEST);

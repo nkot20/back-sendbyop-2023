@@ -105,7 +105,7 @@ public class UserService implements IUserService {
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
-                .roleId(user.getRole().getId())
+                .roleId(user.getRole())
                 .build();
     }
 }

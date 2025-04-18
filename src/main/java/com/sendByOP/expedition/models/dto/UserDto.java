@@ -12,6 +12,6 @@ public class UserDto {
     private String password;
     private String lastName;
     private String firstName;
-    private Integer roleId; // Role ID to be mapped in the DTO
+    private String roleId; // Role ID to be mapped in the DTO
 
 }

@@ -27,9 +27,9 @@ public class UserPrinciple implements UserDetails {
     }
 
     public static UserPrinciple build(User user) {
-        Role roleUser = user.getRole();
+        String roleUser = user.getRole();
         Set<String> roles = new HashSet<>();
-        Collections.addAll(roles, roleUser.getLabel());
+        Collections.addAll(roles, roleUser);
         
         List<SimpleGrantedAuthority> authorities = roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role))
