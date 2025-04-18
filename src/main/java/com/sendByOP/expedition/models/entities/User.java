@@ -35,7 +35,6 @@ public class User implements Serializable {
     @Column(name = "first_name")
     private String firstName; // Renamed from 'prenom' to 'firstName'
 
-    @JoinColumn(name = "role", referencedColumnName = "role_id")
-    @ManyToOne(optional = false)
-    private Role role;
+    @Column(name = "role")
+    private String role;
 }

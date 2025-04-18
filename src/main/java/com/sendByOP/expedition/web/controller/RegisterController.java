@@ -37,17 +37,6 @@ public class RegisterController{
         return ResponseEntity.ok(customerService.getListClient());
     }
 
-    @Operation(summary = "Register new customer", description = "Register a new customer and send verification email")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Customer registered successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid input data"),
-        @ApiResponse(responseCode = "409", description = "Email already registered")
-    })
-    @PostMapping("/register")
-    public ResponseEntity<?> registerCustomer(@RequestBody @Parameter(description = "Customer registration details") CustomerRegistrationDto registrationDto) throws SendByOpException {
-        userRegistrationService.registerNewCustomer(registrationDto);
-        return ResponseEntity.ok(new ResponseMessage("Registration successful. Please check your email for verification."));
-    }
 
     @Operation(summary = "Update customer details", description = "Update an existing customer's information")
     @ApiResponses(value = {
@@ -76,7 +65,7 @@ public class RegisterController{
         @ApiResponse(responseCode = "200", description = "Customer details retrieved successfully"),
         @ApiResponse(responseCode = "404", description = "Invalid or expired token")
     })
-    @PostMapping("/verify/getcustomer/{token}")
+    @PostMapping("/verify/customer/{token}")
     public ResponseEntity<?> getCustomerByToken(@PathVariable("token") @Parameter(description = "Verification token") String token) throws SendByOpException {
         CustomerDto customer = userRegistrationService.verifyCustomerEmail(token);
         return ResponseEntity.ok(customer);

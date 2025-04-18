@@ -46,7 +46,7 @@ public class CustomerService implements IClientServivce {
             CustomerDto clientDto, MultipartFile imageProfil, MultipartFile imageCni) throws SendByOpException {
         Customer client = customerMapper.toEntity(clientDto);
         CHeckNull.checkEmail(client.getEmail());
-        CHeckNull.checkNumero(client.getNationalIdNumber());
+        CHeckNull.checkPhoneNumber(client.getPhoneNumber());
         CHeckNull.checkIntitule(client.getPhoneNumber());
         client.setRegistrationStatus(0);
         client.setProfilePicture(transformImage(imageProfil));
@@ -59,7 +59,7 @@ public class CustomerService implements IClientServivce {
     public CustomerDto saveClient(CustomerDto clientDto) throws SendByOpException {
         Customer client = customerMapper.toEntity(clientDto);
         CHeckNull.checkEmail(client.getEmail());
-        CHeckNull.checkNumero(client.getNationalIdNumber());
+        CHeckNull.checkPhoneNumber(client.getPhoneNumber());
         CHeckNull.checkIntitule(client.getPhoneNumber());
         client.setRegistrationStatus(0);
         client.setEmailVerified(0);
@@ -75,7 +75,7 @@ public class CustomerService implements IClientServivce {
                 .orElseThrow(() -> new RuntimeException("Client not found"));
         customerMapper.copy(clientDto, existingClient);
         CHeckNull.checkEmail(existingClient.getEmail());
-        CHeckNull.checkNumero(existingClient.getNationalIdNumber());
+        CHeckNull.checkPhoneNumber(existingClient.getPhoneNumber());
         CHeckNull.checkIntitule(existingClient.getPhoneNumber());
         Customer updatedClient = clientRepository.save(existingClient);
         return customerMapper.toDto(updatedClient);

@@ -6,6 +6,7 @@ import com.sendByOP.expedition.utils.AppConstants;
 import com.sendByOP.expedition.utils.DateUse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import java.util.Date;
@@ -13,17 +14,21 @@ import java.util.Date;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class VerifyTokenService {
 
     private final VerifyTokenRepository verifyTokenRepository;
 
     public VerifyToken save(String email) {
-        VerifyToken verifyToken = new VerifyToken();
-        DateUse dateUse = new DateUse();
+        String token = RandomStringUtils.randomAlphanumeric(64); // ou UUID.randomUUID().toString()
 
+        // Création de l'objet token
+        VerifyToken verifyToken = new VerifyToken();
         verifyToken.setEmail(email);
-        verifyToken.setExpiratedToken(DateUse.calculateExpiryDate(1440));
-        verifyToken.setToken(RandomStringUtils.random(64));
+        verifyToken.setToken(token);
+        verifyToken.setExpiratedToken(DateUse.calculateExpiryDate(1440)); // 1440 minutes = 24h
+
+        log.info("Generated email verification token for {}: {}", email, token);
 
         return verifyTokenRepository.save(verifyToken);
 

@@ -33,7 +33,6 @@ public class ReservationService implements IReservationService {
     public BookingDto saveBooking(BookingDto booking) throws SendByOpException {
         log.debug("Saving booking for customer ID: {}", booking.getCustomerId());
         try {
-            CHeckNull.checkNumero(booking.getCustomerId());
             BookingDto savedBooking = bookingMapper.toDto(
                     bookingRepository.save(bookingMapper.toEntity(booking))
             );
