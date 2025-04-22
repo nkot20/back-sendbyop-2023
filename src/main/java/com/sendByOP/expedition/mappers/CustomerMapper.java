@@ -11,10 +11,10 @@ import java.util.List;
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface CustomerMapper {
     @Mapping(source = "id", target = "id")
-    Customer toEntity(CustomerDto customerDto);
+    Customer toEntity(CustomerDto clientDto);
 
     @Mapping(source = "id", target = "id")
-    CustomerDto toDto(Customer customer);
+    CustomerDto toDto(Customer client);
 
     void copy(CustomerDto clientDto, @MappingTarget Customer client);
 }

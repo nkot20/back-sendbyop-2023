@@ -16,7 +16,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/airport")
+@RequestMapping("/public/airport")
 @RequiredArgsConstructor
 @Tag(name = "Airport Management", description = "APIs for managing airport information")
 public class AirPortController {

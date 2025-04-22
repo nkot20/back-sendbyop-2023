@@ -55,7 +55,7 @@ public class AuthRestAPIsController {
     @Operation(summary = "Change password", description = "Initiates password change process")
     @ApiResponse(responseCode = "200", description = "Password change initiated successfully")
     @ApiResponse(responseCode = "404", description = "User not found")
-    @PostMapping("/changepw")
+    @PostMapping("/change-pw")
     public ResponseEntity<ResponseMessage> changePassword(@RequestBody EmailDto emailDto) throws SendByOpException {
         authService.changePassword(emailDto.getTo(), emailDto.getBody(), emailDto.getTopic());
         return ResponseEntity.ok(new ResponseMessage(ResponseMessages.PASSWORD_UPDATED_SUCCESSFULLY.getMessage()));

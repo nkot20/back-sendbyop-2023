@@ -35,7 +35,7 @@ public class UserRegistrationService {
     private String baseUrl;
 
     public CustomerDto registerNewCustomer(CustomerRegistrationDto registrationDto) throws SendByOpException {
-        log.info("user registration {}", registrationDto);
+        log.info("user registration {}", registrationDto.getFirstName());
         if (customerService.customerIsExist(registrationDto.getEmail())) {
             throw new SendByOpException(ErrorInfo.EMAIL_ALREADY_EXISTS);
         }
@@ -54,7 +54,7 @@ public class UserRegistrationService {
                         .email(customer.getEmail())
                         .firstName(customer.getFirstName())
                         .lastName(customer.getLastName())
-                        .username(customer.getFirstName())
+                        .username(customer.getEmail())
                         .password(passwordEncoder.encode(registrationDto.getPassword()))
                         .role(RoleEnum.CUSTOMER.name())
                 .build());

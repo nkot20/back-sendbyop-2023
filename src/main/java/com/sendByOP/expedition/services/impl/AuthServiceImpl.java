@@ -53,15 +53,11 @@ public class AuthServiceImpl implements IAuthService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtProvider.generateJwtToken(authentication);
-        log.debug("JWT Token generated for user: {}", loginRequest.getUsername());
+        String refreshToken = jwtProvider.generateRefreshToken(authentication);
+        log.debug("JWT Token and Refresh Token generated for user: {}", loginRequest.getUsername());
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-
-
-        // Check if the user has the "client" role and handle accordingly
-        userDetails.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals(RoleEnum.CUSTOMER));
-
-        return new JwtResponse(jwt, userDetails.getUsername(), null, userDetails.getAuthorities());
+        return new JwtResponse(jwt, refreshToken, userDetails.getUsername(), userDetails.getAuthorities());
     }
 
     @Override
