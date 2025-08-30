@@ -1,9 +1,7 @@
 package com.sendByOP.expedition.models.entities;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,6 +11,8 @@ import java.util.Date;
 @Builder
 @Entity
 @Table(name = "customer")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Customer extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

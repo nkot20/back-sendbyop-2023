@@ -21,6 +21,6 @@ public interface ReservationRepository extends CrudRepository<Booking, Integer> 
 
     List<Booking> findAllByOrderByBookingDateDesc();
 
-
+    List<Booking> findByFlightFlightIdAndPaymentStatus(Integer flightId, Integer paymentStatus);
 
 }
