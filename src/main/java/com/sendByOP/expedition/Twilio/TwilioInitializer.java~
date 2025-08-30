@@ -5,13 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class TwilioInitiazer {
+public class TwilioInitializer {
 
 
-    private final Twilioproperties twilioproperties;
+    private final TwilioProperties twilioproperties;
 
     @Autowired
-    public TwilioInitiazer(Twilioproperties twilioproperties)
+    public TwilioInitializer(TwilioProperties twilioproperties)
     {
         this.twilioproperties=twilioproperties;
         Twilio.init(twilioproperties.getAccountSid(), twilioproperties.getAuthToken());

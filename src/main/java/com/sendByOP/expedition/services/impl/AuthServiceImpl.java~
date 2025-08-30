@@ -12,7 +12,7 @@ import com.sendByOP.expedition.reponse.JwtResponse;
 import com.sendByOP.expedition.reponse.ResponseMessage;
 import com.sendByOP.expedition.security.jwt.JwtProvider;
 import com.sendByOP.expedition.services.iServices.IAuthService;
-import com.sendByOP.expedition.services.iServices.ICustomerService;
+import com.sendByOP.expedition.services.iServices.IClientServivce;
 import com.sendByOP.expedition.services.iServices.IRoleService;
 import com.sendByOP.expedition.services.iServices.IUserService;
 import jakarta.mail.MessagingException;
@@ -39,7 +39,7 @@ public class AuthServiceImpl implements IAuthService {
     private final PasswordEncoder encoder;
     private final JwtProvider jwtProvider;
     private final SendMailService sendMailService;
-    private final ICustomerService clientService;
+    private final IClientServivce clientService;
 
     @Override
     public JwtResponse authenticateUser(@Valid LoginForm loginRequest) throws SendByOpException {

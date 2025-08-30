@@ -1,10 +1,7 @@
 package com.sendByOP.expedition.models.entities;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -14,6 +11,8 @@ import java.io.Serializable;
 @Builder
 @Entity
 @Table(name = "airport")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Airport extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -32,7 +32,5 @@ public class AirportDto {
     @Schema(description = "Country of the airport", example = "italy")
     private String country;
 
-    @Schema(description = "City of the airport", example = "rome")
-    private String city;
 
 }

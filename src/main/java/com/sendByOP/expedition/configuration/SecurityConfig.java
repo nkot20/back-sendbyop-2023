@@ -52,6 +52,7 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui.html").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/webjars/**").permitAll()
+                        .requestMatchers("/public/**").permitAll()
                         .requestMatchers("/admin/**").hasRole(RoleEnum.ADMIN.name())
                         .requestMatchers("/user/**").hasAnyRole(RoleEnum.ADMIN.name(),
                                 RoleEnum.CUSTOMER.name())

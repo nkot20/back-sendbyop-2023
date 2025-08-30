@@ -1,6 +1,6 @@
 package com.sendByOP.expedition.services.impl;
 
-import com.sendByOP.expedition.Twilio.Twilioproperties;
+import com.sendByOP.expedition.Twilio.TwilioProperties;
 import com.sendByOP.expedition.exception.PhoneVerificationException;
 import com.sendByOP.expedition.exception.SendByOpException;
 import com.sendByOP.expedition.models.dto.VerificationResult;
@@ -19,7 +19,7 @@ import org.springframework.util.StringUtils;
 @Transactional
 @Slf4j
 public class PhoneVerificationService implements IPhoneVerificationService {
-    private final Twilioproperties twilioproperties;
+    private final TwilioProperties twilioproperties;
 
     @Override
     public VerificationResult startVerification(String phone) throws SendByOpException {

@@ -7,7 +7,7 @@ import com.sendByOP.expedition.mappers.BankInfoMapper;
 import com.sendByOP.expedition.models.dto.BankInfoDto;
 import com.sendByOP.expedition.models.entities.BankInfo;
 import com.sendByOP.expedition.repositories.BankAccountRepository;
-import com.sendByOP.expedition.services.iServices.ICustomerService;
+import com.sendByOP.expedition.services.iServices.IClientServivce;
 import com.sendByOP.expedition.services.iServices.IBankAccountService;
 import com.sendByOP.expedition.utils.CHeckNull;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class BankAccountInfoService implements IBankAccountService {
     private final BankAccountRepository bankAccountRepository;
-    private final ICustomerService clientService;
+    private final IClientServivce clientService;
     private final BankInfoMapper bankInfoMapper;
     private final CustomerMapper customerMapper;
 

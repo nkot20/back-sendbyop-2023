@@ -1,0 +1,2470 @@
+[
+  {
+    "country": "Belgium",
+    "cities": [
+      {
+        "city": "Antwerp",
+        "airports": [
+          {
+            "name": "Antwerp International Airport",
+            "iataCode": "ANR"
+          }
+        ]
+      },
+      {
+        "city": "Brussels",
+        "airports": [
+          {
+            "name": "Brussels Airport",
+            "iataCode": "BRU"
+          }
+        ]
+      },
+      {
+        "city": "Charleroi",
+        "airports": [
+          {
+            "name": "Brussels South Charleroi Airport",
+            "iataCode": "CRL"
+          }
+        ]
+      },
+      {
+        "city": "Ghent",
+        "airports": [
+          {
+            "name": "Ghent Airport",
+            "iataCode": "GNE"
+          }
+        ]
+      },
+      {
+        "city": "Kortrijk",
+        "airports": [
+          {
+            "name": "Kortrijk-Wevelgem International Airport",
+            "iataCode": "KJK"
+          }
+        ]
+      },
+      {
+        "city": "Liège",
+        "airports": [
+          {
+            "name": "Liège Airport",
+            "iataCode": "LGG"
+          }
+        ]
+      },
+      {
+        "city": "Ostend",
+        "airports": [
+          {
+            "name": "Ostend-Bruges International Airport",
+            "iataCode": "OST"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Benin",
+    "cities": [
+      {
+        "city": "Cotonou",
+        "airports": [
+          {
+            "name": "Cotonou Cadjehoun Airport",
+            "iataCode": "COO"
+          }
+        ]
+      },
+      {
+        "city": "Parakou",
+        "airports": [
+          {
+            "name": "Parakou Airport",
+            "iataCode": "PKO"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Burkina Faso",
+    "cities": [
+      {
+        "city": "Bobo-Dioulasso",
+        "airports": [
+          {
+            "name": "Bobo-Dioulasso Airport",
+            "iataCode": "BOY"
+          }
+        ]
+      },
+      {
+        "city": "Ouagadougou",
+        "airports": [
+          {
+            "name": "Ouagadougou Airport",
+            "iataCode": "OUA"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Burundi",
+    "cities": [
+      {
+        "city": "Bujumbura",
+        "airports": [
+          {
+            "name": "Bujumbura International Airport",
+            "iataCode": "BJM"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Cameroon",
+    "cities": [
+      {
+        "city": "Bafoussam",
+        "airports": [
+          {
+            "name": "Bafoussam Airport",
+            "iataCode": "BFX"
+          }
+        ]
+      },
+      {
+        "city": "Bali",
+        "airports": [
+          {
+            "name": "Bali Airport",
+            "iataCode": "BLC"
+          }
+        ]
+      },
+      {
+        "city": "Bamenda",
+        "airports": [
+          {
+            "name": "Bamenda Airport",
+            "iataCode": "BPC"
+          }
+        ]
+      },
+      {
+        "city": "Batouri",
+        "airports": [
+          {
+            "name": "Batouri Airport",
+            "iataCode": "OUR"
+          }
+        ]
+      },
+      {
+        "city": "Bertoua",
+        "airports": [
+          {
+            "name": "Bertoua Airport",
+            "iataCode": "BTA"
+          }
+        ]
+      },
+      {
+        "city": "Douala",
+        "airports": [
+          {
+            "name": "Douala International Airport",
+            "iataCode": "DLA"
+          }
+        ]
+      },
+      {
+        "city": "Dschang",
+        "airports": [
+          {
+            "name": "Dschang Airport",
+            "iataCode": "DSC"
+          }
+        ]
+      },
+      {
+        "city": "Ebolowa",
+        "airports": [
+          {
+            "name": "Ebolowa Airport",
+            "iataCode": "EBW"
+          }
+        ]
+      },
+      {
+        "city": "Foumban",
+        "airports": [
+          {
+            "name": "Foumban Nkounja Airport",
+            "iataCode": "FOM"
+          }
+        ]
+      },
+      {
+        "city": "Garoua",
+        "airports": [
+          {
+            "name": "Garoua International Airport",
+            "iataCode": "GOU"
+          }
+        ]
+      },
+      {
+        "city": "Kaélé",
+        "airports": [
+          {
+            "name": "Kaélé Airport",
+            "iataCode": "KLE"
+          }
+        ]
+      },
+      {
+        "city": "Koutaba",
+        "airports": [
+          {
+            "name": "Koutaba Airport",
+            "iataCode": "KOB"
+          }
+        ]
+      },
+      {
+        "city": "Kribi",
+        "airports": [
+          {
+            "name": "Kribi Airport",
+            "iataCode": "KBI"
+          }
+        ]
+      },
+      {
+        "city": "Mamfé",
+        "airports": [
+          {
+            "name": "Mamfé Airport",
+            "iataCode": "MMF"
+          }
+        ]
+      },
+      {
+        "city": "Maroua",
+        "airports": [
+          {
+            "name": "Salak Airport",
+            "iataCode": "MVR"
+          }
+        ]
+      },
+      {
+        "city": "Ngaoundéré",
+        "airports": [
+          {
+            "name": "Ngaoundéré Airport",
+            "iataCode": "NGE"
+          }
+        ]
+      },
+      {
+        "city": "Tiko",
+        "airports": [
+          {
+            "name": "Tiko Airport",
+            "iataCode": "TKC"
+          }
+        ]
+      },
+      {
+        "city": "Yagoua",
+        "airports": [
+          {
+            "name": "Yagoua Airport",
+            "iataCode": "GXX"
+          }
+        ]
+      },
+      {
+        "city": "Yaoundé",
+        "airports": [
+          {
+            "name": "Yaoundé Nsimalen International Airport",
+            "iataCode": "NSI"
+          },
+          {
+            "name": "Yaoundé Airport",
+            "iataCode": "YAO"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Central African Republic",
+    "cities": [
+      {
+        "city": "Bambari",
+        "airports": [
+          {
+            "name": "Bambari Airport",
+            "iataCode": "BBR"
+          }
+        ]
+      },
+      {
+        "city": "Bangui",
+        "airports": [
+          {
+            "name": "Bangui M'Poko International Airport",
+            "iataCode": "BGF"
+          }
+        ]
+      },
+      {
+        "city": "Berberati",
+        "airports": [
+          {
+            "name": "Berberati Airport",
+            "iataCode": "BBT"
+          }
+        ]
+      },
+      {
+        "city": "Bossangoa",
+        "airports": [
+          {
+            "name": "Bossangoa Airport",
+            "iataCode": "BSN"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Chad",
+    "cities": [
+      {
+        "city": "Abéché",
+        "airports": [
+          {
+            "name": "Abéché Airport",
+            "iataCode": "AEH"
+          }
+        ]
+      },
+      {
+        "city": "Faya",
+        "airports": [
+          {
+            "name": "Faya Airport",
+            "iataCode": "FYT"
+          }
+        ]
+      },
+      {
+        "city": "Moundou",
+        "airports": [
+          {
+            "name": "Moundou Airport",
+            "iataCode": "MQQ"
+          }
+        ]
+      },
+      {
+        "city": "N'Djamena",
+        "airports": [
+          {
+            "name": "N'Djamena International Airport",
+            "iataCode": "NDJ"
+          }
+        ]
+      },
+      {
+        "city": "Sarh",
+        "airports": [
+          {
+            "name": "Sarh Airport",
+            "iataCode": "SRH"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Comoros",
+    "cities": [
+      {
+        "city": "Mayotte",
+        "airports": [
+          {
+            "name": "Dzaoudzi Pamandzi International Airport",
+            "iataCode": "DZA"
+          }
+        ]
+      },
+      {
+        "city": "Mohéli",
+        "airports": [
+          {
+            "name": "Mohéli Bandar Es Eslam Airport",
+            "iataCode": "NWA"
+          }
+        ]
+      },
+      {
+        "city": "Moroni",
+        "airports": [
+          {
+            "name": "Prince Said Ibrahim International Airport",
+            "iataCode": "HAH"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Democratic Republic of the Congo",
+    "cities": [
+      {
+        "city": "Bukavu",
+        "airports": [
+          {
+            "name": "Bukavu Kavumu Airport",
+            "iataCode": "BKY"
+          }
+        ]
+      },
+      {
+        "city": "Goma",
+        "airports": [
+          {
+            "name": "Goma International Airport",
+            "iataCode": "GOM"
+          }
+        ]
+      },
+      {
+        "city": "Kananga",
+        "airports": [
+          {
+            "name": "Kananga Airport",
+            "iataCode": "KGA"
+          }
+        ]
+      },
+      {
+        "city": "Kinshasa",
+        "airports": [
+          {
+            "name": "N'djili International Airport",
+            "iataCode": "FIH"
+          }
+        ]
+      },
+      {
+        "city": "Kisangani",
+        "airports": [
+          {
+            "name": "Bangoka International Airport",
+            "iataCode": "FKI"
+          }
+        ]
+      },
+      {
+        "city": "Lubumbashi",
+        "airports": [
+          {
+            "name": "Lubumbashi International Airport",
+            "iataCode": "FBM"
+          }
+        ]
+      },
+      {
+        "city": "Matadi",
+        "airports": [
+          {
+            "name": "Matadi Airport",
+            "iataCode": "MAT"
+          }
+        ]
+      },
+      {
+        "city": "Mbuji-Mayi",
+        "airports": [
+          {
+            "name": "Mbuji Mayi Airport",
+            "iataCode": "MJM"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Djibouti",
+    "cities": [
+      {
+        "city": "Djibouti",
+        "airports": [
+          {
+            "name": "Djibouti-Ambouli International Airport",
+            "iataCode": "JIB"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "France",
+    "cities": [
+      {
+        "city": "Ajaccio",
+        "airports": [
+          {
+            "name": "Ajaccio Airport",
+            "iataCode": "AJA"
+          }
+        ]
+      },
+      {
+        "city": "Annecy",
+        "airports": [
+          {
+            "name": "Annecy Airport",
+            "iataCode": "NCY"
+          }
+        ]
+      },
+      {
+        "city": "Aurillac",
+        "airports": [
+          {
+            "name": "Aurillac Airport",
+            "iataCode": "AUR"
+          }
+        ]
+      },
+      {
+        "city": "Avignon",
+        "airports": [
+          {
+            "name": "Avignon Airport",
+            "iataCode": "AVN"
+          }
+        ]
+      },
+      {
+        "city": "Bastia",
+        "airports": [
+          {
+            "name": "Bastia Airport",
+            "iataCode": "BIA"
+          }
+        ]
+      },
+      {
+        "city": "Bergerac",
+        "airports": [
+          {
+            "name": "Bergerac Airport",
+            "iataCode": "EGC"
+          }
+        ]
+      },
+      {
+        "city": "Biarritz",
+        "airports": [
+          {
+            "name": "Biarritz Airport",
+            "iataCode": "BIQ"
+          }
+        ]
+      },
+      {
+        "city": "Bordeaux",
+        "airports": [
+          {
+            "name": "Bordeaux-Mérignac Airport",
+            "iataCode": "BOD"
+          }
+        ]
+      },
+      {
+        "city": "Brest",
+        "airports": [
+          {
+            "name": "Brest Airport",
+            "iataCode": "BES"
+          }
+        ]
+      },
+      {
+        "city": "Caen",
+        "airports": [
+          {
+            "name": "Caen Airport",
+            "iataCode": "CFR"
+          }
+        ]
+      },
+      {
+        "city": "Calvi",
+        "airports": [
+          {
+            "name": "Calvi Airport",
+            "iataCode": "CLY"
+          }
+        ]
+      },
+      {
+        "city": "Chambéry",
+        "airports": [
+          {
+            "name": "Chambéry Airport",
+            "iataCode": "CMF"
+          }
+        ]
+      },
+      {
+        "city": "Clermont-Ferrand",
+        "airports": [
+          {
+            "name": "Clermont-Ferrand Airport",
+            "iataCode": "CFE"
+          }
+        ]
+      },
+      {
+        "city": "Dijon",
+        "airports": [
+          {
+            "name": "Dijon Airport",
+            "iataCode": "DIJ"
+          }
+        ]
+      },
+      {
+        "city": "Figari",
+        "airports": [
+          {
+            "name": "Figari Airport",
+            "iataCode": "FSC"
+          }
+        ]
+      },
+      {
+        "city": "Grenoble",
+        "airports": [
+          {
+            "name": "Grenoble Airport",
+            "iataCode": "GNB"
+          }
+        ]
+      },
+      {
+        "city": "La Rochelle",
+        "airports": [
+          {
+            "name": "La Rochelle Airport",
+            "iataCode": "LRH"
+          }
+        ]
+      },
+      {
+        "city": "Le Puy",
+        "airports": [
+          {
+            "name": "Le Puy Airport",
+            "iataCode": "LPY"
+          }
+        ]
+      },
+      {
+        "city": "Lille",
+        "airports": [
+          {
+            "name": "Lille-Lesquin Airport",
+            "iataCode": "LIL"
+          }
+        ]
+      },
+      {
+        "city": "Limoges",
+        "airports": [
+          {
+            "name": "Limoges Airport",
+            "iataCode": "LIG"
+          }
+        ]
+      },
+      {
+        "city": "Lyon",
+        "airports": [
+          {
+            "name": "Lyon-Saint-Exupéry Airport",
+            "iataCode": "LYS"
+          }
+        ]
+      },
+      {
+        "city": "Marseille",
+        "airports": [
+          {
+            "name": "Marseille Provence Airport",
+            "iataCode": "MRS"
+          }
+        ]
+      },
+      {
+        "city": "Metz",
+        "airports": [
+          {
+            "name": "Metz-Nancy Airport",
+            "iataCode": "ETZ"
+          }
+        ]
+      },
+      {
+        "city": "Montpellier",
+        "airports": [
+          {
+            "name": "Montpellier Airport",
+            "iataCode": "MPL"
+          }
+        ]
+      },
+      {
+        "city": "Mulhouse",
+        "airports": [
+          {
+            "name": "Bâle-Mulhouse Airport",
+            "iataCode": "MLH"
+          }
+        ]
+      },
+      {
+        "city": "Nantes",
+        "airports": [
+          {
+            "name": "Nantes Atlantique Airport",
+            "iataCode": "NTE"
+          }
+        ]
+      },
+      {
+        "city": "Nice",
+        "airports": [
+          {
+            "name": "Nice Côte d'Azur Airport",
+            "iataCode": "NCE"
+          }
+        ]
+      },
+      {
+        "city": "Paris",
+        "airports": [
+          {
+            "name": "Charles de Gaulle Airport",
+            "iataCode": "CDG"
+          },
+          {
+            "name": "Orly Airport",
+            "iataCode": "ORY"
+          },
+          {
+            "name": "Paris-Beauvais Airport",
+            "iataCode": "BVA"
+          }
+        ]
+      },
+      {
+        "city": "Pau",
+        "airports": [
+          {
+            "name": "Pau Airport",
+            "iataCode": "PUF"
+          }
+        ]
+      },
+      {
+        "city": "Perpignan",
+        "airports": [
+          {
+            "name": "Perpignan Airport",
+            "iataCode": "PGF"
+          }
+        ]
+      },
+      {
+        "city": "Poitiers",
+        "airports": [
+          {
+            "name": "Poitiers Airport",
+            "iataCode": "PIS"
+          }
+        ]
+      },
+      {
+        "city": "Rennes",
+        "airports": [
+          {
+            "name": "Rennes Airport",
+            "iataCode": "RNS"
+          }
+        ]
+      },
+      {
+        "city": "Rodez",
+        "airports": [
+          {
+            "name": "Rodez Airport",
+            "iataCode": "RDZ"
+          }
+        ]
+      },
+      {
+        "city": "Saint-Étienne",
+        "airports": [
+          {
+            "name": "Saint-Étienne Airport",
+            "iataCode": "EBU"
+          }
+        ]
+      },
+      {
+        "city": "Strasbourg",
+        "airports": [
+          {
+            "name": "Strasbourg Airport",
+            "iataCode": "SXB"
+          }
+        ]
+      },
+      {
+        "city": "Tarbes",
+        "airports": [
+          {
+            "name": "Tarbes Airport",
+            "iataCode": "LDE"
+          }
+        ]
+      },
+      {
+        "city": "Toulouse",
+        "airports": [
+          {
+            "name": "Toulouse-Blagnac Airport",
+            "iataCode": "TLS"
+          }
+        ]
+      },
+      {
+        "city": "Tours",
+        "airports": [
+          {
+            "name": "Tours Airport",
+            "iataCode": "TUF"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Gabon",
+    "cities": [
+      {
+        "city": "Franceville",
+        "airports": [
+          {
+            "name": "Franceville Mvengue Airport",
+            "iataCode": "MVB"
+          }
+        ]
+      },
+      {
+        "city": "Lambaréné",
+        "airports": [
+          {
+            "name": "Lambaréné Airport",
+            "iataCode": "LBQ"
+          }
+        ]
+      },
+      {
+        "city": "Libreville",
+        "airports": [
+          {
+            "name": "Libreville Léon-M'ba International Airport",
+            "iataCode": "LBV"
+          }
+        ]
+      },
+      {
+        "city": "Oyem",
+        "airports": [
+          {
+            "name": "Oyem Airport",
+            "iataCode": "OYE"
+          }
+        ]
+      },
+      {
+        "city": "Port-Gentil",
+        "airports": [
+          {
+            "name": "Port-Gentil Airport",
+            "iataCode": "POG"
+          }
+        ]
+      },
+      {
+        "city": "Tchibanga",
+        "airports": [
+          {
+            "name": "Tchibanga Airport",
+            "iataCode": "TCH"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Germany",
+    "cities": [
+      {
+        "city": "Augsburg",
+        "airports": [
+          {
+            "name": "Augsburg Airport",
+            "iataCode": "AGB"
+          }
+        ]
+      },
+      {
+        "city": "Baden-Baden",
+        "airports": [
+          {
+            "name": "Karlsruhe Baden-Baden Airport",
+            "iataCode": "FKB"
+          }
+        ]
+      },
+      {
+        "city": "Berlin",
+        "airports": [
+          {
+            "name": "Berlin Brandenburg Airport",
+            "iataCode": "BER"
+          }
+        ]
+      },
+      {
+        "city": "Bremen",
+        "airports": [
+          {
+            "name": "Bremen Airport",
+            "iataCode": "BRE"
+          }
+        ]
+      },
+      {
+        "city": "Cologne",
+        "airports": [
+          {
+            "name": "Cologne Bonn Airport",
+            "iataCode": "CGN"
+          }
+        ]
+      },
+      {
+        "city": "Dortmund",
+        "airports": [
+          {
+            "name": "Dortmund Airport",
+            "iataCode": "DTM"
+          }
+        ]
+      },
+      {
+        "city": "Dresden",
+        "airports": [
+          {
+            "name": "Dresden Airport",
+            "iataCode": "DRS"
+          }
+        ]
+      },
+      {
+        "city": "Düsseldorf",
+        "airports": [
+          {
+            "name": "Düsseldorf Airport",
+            "iataCode": "DUS"
+          }
+        ]
+      },
+      {
+        "city": "Erfurt",
+        "airports": [
+          {
+            "name": "Erfurt Airport",
+            "iataCode": "ERF"
+          }
+        ]
+      },
+      {
+        "city": "Frankfurt",
+        "airports": [
+          {
+            "name": "Frankfurt Airport",
+            "iataCode": "FRA"
+          }
+        ]
+      },
+      {
+        "city": "Friedrichshafen",
+        "airports": [
+          {
+            "name": "Friedrichshafen Airport",
+            "iataCode": "FDH"
+          }
+        ]
+      },
+      {
+        "city": "Hamburg",
+        "airports": [
+          {
+            "name": "Hamburg Airport",
+            "iataCode": "HAM"
+          }
+        ]
+      },
+      {
+        "city": "Hannover",
+        "airports": [
+          {
+            "name": "Hannover Airport",
+            "iataCode": "HAJ"
+          }
+        ]
+      },
+      {
+        "city": "Leipzig",
+        "airports": [
+          {
+            "name": "Leipzig/Halle Airport",
+            "iataCode": "LEJ"
+          }
+        ]
+      },
+      {
+        "city": "Mönchengladbach",
+        "airports": [
+          {
+            "name": "Münchengladbach Airport",
+            "iataCode": "MGL"
+          }
+        ]
+      },
+      {
+        "city": "Munich",
+        "airports": [
+          {
+            "name": "Munich Airport",
+            "iataCode": "MUC"
+          }
+        ]
+      },
+      {
+        "city": "Münster",
+        "airports": [
+          {
+            "name": "Münster Osnabrück Airport",
+            "iataCode": "FMO"
+          }
+        ]
+      },
+      {
+        "city": "Nuremberg",
+        "airports": [
+          {
+            "name": "Nuremberg Airport",
+            "iataCode": "NUE"
+          }
+        ]
+      },
+      {
+        "city": "Paderborn",
+        "airports": [
+          {
+            "name": "Paderborn Airport",
+            "iataCode": "PAD"
+          }
+        ]
+      },
+      {
+        "city": "Rostock",
+        "airports": [
+          {
+            "name": "Rostock Airport",
+            "iataCode": "RLG"
+          }
+        ]
+      },
+      {
+        "city": "Saarbrücken",
+        "airports": [
+          {
+            "name": "Saarbrücken Airport",
+            "iataCode": "SCN"
+          }
+        ]
+      },
+      {
+        "city": "Stuttgart",
+        "airports": [
+          {
+            "name": "Stuttgart Airport",
+            "iataCode": "STR"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Guinea",
+    "cities": [
+      {
+        "city": "Conakry",
+        "airports": [
+          {
+            "name": "Conakry International Airport",
+            "iataCode": "CKY"
+          }
+        ]
+      },
+      {
+        "city": "Faranah",
+        "airports": [
+          {
+            "name": "Faranah Airport",
+            "iataCode": "FAA"
+          }
+        ]
+      },
+      {
+        "city": "Kankan",
+        "airports": [
+          {
+            "name": "Kankan Airport",
+            "iataCode": "KNN"
+          }
+        ]
+      },
+      {
+        "city": "Labé",
+        "airports": [
+          {
+            "name": "Labé Airport",
+            "iataCode": "LEK"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Guinea-Bissau",
+    "cities": [
+      {
+        "city": "Bissau",
+        "airports": [
+          {
+            "name": "Osvaldo Vieira International Airport",
+            "iataCode": "OXB"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Ivory Coast",
+    "cities": [
+      {
+        "city": "Abengourou",
+        "airports": [
+          {
+            "name": "Abengourou Airport",
+            "iataCode": "OGO"
+          }
+        ]
+      },
+      {
+        "city": "Abidjan",
+        "airports": [
+          {
+            "name": "Félix Houphouët-Boigny International Airport",
+            "iataCode": "ABJ"
+          }
+        ]
+      },
+      {
+        "city": "Bondoukou",
+        "airports": [
+          {
+            "name": "Bondoukou Airport",
+            "iataCode": "BDK"
+          }
+        ]
+      },
+      {
+        "city": "Bouaké",
+        "airports": [
+          {
+            "name": "Bouaké Airport",
+            "iataCode": "BYK"
+          }
+        ]
+      },
+      {
+        "city": "Boundiali",
+        "airports": [
+          {
+            "name": "Boundiali Airport",
+            "iataCode": "BXI"
+          }
+        ]
+      },
+      {
+        "city": "Daloa",
+        "airports": [
+          {
+            "name": "Daloa Airport",
+            "iataCode": "DJO"
+          }
+        ]
+      },
+      {
+        "city": "Ferkessédougou",
+        "airports": [
+          {
+            "name": "Ferkessédougou Airport",
+            "iataCode": "FEK"
+          }
+        ]
+      },
+      {
+        "city": "Guiglo",
+        "airports": [
+          {
+            "name": "Guiglo Airport",
+            "iataCode": "GGO"
+          }
+        ]
+      },
+      {
+        "city": "Korhogo",
+        "airports": [
+          {
+            "name": "Korhogo Airport",
+            "iataCode": "HGO"
+          }
+        ]
+      },
+      {
+        "city": "Man",
+        "airports": [
+          {
+            "name": "Man Airport",
+            "iataCode": "MJC"
+          }
+        ]
+      },
+      {
+        "city": "Odienné",
+        "airports": [
+          {
+            "name": "Odienné Airport",
+            "iataCode": "KEO"
+          }
+        ]
+      },
+      {
+        "city": "San Pédro",
+        "airports": [
+          {
+            "name": "San Pédro Airport",
+            "iataCode": "SPY"
+          }
+        ]
+      },
+      {
+        "city": "Sassandra",
+        "airports": [
+          {
+            "name": "Sassandra Airport",
+            "iataCode": "ZSS"
+          }
+        ]
+      },
+      {
+        "city": "Tabou",
+        "airports": [
+          {
+            "name": "Tabou Airport",
+            "iataCode": "TXU"
+          }
+        ]
+      },
+      {
+        "city": "Yamoussoukro",
+        "airports": [
+          {
+            "name": "Yamoussoukro International Airport",
+            "iataCode": "ASK"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Madagascar",
+    "cities": [
+      {
+        "city": "Antananarivo",
+        "airports": [
+          {
+            "name": "Ivato International Airport",
+            "iataCode": "TNR"
+          }
+        ]
+      },
+      {
+        "city": "Antsiranana",
+        "airports": [
+          {
+            "name": "Arrachart Airport",
+            "iataCode": "DIE"
+          }
+        ]
+      },
+      {
+        "city": "Fianarantsoa",
+        "airports": [
+          {
+            "name": "Fianarantsoa Airport",
+            "iataCode": "WFI"
+          }
+        ]
+      },
+      {
+        "city": "Fort Dauphin",
+        "airports": [
+          {
+            "name": "Fort Dauphin Airport",
+            "iataCode": "FTU"
+          }
+        ]
+      },
+      {
+        "city": "Mahajanga",
+        "airports": [
+          {
+            "name": "Mahajanga Amborovy Airport",
+            "iataCode": "MJN"
+          }
+        ]
+      },
+      {
+        "city": "Morondava",
+        "airports": [
+          {
+            "name": "Morondava Airport",
+            "iataCode": "MOQ"
+          }
+        ]
+      },
+      {
+        "city": "Nosy Be",
+        "airports": [
+          {
+            "name": "Fascene Airport",
+            "iataCode": "NOS"
+          }
+        ]
+      },
+      {
+        "city": "Sambava",
+        "airports": [
+          {
+            "name": "Sambava Airport",
+            "iataCode": "SVB"
+          }
+        ]
+      },
+      {
+        "city": "Toamasina",
+        "airports": [
+          {
+            "name": "Toamasina Airport",
+            "iataCode": "TMM"
+          }
+        ]
+      },
+      {
+        "city": "Toliara",
+        "airports": [
+          {
+            "name": "Toliara Airport",
+            "iataCode": "TLE"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Mali",
+    "cities": [
+      {
+        "city": "Bamako",
+        "airports": [
+          {
+            "name": "Bamako-Sénou International Airport",
+            "iataCode": "BKO"
+          }
+        ]
+      },
+      {
+        "city": "Gao",
+        "airports": [
+          {
+            "name": "Gao Airport",
+            "iataCode": "GAQ"
+          }
+        ]
+      },
+      {
+        "city": "Kayes",
+        "airports": [
+          {
+            "name": "Kayes Airport",
+            "iataCode": "KYS"
+          }
+        ]
+      },
+      {
+        "city": "Mopti",
+        "airports": [
+          {
+            "name": "Mopti Airport",
+            "iataCode": "MZI"
+          }
+        ]
+      },
+      {
+        "city": "Timbuktu",
+        "airports": [
+          {
+            "name": "Timbuktu Airport",
+            "iataCode": "TOM"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Mauritania",
+    "cities": [
+      {
+        "city": "Nouadhibou",
+        "airports": [
+          {
+            "name": "Nouadhibou International Airport",
+            "iataCode": "NDB"
+          }
+        ]
+      },
+      {
+        "city": "Nouakchott",
+        "airports": [
+          {
+            "name": "Nouakchott–Oumtounsy International Airport",
+            "iataCode": "NKC"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Niger",
+    "cities": [
+      {
+        "city": "Agadez",
+        "airports": [
+          {
+            "name": "Mano Dayak International Airport",
+            "iataCode": "AJY"
+          }
+        ]
+      },
+      {
+        "city": "Maradi",
+        "airports": [
+          {
+            "name": "Maradi Airport",
+            "iataCode": "MFQ"
+          }
+        ]
+      },
+      {
+        "city": "Niamey",
+        "airports": [
+          {
+            "name": "Diori Hamani International Airport",
+            "iataCode": "NIM"
+          }
+        ]
+      },
+      {
+        "city": "Tahoua",
+        "airports": [
+          {
+            "name": "Tahoua Airport",
+            "iataCode": "THZ"
+          }
+        ]
+      },
+      {
+        "city": "Zinder",
+        "airports": [
+          {
+            "name": "Zinder Airport",
+            "iataCode": "ZND"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Republic of the Congo",
+    "cities": [
+      {
+        "city": "Brazzaville",
+        "airports": [
+          {
+            "name": "Maya-Maya Airport",
+            "iataCode": "BZV"
+          }
+        ]
+      },
+      {
+        "city": "Ouesso",
+        "airports": [
+          {
+            "name": "Ouesso Airport",
+            "iataCode": "OUE"
+          }
+        ]
+      },
+      {
+        "city": "Owando",
+        "airports": [
+          {
+            "name": "Owando Airport",
+            "iataCode": "FTX"
+          }
+        ]
+      },
+      {
+        "city": "Pointe-Noire",
+        "airports": [
+          {
+            "name": "Agostinho Neto International Airport",
+            "iataCode": "PNR"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Rwanda",
+    "cities": [
+      {
+        "city": "Kigali",
+        "airports": [
+          {
+            "name": "Kigali International Airport",
+            "iataCode": "KGL"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Senegal",
+    "cities": [
+      {
+        "city": "Cap Skirring",
+        "airports": [
+          {
+            "name": "Cap Skirring Airport",
+            "iataCode": "CSK"
+          }
+        ]
+      },
+      {
+        "city": "Dakar",
+        "airports": [
+          {
+            "name": "Blaise Diagne International Airport",
+            "iataCode": "DSS"
+          },
+          {
+            "name": "Léopold Sédar Senghor International Airport",
+            "iataCode": "DKR"
+          }
+        ]
+      },
+      {
+        "city": "Saint-Louis",
+        "airports": [
+          {
+            "name": "Saint-Louis Airport",
+            "iataCode": "XLS"
+          }
+        ]
+      },
+      {
+        "city": "Tambacounda",
+        "airports": [
+          {
+            "name": "Tambacounda Airport",
+            "iataCode": "TUD"
+          }
+        ]
+      },
+      {
+        "city": "Ziguinchor",
+        "airports": [
+          {
+            "name": "Ziguinchor Airport",
+            "iataCode": "ZIG"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Switzerland",
+    "cities": [
+      {
+        "city": "Bern",
+        "airports": [
+          {
+            "name": "Bern Airport",
+            "iataCode": "BRN"
+          }
+        ]
+      },
+      {
+        "city": "Buochs",
+        "airports": [
+          {
+            "name": "Buochs Airport",
+            "iataCode": "BXO"
+          }
+        ]
+      },
+      {
+        "city": "Emmen",
+        "airports": [
+          {
+            "name": "Emmen Air Base",
+            "iataCode": "EML"
+          }
+        ]
+      },
+      {
+        "city": "Geneva",
+        "airports": [
+          {
+            "name": "Geneva Airport",
+            "iataCode": "GVA"
+          }
+        ]
+      },
+      {
+        "city": "Grenchen",
+        "airports": [
+          {
+            "name": "Grenchen Airport",
+            "iataCode": "ZHI"
+          }
+        ]
+      },
+      {
+        "city": "La Chaux-de-Fonds",
+        "airports": [
+          {
+            "name": "Les Eplatures Airport",
+            "iataCode": "ZHV"
+          }
+        ]
+      },
+      {
+        "city": "Lugano",
+        "airports": [
+          {
+            "name": "Lugano Airport",
+            "iataCode": "LUG"
+          }
+        ]
+      },
+      {
+        "city": "Payerne",
+        "airports": [
+          {
+            "name": "Payerne Air Base",
+            "iataCode": "VIP"
+          }
+        ]
+      },
+      {
+        "city": "Sion",
+        "airports": [
+          {
+            "name": "Sion Airport",
+            "iataCode": "SIR"
+          }
+        ]
+      },
+      {
+        "city": "St. Gallen",
+        "airports": [
+          {
+            "name": "St. Gallen-Altenrhein Airport",
+            "iataCode": "ACH"
+          }
+        ]
+      },
+      {
+        "city": "St. Moritz",
+        "airports": [
+          {
+            "name": "Samedan Airport",
+            "iataCode": "SMV"
+          }
+        ]
+      },
+      {
+        "city": "Zurich",
+        "airports": [
+          {
+            "name": "Zurich Airport",
+            "iataCode": "ZRH"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Togo",
+    "cities": [
+      {
+        "city": "Lomé",
+        "airports": [
+          {
+            "name": "Gnassingbé Eyadéma International Airport",
+            "iataCode": "LFW"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "United Kingdom",
+    "cities": [
+      {
+        "city": "Aberdeen",
+        "airports": [
+          {
+            "name": "Aberdeen Airport",
+            "iataCode": "ABZ"
+          }
+        ]
+      },
+      {
+        "city": "Belfast",
+        "airports": [
+          {
+            "name": "Belfast International Airport",
+            "iataCode": "BFS"
+          }
+        ]
+      },
+      {
+        "city": "Birmingham",
+        "airports": [
+          {
+            "name": "Birmingham Airport",
+            "iataCode": "BHX"
+          }
+        ]
+      },
+      {
+        "city": "Blackpool",
+        "airports": [
+          {
+            "name": "Blackpool Airport",
+            "iataCode": "BLK"
+          }
+        ]
+      },
+      {
+        "city": "Bournemouth",
+        "airports": [
+          {
+            "name": "Bournemouth Airport",
+            "iataCode": "BOH"
+          }
+        ]
+      },
+      {
+        "city": "Bristol",
+        "airports": [
+          {
+            "name": "Bristol Airport",
+            "iataCode": "BRS"
+          }
+        ]
+      },
+      {
+        "city": "Cardiff",
+        "airports": [
+          {
+            "name": "Cardiff Airport",
+            "iataCode": "CWL"
+          }
+        ]
+      },
+      {
+        "city": "Doncaster",
+        "airports": [
+          {
+            "name": "Doncaster Sheffield Airport",
+            "iataCode": "DSA"
+          }
+        ]
+      },
+      {
+        "city": "Durham",
+        "airports": [
+          {
+            "name": "Durham Tees Valley Airport",
+            "iataCode": "MME"
+          }
+        ]
+      },
+      {
+        "city": "Edinburgh",
+        "airports": [
+          {
+            "name": "Edinburgh Airport",
+            "iataCode": "EDI"
+          }
+        ]
+      },
+      {
+        "city": "Exeter",
+        "airports": [
+          {
+            "name": "Exeter Airport",
+            "iataCode": "EXT"
+          }
+        ]
+      },
+      {
+        "city": "Glasgow",
+        "airports": [
+          {
+            "name": "Glasgow International Airport",
+            "iataCode": "GLA"
+          },
+          {
+            "name": "Prestwick Airport",
+            "iataCode": "PIK"
+          }
+        ]
+      },
+      {
+        "city": "Grimsby",
+        "airports": [
+          {
+            "name": "Humberside Airport",
+            "iataCode": "HUY"
+          }
+        ]
+      },
+      {
+        "city": "Inverness",
+        "airports": [
+          {
+            "name": "Inverness Airport",
+            "iataCode": "INV"
+          }
+        ]
+      },
+      {
+        "city": "Kirkwall",
+        "airports": [
+          {
+            "name": "Kirkwall Airport",
+            "iataCode": "KOI"
+          }
+        ]
+      },
+      {
+        "city": "Leeds",
+        "airports": [
+          {
+            "name": "Leeds Bradford Airport",
+            "iataCode": "LBA"
+          }
+        ]
+      },
+      {
+        "city": "Lerwick",
+        "airports": [
+          {
+            "name": "Sumburgh Airport",
+            "iataCode": "LSI"
+          }
+        ]
+      },
+      {
+        "city": "Liverpool",
+        "airports": [
+          {
+            "name": "Liverpool John Lennon Airport",
+            "iataCode": "LPL"
+          }
+        ]
+      },
+      {
+        "city": "London",
+        "airports": [
+          {
+            "name": "London Heathrow Airport",
+            "iataCode": "LHR"
+          },
+          {
+            "name": "London Gatwick Airport",
+            "iataCode": "LGW"
+          },
+          {
+            "name": "London Stansted Airport",
+            "iataCode": "STN"
+          },
+          {
+            "name": "London Luton Airport",
+            "iataCode": "LTN"
+          },
+          {
+            "name": "London City Airport",
+            "iataCode": "LCY"
+          }
+        ]
+      },
+      {
+        "city": "Manchester",
+        "airports": [
+          {
+            "name": "Manchester Airport",
+            "iataCode": "MAN"
+          }
+        ]
+      },
+      {
+        "city": "Newcastle",
+        "airports": [
+          {
+            "name": "Newcastle Airport",
+            "iataCode": "NCL"
+          }
+        ]
+      },
+      {
+        "city": "Newquay",
+        "airports": [
+          {
+            "name": "Newquay Airport",
+            "iataCode": "NQY"
+          }
+        ]
+      },
+      {
+        "city": "Norwich",
+        "airports": [
+          {
+            "name": "Norwich Airport",
+            "iataCode": "NWI"
+          }
+        ]
+      },
+      {
+        "city": "Nottingham",
+        "airports": [
+          {
+            "name": "East Midlands Airport",
+            "iataCode": "EMA"
+          }
+        ]
+      },
+      {
+        "city": "Southampton",
+        "airports": [
+          {
+            "name": "Southampton Airport",
+            "iataCode": "SOU"
+          }
+        ]
+      },
+      {
+        "city": "Southend",
+        "airports": [
+          {
+            "name": "Southend Airport",
+            "iataCode": "SEN"
+          }
+        ]
+      },
+      {
+        "city": "Stornoway",
+        "airports": [
+          {
+            "name": "Stornoway Airport",
+            "iataCode": "SYY"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "United States",
+    "cities": [
+      {
+        "city": "Anchorage",
+        "airports": [
+          {
+            "name": "Anchorage Ted Stevens International Airport",
+            "iataCode": "ANC"
+          }
+        ]
+      },
+      {
+        "city": "Atlanta",
+        "airports": [
+          {
+            "name": "Hartsfield-Jackson Atlanta International Airport",
+            "iataCode": "ATL"
+          }
+        ]
+      },
+      {
+        "city": "Baltimore",
+        "airports": [
+          {
+            "name": "Baltimore/Washington International Airport",
+            "iataCode": "BWI"
+          }
+        ]
+      },
+      {
+        "city": "Boston",
+        "airports": [
+          {
+            "name": "Logan International Airport",
+            "iataCode": "BOS"
+          }
+        ]
+      },
+      {
+        "city": "Burbank",
+        "airports": [
+          {
+            "name": "Burbank Hollywood Airport",
+            "iataCode": "BUR"
+          }
+        ]
+      },
+      {
+        "city": "Charlotte",
+        "airports": [
+          {
+            "name": "Charlotte Douglas International Airport",
+            "iataCode": "CLT"
+          }
+        ]
+      },
+      {
+        "city": "Chicago",
+        "airports": [
+          {
+            "name": "O'Hare International Airport",
+            "iataCode": "ORD"
+          },
+          {
+            "name": "Midway International Airport",
+            "iataCode": "MDW"
+          }
+        ]
+      },
+      {
+        "city": "Cincinnati",
+        "airports": [
+          {
+            "name": "Cincinnati/Northern Kentucky International Airport",
+            "iataCode": "CVG"
+          }
+        ]
+      },
+      {
+        "city": "Cleveland",
+        "airports": [
+          {
+            "name": "Cleveland Hopkins International Airport",
+            "iataCode": "CLE"
+          }
+        ]
+      },
+      {
+        "city": "Dallas",
+        "airports": [
+          {
+            "name": "Dallas/Fort Worth International Airport",
+            "iataCode": "DFW"
+          },
+          {
+            "name": "Dallas Love Field",
+            "iataCode": "DAL"
+          }
+        ]
+      },
+      {
+        "city": "Denver",
+        "airports": [
+          {
+            "name": "Denver International Airport",
+            "iataCode": "DEN"
+          }
+        ]
+      },
+      {
+        "city": "Detroit",
+        "airports": [
+          {
+            "name": "Detroit Metropolitan Wayne County Airport",
+            "iataCode": "DTW"
+          }
+        ]
+      },
+      {
+        "city": "Fort Lauderdale",
+        "airports": [
+          {
+            "name": "Fort Lauderdale-Hollywood International Airport",
+            "iataCode": "FLL"
+          }
+        ]
+      },
+      {
+        "city": "Honolulu",
+        "airports": [
+          {
+            "name": "Honolulu International Airport",
+            "iataCode": "HNL"
+          }
+        ]
+      },
+      {
+        "city": "Houston",
+        "airports": [
+          {
+            "name": "George Bush Intercontinental Airport",
+            "iataCode": "IAH"
+          },
+          {
+            "name": "William P. Hobby Airport",
+            "iataCode": "HOU"
+          }
+        ]
+      },
+      {
+        "city": "Indianapolis",
+        "airports": [
+          {
+            "name": "Indianapolis International Airport",
+            "iataCode": "IND"
+          }
+        ]
+      },
+      {
+        "city": "Kansas City",
+        "airports": [
+          {
+            "name": "Kansas City International Airport",
+            "iataCode": "MCI"
+          }
+        ]
+      },
+      {
+        "city": "Las Vegas",
+        "airports": [
+          {
+            "name": "Harry Reid International Airport",
+            "iataCode": "LAS"
+          }
+        ]
+      },
+      {
+        "city": "Long Beach",
+        "airports": [
+          {
+            "name": "Long Beach Airport",
+            "iataCode": "LGB"
+          }
+        ]
+      },
+      {
+        "city": "Los Angeles",
+        "airports": [
+          {
+            "name": "Los Angeles International Airport",
+            "iataCode": "LAX"
+          }
+        ]
+      },
+      {
+        "city": "Miami",
+        "airports": [
+          {
+            "name": "Miami International Airport",
+            "iataCode": "MIA"
+          }
+        ]
+      },
+      {
+        "city": "Milwaukee",
+        "airports": [
+          {
+            "name": "Milwaukee Mitchell International Airport",
+            "iataCode": "MKE"
+          }
+        ]
+      },
+      {
+        "city": "Minneapolis",
+        "airports": [
+          {
+            "name": "Minneapolis-Saint Paul International Airport",
+            "iataCode": "MSP"
+          }
+        ]
+      },
+      {
+        "city": "Nashville",
+        "airports": [
+          {
+            "name": "Nashville International Airport",
+            "iataCode": "BNA"
+          }
+        ]
+      },
+      {
+        "city": "New Orleans",
+        "airports": [
+          {
+            "name": "Louis Armstrong New Orleans International Airport",
+            "iataCode": "MSY"
+          }
+        ]
+      },
+      {
+        "city": "New York",
+        "airports": [
+          {
+            "name": "John F. Kennedy International Airport",
+            "iataCode": "JFK"
+          },
+          {
+            "name": "LaGuardia Airport",
+            "iataCode": "LGA"
+          }
+        ]
+      },
+      {
+        "city": "Newark",
+        "airports": [
+          {
+            "name": "Newark Liberty International Airport",
+            "iataCode": "EWR"
+          }
+        ]
+      },
+      {
+        "city": "Oakland",
+        "airports": [
+          {
+            "name": "Oakland International Airport",
+            "iataCode": "OAK"
+          }
+        ]
+      },
+      {
+        "city": "Orange County",
+        "airports": [
+          {
+            "name": "John Wayne Airport",
+            "iataCode": "SNA"
+          }
+        ]
+      },
+      {
+        "city": "Orlando",
+        "airports": [
+          {
+            "name": "Orlando International Airport",
+            "iataCode": "MCO"
+          }
+        ]
+      },
+      {
+        "city": "Philadelphia",
+        "airports": [
+          {
+            "name": "Philadelphia International Airport",
+            "iataCode": "PHL"
+          }
+        ]
+      },
+      {
+        "city": "Phoenix",
+        "airports": [
+          {
+            "name": "Phoenix Sky Harbor International Airport",
+            "iataCode": "PHX"
+          }
+        ]
+      },
+      {
+        "city": "Pittsburgh",
+        "airports": [
+          {
+            "name": "Pittsburgh International Airport",
+            "iataCode": "PIT"
+          }
+        ]
+      },
+      {
+        "city": "Portland",
+        "airports": [
+          {
+            "name": "Portland International Airport",
+            "iataCode": "PDX"
+          }
+        ]
+      },
+      {
+        "city": "Sacramento",
+        "airports": [
+          {
+            "name": "Sacramento International Airport",
+            "iataCode": "SMF"
+          }
+        ]
+      },
+      {
+        "city": "Salt Lake City",
+        "airports": [
+          {
+            "name": "Salt Lake City International Airport",
+            "iataCode": "SLC"
+          }
+        ]
+      },
+      {
+        "city": "San Diego",
+        "airports": [
+          {
+            "name": "San Diego International Airport",
+            "iataCode": "SAN"
+          }
+        ]
+      },
+      {
+        "city": "San Francisco",
+        "airports": [
+          {
+            "name": "San Francisco International Airport",
+            "iataCode": "SFO"
+          }
+        ]
+      },
+      {
+        "city": "San Jose",
+        "airports": [
+          {
+            "name": "San Jose International Airport",
+            "iataCode": "SJC"
+          }
+        ]
+      },
+      {
+        "city": "Seattle",
+        "airports": [
+          {
+            "name": "Seattle-Tacoma International Airport",
+            "iataCode": "SEA"
+          }
+        ]
+      },
+      {
+        "city": "St. Louis",
+        "airports": [
+          {
+            "name": "St. Louis Lambert International Airport",
+            "iataCode": "STL"
+          }
+        ]
+      },
+      {
+        "city": "Tampa",
+        "airports": [
+          {
+            "name": "Tampa International Airport",
+            "iataCode": "TPA"
+          }
+        ]
+      },
+      {
+        "city": "Washington",
+        "airports": [
+          {
+            "name": "Ronald Reagan Washington National Airport",
+            "iataCode": "DCA"
+          },
+          {
+            "name": "Washington Dulles International Airport",
+            "iataCode": "IAD"
+          }
+        ]
+      }
+    ]
+  }
+]

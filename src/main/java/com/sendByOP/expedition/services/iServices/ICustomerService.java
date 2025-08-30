@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-public interface IClientServivce {
+public interface ICustomerService {
 
     public List<CustomerDto> getListClient();
     public CustomerDto getClientById(int id);

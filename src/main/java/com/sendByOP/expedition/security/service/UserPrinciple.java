@@ -3,12 +3,16 @@ package com.sendByOP.expedition.security.service;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sendByOP.expedition.models.entities.Role;
 import com.sendByOP.expedition.models.entities.User;
+import lombok.Data;
+import lombok.Getter;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Data
 public class UserPrinciple implements UserDetails {
     private String id;
 
@@ -17,9 +21,9 @@ public class UserPrinciple implements UserDetails {
     @JsonIgnore
     private String password;
 
-    private Collection<SimpleGrantedAuthority> authorities;
+    private Collection<GrantedAuthority> authorities;
 
-    public UserPrinciple(String id, String name, String password, Collection<SimpleGrantedAuthority> authorities) {
+    public UserPrinciple(String id, String name, String password, Collection<GrantedAuthority> authorities) {
         this.id = id;
         this.username = name;
         this.password = password;
@@ -30,9 +34,9 @@ public class UserPrinciple implements UserDetails {
         String roleUser = user.getRole();
         Set<String> roles = new HashSet<>();
         Collections.addAll(roles, roleUser);
-        
-        List<SimpleGrantedAuthority> authorities = roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role))
+
+        List<GrantedAuthority> authorities = roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .collect(Collectors.toList());
 
         return new UserPrinciple(
@@ -41,25 +45,6 @@ public class UserPrinciple implements UserDetails {
                 user.getPassword(),
                 authorities
         );
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public Collection<SimpleGrantedAuthority> getAuthorities() {
-        return authorities;
     }
 
     @Override
@@ -80,20 +65,6 @@ public class UserPrinciple implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        UserPrinciple user = (UserPrinciple) o;
-        return Objects.equals(id, user.id);
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 }
 

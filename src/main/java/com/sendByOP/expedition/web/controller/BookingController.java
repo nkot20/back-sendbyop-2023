@@ -5,7 +5,7 @@ import com.sendByOP.expedition.models.dto.CustomerDto;
 import com.sendByOP.expedition.models.dto.BookingDto;
 import com.sendByOP.expedition.models.dto.RejectionDto;
 import com.sendByOP.expedition.services.iServices.IAnnulationReservationService;
-import com.sendByOP.expedition.services.iServices.IClientServivce;
+import com.sendByOP.expedition.services.iServices.ICustomerService;
 import com.sendByOP.expedition.services.iServices.IReservationService;
 import com.sendByOP.expedition.exception.SendByOpException;
 import com.sendByOP.expedition.reponse.ResponseMessage;
@@ -30,7 +30,7 @@ import java.util.List;
 public class BookingController {
 
     private final IReservationService bookingService;
-    private final IClientServivce customerService;
+    private final ICustomerService customerService;
     private final IAnnulationReservationService cancellationService;
 
 

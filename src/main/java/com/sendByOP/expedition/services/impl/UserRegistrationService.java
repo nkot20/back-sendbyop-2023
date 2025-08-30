@@ -7,7 +7,7 @@ import com.sendByOP.expedition.models.dto.CustomerRegistrationDto;
 import com.sendByOP.expedition.models.entities.User;
 import com.sendByOP.expedition.models.entities.VerifyToken;
 import com.sendByOP.expedition.models.enums.RoleEnum;
-import com.sendByOP.expedition.services.iServices.IClientServivce;
+import com.sendByOP.expedition.services.iServices.ICustomerService;
 import com.sendByOP.expedition.utils.AppConstants;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import java.io.UnsupportedEncodingException;
 @Slf4j
 @Transactional
 public class UserRegistrationService {
-    private final IClientServivce customerService;
+    private final ICustomerService customerService;
     private final VerifyTokenService verifyTokenService;
     private final SendMailService emailService;
     private final PasswordEncoder passwordEncoder;

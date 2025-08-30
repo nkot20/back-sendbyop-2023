@@ -74,6 +74,8 @@ public class FlightService implements IVolService {
         log.debug("Saving flight with stopovers: {}", flightWithStopoversDto);
         try {
             Flight flightEntity = flightMapper.toEntity(flightWithStopoversDto.getVol());
+            
+            // Récupération et assignation des aéroports
             AirportDto departureAirportDto = airportService.getAirport(
                     flightWithStopoversDto.getVol().getDepartureAirportId()
             );
@@ -84,11 +86,14 @@ public class FlightService implements IVolService {
             flightEntity.setDepartureAirport(airportMapper.toEntity(departureAirportDto));
             flightEntity.setArrivalAirport(airportMapper.toEntity(arrivalAirportDto));
 
-            FlightDto savedFlightDto = saveVol(flightMapper.toDto(flightEntity));
+            // Sauvegarde directe de l'entité avec les aéroports assignés
+            Flight savedFlight = flightRepository.save(flightEntity);
+            FlightDto savedFlightDto = flightMapper.toDto(savedFlight);
 
+            // Traitement des escales si présentes
             if (flightWithStopoversDto.getEscales() != null && !flightWithStopoversDto.getEscales().isEmpty()) {
                 flightWithStopoversDto.getEscales().forEach(stopoverDto -> {
-                    stopoverDto.setFlightId(flightEntity.getFlightId());
+                    stopoverDto.setFlightId(savedFlight.getFlightId());
                     stopoverService.addStopover(stopoverDto);
                 });
             }

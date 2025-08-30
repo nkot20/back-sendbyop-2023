@@ -5,13 +5,13 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConfigurationProperties("twilio")
-public class Twilioproperties {
+public class TwilioProperties {
 
     private String accountSid;
     private String authToken;
     private String serviceId;
 
-    public Twilioproperties() {
+    public TwilioProperties() {
 
     }
     public String getAccountSid() {
