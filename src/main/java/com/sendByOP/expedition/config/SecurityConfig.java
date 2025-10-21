@@ -1,6 +1,5 @@
-package com.sendByOP.expedition.configuration;
+package com.sendByOP.expedition.config;
 
-import com.sendByOP.expedition.models.enums.RoleEnum;
 import com.sendByOP.expedition.security.jwt.JwtAuthEntryPoint;
 import com.sendByOP.expedition.security.jwt.JwtAuthTokenFilter;
 import com.sendByOP.expedition.security.service.UserDetailsServiceImpl;
@@ -11,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -26,7 +24,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -34,19 +31,19 @@ import java.util.List;
 @Slf4j
 public class SecurityConfig {
 
-    @Bean
-    public JwtAuthTokenFilter authenticationJwtTokenFilter() {
-        return new JwtAuthTokenFilter();
-    }
+    private final JwtAuthTokenFilter authenticationJwtTokenFilter;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-                .cors()
-                .and()
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/customer/verify/**").permitAll()
+                        .requestMatchers("/customer/resend/**").permitAll()
+                        .requestMatchers("/customer/password/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/swagger-ui.html").permitAll()
@@ -54,14 +51,14 @@ public class SecurityConfig {
                         .requestMatchers("/webjars/**").permitAll()
                         .requestMatchers("/public/**").permitAll()
                         .requestMatchers("/trips/public/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole(RoleEnum.ADMIN.name())
-                        .requestMatchers("/user/**").hasAnyRole(RoleEnum.ADMIN.name(),
-                                RoleEnum.CUSTOMER.name())
+                        .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/user/**").hasAnyRole("ADMIN", "CUSTOMER")
                         .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(new JwtAuthEntryPoint()))
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(authenticationJwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

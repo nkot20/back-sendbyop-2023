@@ -7,5 +7,6 @@ public interface IBankAccountService {
 
     public BankInfoDto save(BankInfoDto infoBancaire) throws SendByOpException;
     public BankInfoDto getBankAccountInfos(int idCli) throws SendByOpException;
+    public BankInfoDto getBankAccountInfosByEmail(String email) throws SendByOpException;
 
 }

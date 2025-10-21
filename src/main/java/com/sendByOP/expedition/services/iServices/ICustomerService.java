@@ -20,6 +20,7 @@ public interface ICustomerService {
     public CustomerDto getCustomerById(int id) throws SendByOpException;
     public List<CustomerDto> getAllRegister();
     public CustomerDto findByNumber(String tel) throws SendByOpException;
+    public String uploadProfilePicture(Integer customerId, MultipartFile file) throws SendByOpException;
 
 
 }

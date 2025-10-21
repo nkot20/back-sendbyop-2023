@@ -1,5 +1,6 @@
 package com.sendByOP.expedition.models.entities;
 
+import com.sendByOP.expedition.models.enums.AccountStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,4 +40,8 @@ public class User implements Serializable {
 
     @Column(name = "role")
     private String role;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private AccountStatus status;
 }

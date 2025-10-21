@@ -37,4 +37,6 @@ public interface IVolService {
     List<PublicFlightDto> getPublicValidAndActiveFlights();
     
     Page<PublicFlightDto> getPublicValidAndActiveFlights(Pageable pageable);
+    
+    PublicFlightDto getPublicFlightById(int id);
 }

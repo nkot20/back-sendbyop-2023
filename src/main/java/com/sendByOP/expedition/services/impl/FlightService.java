@@ -239,6 +239,20 @@ public class FlightService implements IVolService {
         return publicFlightsPage;
     }
 
+    @Override
+    public PublicFlightDto getPublicFlightById(int id) {
+        log.debug("Fetching public flight details for flight id: {}", id);
+        Flight flight = flightRepository.findByFlightId(id)
+                .orElseThrow(() -> {
+                    log.error("Flight not found with flight id: {}", id);
+                    return new EntityNotFoundException("Flight not found with flight id: " + id);
+                });
+        
+        PublicFlightDto publicFlightDto = convertToPublicFlightDto(flight);
+        log.info("Successfully retrieved public flight details for flight id: {}", id);
+        return publicFlightDto;
+    }
+
     private PublicFlightDto convertToPublicFlightDto(Flight flight) {
         // Calculate available weight
         Float totalBookedWeight = parcelRepository.getTotalWeightByFlightId(flight.getFlightId());

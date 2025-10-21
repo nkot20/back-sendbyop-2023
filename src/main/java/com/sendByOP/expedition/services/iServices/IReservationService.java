@@ -3,7 +3,10 @@ package com.sendByOP.expedition.services.iServices;
 import com.sendByOP.expedition.exception.SendByOpException;
 import com.sendByOP.expedition.models.dto.RejectionDto;
 import com.sendByOP.expedition.models.dto.BookingDto;
+import com.sendByOP.expedition.models.dto.CustomerBookingDto;
 import jakarta.mail.MessagingException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.io.UnsupportedEncodingException;
 import java.sql.Date;
 import java.util.List;
@@ -26,5 +29,7 @@ public interface IReservationService {
     public BookingDto cancelBooking(int bookingId, String reason) throws SendByOpException;
     public String getSenderWhatsAppLink(int bookingId) throws SendByOpException;
     public BookingDto processPayment(int bookingId) throws SendByOpException;
+    public List<CustomerBookingDto> getCustomerBookingsByEmail(String email) throws SendByOpException;
+    public Page<CustomerBookingDto> getCustomerBookingsByEmailPaginated(String email, Pageable pageable) throws SendByOpException;
 
 }

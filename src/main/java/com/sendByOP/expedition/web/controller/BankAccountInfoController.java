@@ -35,7 +35,19 @@ public class BankAccountInfoController {
     @ApiResponse(responseCode = "404", description = "Bank account information not found")
     @GetMapping("/{id}")
     public ResponseEntity<?> getInfoIban(@Parameter(description = "ID of the bank account information") @PathVariable("id") int id) throws SendByOpException {
-        return new ResponseEntity<>(iInfoBancaireService.getBankAccountInfos(id), HttpStatus.CREATED);
+        return new ResponseEntity<>(iInfoBancaireService.getBankAccountInfos(id), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Get bank account information by customer email", 
+               description = "Retrieves bank account information for a customer using their email address")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved bank account information")
+    @ApiResponse(responseCode = "404", description = "Customer or bank account information not found")
+    @ApiResponse(responseCode = "400", description = "Invalid email format")
+    @GetMapping("/customer/{email}")
+    public ResponseEntity<BankInfoDto> getBankAccountInfosByEmail(
+            @Parameter(description = "Customer email address") @PathVariable("email") String email) throws SendByOpException {
+        BankInfoDto bankInfo = iInfoBancaireService.getBankAccountInfosByEmail(email);
+        return new ResponseEntity<>(bankInfo, HttpStatus.OK);
     }
 
 }

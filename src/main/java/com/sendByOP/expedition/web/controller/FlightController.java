@@ -85,6 +85,19 @@ public class FlightController {
         return ResponseEntity.ok(flights);
     }
 
+    @GetMapping("/public/{id}")
+    @Operation(summary = "Get flight details by ID (Public API)", 
+               description = "Retrieve detailed information about a specific flight for public viewing")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Flight details retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Flight not found")
+    })
+    public ResponseEntity<PublicFlightDto> getPublicFlightById(@PathVariable("id") @Parameter(description = "Flight ID") int id) {
+        log.debug("Public API request for flight details with id: {}", id);
+        PublicFlightDto flight = flightService.getPublicFlightById(id);
+        return ResponseEntity.ok(flight);
+    }
+
     @Operation(summary = "Create a new flight", description = "Creates a new flight with optional stopovers")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Flight created successfully"),

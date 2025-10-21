@@ -2,14 +2,16 @@ package com.sendByOP.expedition.services.impl;
 
 import com.sendByOP.expedition.mappers.BookingMapper;
 import com.sendByOP.expedition.models.dto.*;
+import com.sendByOP.expedition.models.entities.Booking;
 import com.sendByOP.expedition.services.iServices.IReservationService;
 import com.sendByOP.expedition.exception.ErrorInfo;
 import com.sendByOP.expedition.exception.SendByOpException;
 import com.sendByOP.expedition.repositories.ReservationRepository;
-import com.sendByOP.expedition.utils.CHeckNull;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -345,6 +347,104 @@ public class ReservationService implements IReservationService {
             return sender.getWhatsappLink();
         } catch (Exception e) {
             log.error("Error getting sender WhatsApp link: {}", e.getMessage());
+            throw new SendByOpException(ErrorInfo.INTERNAL_ERROR);
+        }
+    }
+
+    @Override
+    public List<CustomerBookingDto> getCustomerBookingsByEmail(String email) throws SendByOpException {
+        log.debug("Fetching bookings for customer email: {}", email);
+        try {
+            List<Booking> bookings = bookingRepository.findByCustomerEmailOrderByBookingDateDesc(email);
+            
+            List<CustomerBookingDto> customerBookings = bookings.stream()
+                    .map(this::convertToCustomerBookingDto)
+                    .collect(Collectors.toList());
+            
+            log.info("Successfully fetched {} bookings for customer email: {}", customerBookings.size(), email);
+            return customerBookings;
+        } catch (Exception e) {
+            log.error("Error fetching customer bookings by email: {}", e.getMessage());
+            throw new SendByOpException(ErrorInfo.INTERNAL_ERROR);
+        }
+    }
+
+    private CustomerBookingDto convertToCustomerBookingDto(Booking booking) {
+        try {
+            // Get parcels for this booking
+            List<ParcelDto> parcels = parcelService.findAllParcelsByBookingId(booking.getId());
+            
+            return CustomerBookingDto.builder()
+                    .id(booking.getId())
+                    .bookingDate(booking.getBookingDate())
+                    .bookingTime(booking.getBookingTime())
+                    .paymentStatus(booking.getPaymentStatus())
+                    .expeditionStatus(booking.getExpeditionStatus())
+                    .cancelled(booking.getCancelled())
+                    .customerReceptionStatus(booking.getCustomerReceptionStatus())
+                    .senderReceptionStatus(booking.getSenderReceptionStatus())
+                    .customerReview(booking.getCustomerReview())
+                    .senderReview(booking.getSenderReview())
+                    .flight(convertToFlightSummaryDto(booking.getFlight()))
+                    .receiver(convertToReceiverDto(booking.getReceiver()))
+                    .parcels(parcels)
+                    .build();
+        } catch (Exception e) {
+            log.error("Error converting booking to CustomerBookingDto: {}", e.getMessage());
+            throw new RuntimeException("Error converting booking data", e);
+        }
+    }
+
+    private CustomerBookingDto.FlightSummaryDto convertToFlightSummaryDto(com.sendByOP.expedition.models.entities.Flight flight) {
+        return CustomerBookingDto.FlightSummaryDto.builder()
+                .id(flight.getFlightId())
+                .departureDate(flight.getDepartureDate())
+                .departureTime(flight.getDepartureTime())
+                .arrivalDate(flight.getArrivalDate())
+                .arrivalTime(flight.getArrivalTime())
+                .availableWeight(flight.getKgCount() != null ? flight.getKgCount().doubleValue() : 0.0)
+                .pricePerKg(flight.getAmountPerKg() != null ? flight.getAmountPerKg().doubleValue() : 0.0)
+                .departureAirportName(flight.getDepartureAirport().getName())
+                .departureAirportCode(flight.getDepartureAirport().getIataCode())
+                .departureCityName(flight.getDepartureAirport().getCity().getName())
+                .departureCountryName(flight.getDepartureAirport().getCity().getCountry().getName())
+                .arrivalAirportName(flight.getArrivalAirport().getName())
+                .arrivalAirportCode(flight.getArrivalAirport().getIataCode())
+                .arrivalCityName(flight.getArrivalAirport().getCity().getName())
+                .arrivalCountryName(flight.getArrivalAirport().getCity().getCountry().getName())
+                .travelerFirstName(flight.getCustomer().getFirstName())
+                .travelerLastName(flight.getCustomer().getLastName())
+                .build();
+    }
+
+    private CustomerBookingDto.ReceiverDto convertToReceiverDto(com.sendByOP.expedition.models.entities.Receiver receiver) {
+        if (receiver == null) {
+            return null;
+        }
+        return CustomerBookingDto.ReceiverDto.builder()
+                .id(receiver.getId())
+                .firstName(receiver.getFirstName())
+                .lastName(receiver.getLastName())
+                .phoneNumber(receiver.getPhone())
+                .email(receiver.getEmail())
+                .address(null) // Address field not available in Receiver entity
+                .build();
+    }
+
+    @Override
+    public Page<CustomerBookingDto> getCustomerBookingsByEmailPaginated(String email, Pageable pageable) throws SendByOpException {
+        log.debug("Fetching paginated bookings for customer email: {}, page: {}, size: {}", email, pageable.getPageNumber(), pageable.getPageSize());
+        try {
+            Page<Booking> bookingsPage = bookingRepository.findByCustomerEmailOrderByBookingDateDesc(email, pageable);
+            
+            Page<CustomerBookingDto> customerBookingsPage = bookingsPage.map(this::convertToCustomerBookingDto);
+            
+            log.info("Successfully fetched {} bookings for customer email: {} (page {} of {})", 
+                customerBookingsPage.getNumberOfElements(), email, 
+                customerBookingsPage.getNumber() + 1, customerBookingsPage.getTotalPages());
+            return customerBookingsPage;
+        } catch (Exception e) {
+            log.error("Error fetching paginated customer bookings by email: {}", e.getMessage());
             throw new SendByOpException(ErrorInfo.INTERNAL_ERROR);
         }
     }

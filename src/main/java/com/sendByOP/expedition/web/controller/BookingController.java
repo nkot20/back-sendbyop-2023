@@ -3,6 +3,7 @@ package com.sendByOP.expedition.web.controller;
 import com.sendByOP.expedition.models.dto.CancellationReservationDto;
 import com.sendByOP.expedition.models.dto.CustomerDto;
 import com.sendByOP.expedition.models.dto.BookingDto;
+import com.sendByOP.expedition.models.dto.CustomerBookingDto;
 import com.sendByOP.expedition.models.dto.RejectionDto;
 import com.sendByOP.expedition.services.iServices.IAnnulationReservationService;
 import com.sendByOP.expedition.services.iServices.ICustomerService;
@@ -15,6 +16,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -227,6 +231,47 @@ public class BookingController {
     public ResponseEntity<?> getBookingCancellation(@PathVariable("id") int id) throws SendByOpException {
         CancellationReservationDto cancellation = cancellationService.findByReservation(id);
         return new ResponseEntity<>(cancellation, HttpStatus.OK);
+    }
+
+    /**
+     * Get customer bookings by email with detailed information
+     * @param email Customer email address
+     * @return List of customer bookings with flight, receiver and parcel details
+     * @throws SendByOpException
+     */
+    @Operation(summary = "Get customer bookings by email", 
+               description = "Retrieves all bookings for a customer by email with detailed flight, receiver and parcel information")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved customer bookings")
+    @ApiResponse(responseCode = "404", description = "Customer not found")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+    @GetMapping("/customer/{email}")
+    public ResponseEntity<List<CustomerBookingDto>> getCustomerBookingsByEmail(
+            @Parameter(description = "Customer email address") @PathVariable("email") String email) throws SendByOpException {
+        List<CustomerBookingDto> bookings = bookingService.getCustomerBookingsByEmail(email);
+        return new ResponseEntity<>(bookings, HttpStatus.OK);
+    }
+
+    /**
+     * Get paginated customer bookings by email with detailed information
+     * @param email Customer email address
+     * @param page Page number (0-based)
+     * @param size Number of items per page
+     * @return Paginated list of customer bookings with flight, receiver and parcel details
+     * @throws SendByOpException
+     */
+    @Operation(summary = "Get paginated customer bookings by email", 
+               description = "Retrieves paginated bookings for a customer by email with detailed flight, receiver and parcel information")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved paginated customer bookings")
+    @ApiResponse(responseCode = "404", description = "Customer not found")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
+    @GetMapping("/customer/{email}/paginated")
+    public ResponseEntity<Page<CustomerBookingDto>> getCustomerBookingsByEmailPaginated(
+            @Parameter(description = "Customer email address") @PathVariable("email") String email,
+            @RequestParam(defaultValue = "0") @Parameter(description = "Page number (0-based)") int page,
+            @RequestParam(defaultValue = "10") @Parameter(description = "Number of items per page") int size) throws SendByOpException {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<CustomerBookingDto> bookings = bookingService.getCustomerBookingsByEmailPaginated(email, pageable);
+        return new ResponseEntity<>(bookings, HttpStatus.OK);
     }
 
 }
