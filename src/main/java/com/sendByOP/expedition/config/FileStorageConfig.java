@@ -13,11 +13,16 @@ public class FileStorageConfig {
     
     private String uploadDir = "uploads";
     private String profilePicturesDir = "profile-pictures";
+    private String parcelPhotosDir = "parcel-photos";
     private long maxFileSize = 5242880; // 5MB in bytes
     private String[] allowedImageTypes = {"image/jpeg", "image/jpg", "image/png", "image/webp"};
     private String[] allowedExtensions = {".jpg", ".jpeg", ".png", ".webp"};
     
     public String getProfilePicturesPath() {
         return uploadDir + "/" + profilePicturesDir;
+    }
+    
+    public String getParcelPhotosPath() {
+        return uploadDir + "/" + parcelPhotosDir;
     }
 }

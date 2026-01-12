@@ -12,6 +12,8 @@ import com.sendByOP.expedition.utils.CHeckNull;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -74,7 +76,9 @@ public class CustomerService implements ICustomerService {
     }
 
     @Override
+    @CacheEvict(value = {"customers:email"}, key = "#clientDto.email")
     public CustomerDto updateClient(CustomerDto clientDto) throws SendByOpException {
+        log.debug("Updating customer {} and invalidating cache", clientDto.getId());
         Customer existingClient = clientRepository.findById(clientDto.getId())
                 .orElseThrow(() -> new RuntimeException("Client not found"));
         customerMapper.copy(clientDto, existingClient);
@@ -110,7 +114,9 @@ public class CustomerService implements ICustomerService {
     }
 
     @Override
+    @Cacheable(value = "customers:email", key = "#email")
     public CustomerDto getCustomerByEmail(String email) throws SendByOpException {
+        log.debug("Fetching customer {} from database (cache miss)", email);
         Customer client = clientRepository.findByEmail(email)
                 .orElseThrow(() -> new SendByOpException(ErrorInfo.RESOURCE_NOT_FOUND));
         return customerMapper.toDto(client);

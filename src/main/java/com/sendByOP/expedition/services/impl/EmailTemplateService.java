@@ -103,4 +103,60 @@ public class EmailTemplateService {
         
         return generateEmailContent("welcome", variables);
     }
+
+    /**
+     * Génère un email de confirmation de réservation
+     */
+    public String generateBookingConfirmation(Map<String, Object> bookingData) {
+        log.info("Génération de l'email de confirmation de réservation");
+        return generateEmailContent("booking-confirmation", bookingData);
+    }
+
+    /**
+     * Génère un email de nouvelle réservation pour le voyageur
+     */
+    public String generateBookingPendingTraveler(Map<String, Object> bookingData) {
+        log.info("Génération de l'email de nouvelle réservation pour le voyageur");
+        return generateEmailContent("booking-pending-traveler", bookingData);
+    }
+
+    /**
+     * Génère un email de rappel de paiement
+     */
+    public String generatePaymentReminder(Map<String, Object> paymentData) {
+        log.info("Génération de l'email de rappel de paiement");
+        return generateEmailContent("payment-reminder", paymentData);
+    }
+
+    /**
+     * Génère un email de notification de livraison
+     */
+    public String generateDeliveryNotification(Map<String, Object> deliveryData) {
+        log.info("Génération de l'email de notification de livraison");
+        return generateEmailContent("delivery-notification", deliveryData);
+    }
+
+    /**
+     * Génère un email d'avis d'annulation
+     */
+    public String generateCancellationNotice(Map<String, Object> cancellationData) {
+        log.info("Génération de l'email d'avis d'annulation");
+        return generateEmailContent("cancellation-notice", cancellationData);
+    }
+
+    /**
+     * Génère un email de confirmation de récupération pour le client
+     */
+    public String generatePickupConfirmationCustomer(Map<String, Object> pickupData) {
+        log.info("Génération de l'email de confirmation de récupération pour le client");
+        return generateEmailContent("pickup-confirmation-customer", pickupData);
+    }
+
+    /**
+     * Génère un email de confirmation de récupération pour le voyageur
+     */
+    public String generatePickupConfirmationTraveler(Map<String, Object> pickupData) {
+        log.info("Génération de l'email de confirmation de récupération pour le voyageur");
+        return generateEmailContent("pickup-confirmation-traveler", pickupData);
+    }
 }

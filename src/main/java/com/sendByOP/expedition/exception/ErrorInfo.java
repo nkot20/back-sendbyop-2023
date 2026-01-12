@@ -12,6 +12,8 @@ public enum ErrorInfo {
     RESOURCE_NOT_FOUND("Resource not found", HttpStatus.NOT_FOUND),
     RESOURCE_ALREADY_EXISTS("This resource already exists", HttpStatus.BAD_REQUEST),
     INVALID_RESOURCE_DATA("Invalid resource data provided", HttpStatus.BAD_REQUEST),
+    INVALID_DATA("Invalid data provided", HttpStatus.BAD_REQUEST),
+    DUPLICATE_ENTRY("Duplicate entry detected", HttpStatus.CONFLICT),
     
     // Authentication and registration errors
     EMAIL_ALREADY_EXISTS("Email address is already registered", HttpStatus.BAD_REQUEST),
@@ -40,6 +42,8 @@ public enum ErrorInfo {
     BOOKING_NOT_FOUND("Booking not found", HttpStatus.NOT_FOUND),
     BOOKING_ALREADY_CANCELLED("Booking has already been cancelled", HttpStatus.BAD_REQUEST),
     OPERATION_NOT_ALLOWED("This operation is not allowed", HttpStatus.FORBIDDEN),
+    UNAUTHORIZED("You are not authorized to perform this action", HttpStatus.FORBIDDEN),
+    INVALID_STATUS("Invalid status for this operation", HttpStatus.BAD_REQUEST),
     
     // Parcel and shipping errors
     PARCEL_CREATION_FAILED("Failed to create parcel", HttpStatus.INTERNAL_SERVER_ERROR),

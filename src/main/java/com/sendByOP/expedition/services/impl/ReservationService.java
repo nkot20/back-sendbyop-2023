@@ -6,7 +6,7 @@ import com.sendByOP.expedition.models.entities.Booking;
 import com.sendByOP.expedition.services.iServices.IReservationService;
 import com.sendByOP.expedition.exception.ErrorInfo;
 import com.sendByOP.expedition.exception.SendByOpException;
-import com.sendByOP.expedition.repositories.ReservationRepository;
+import com.sendByOP.expedition.repositories.BookingRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 public class ReservationService implements IReservationService {
-    private final ReservationRepository bookingRepository;
+    private final BookingRepository bookingRepository;
     private final ParcelService parcelService;
     private final SendMailService emailService;
     private final RejectionService rejectionService;
@@ -425,7 +425,7 @@ public class ReservationService implements IReservationService {
                 .id(receiver.getId())
                 .firstName(receiver.getFirstName())
                 .lastName(receiver.getLastName())
-                .phoneNumber(receiver.getPhone())
+                .phoneNumber(receiver.getPhoneNumber())
                 .email(receiver.getEmail())
                 .address(null) // Address field not available in Receiver entity
                 .build();

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -31,6 +32,12 @@ public class CustomerBookingDto implements Serializable {
 
     @Schema(description = "Booking cancellation status (0: Active, 1: Cancelled)", example = "0")
     private int cancelled;
+    
+    @Schema(description = "Actual booking status", example = "PENDING_CONFIRMATION")
+    private String status;
+    
+    @Schema(description = "Display name for booking status", example = "En attente de confirmation")
+    private String statusDisplayName;
 
     @Schema(description = "Customer reception status (0: Pending, 1: Received)", example = "1")
     private int customerReceptionStatus;
@@ -43,10 +50,21 @@ public class CustomerBookingDto implements Serializable {
 
     @Schema(description = "Review provided by the sender", example = "Excellent handling")
     private String senderReview;
+    
+    // Prix et poids totaux
+    @Schema(description = "Total price of the booking", example = "150.00")
+    private BigDecimal totalPrice;
+    
+    @Schema(description = "Total weight in kg", example = "5.5")
+    private Double totalWeight;
 
     // Flight information
     @Schema(description = "Flight details")
     private FlightSummaryDto flight;
+
+    // Customer information (who made the booking)
+    @Schema(description = "Customer who made the booking")
+    private CustomerInfoDto customer;
 
     // Receiver information
     @Schema(description = "Receiver details")
@@ -55,6 +73,35 @@ public class CustomerBookingDto implements Serializable {
     // Parcels information
     @Schema(description = "List of parcels in this booking")
     private List<ParcelDto> parcels;
+    
+    // Photos du colis
+    @Schema(description = "List of parcel photos")
+    private List<ParcelPhotoDto> parcelPhotos;
+    
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Schema(description = "Customer information for booking")
+    public static class CustomerInfoDto implements Serializable {
+        @Schema(description = "Customer ID", example = "1")
+        private Integer id;
+
+        @Schema(description = "Customer first name", example = "John")
+        private String firstName;
+
+        @Schema(description = "Customer last name", example = "Doe")
+        private String lastName;
+
+        @Schema(description = "Customer email", example = "john.doe@example.com")
+        private String email;
+
+        @Schema(description = "Customer phone number", example = "+33612345678")
+        private String phoneNumber;
+        
+        @Schema(description = "Profile picture URL")
+        private String profilePictureUrl;
+    }
 
     @Data
     @Builder

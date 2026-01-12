@@ -1,6 +1,8 @@
 package com.sendByOP.expedition.web.controller;
 
 import com.sendByOP.expedition.exception.SendByOpException;
+import com.sendByOP.expedition.models.dto.CustomerDto;
+import com.sendByOP.expedition.services.FileStorageService;
 import com.sendByOP.expedition.services.iServices.ICustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -9,6 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +30,7 @@ import java.util.Map;
 public class ProfileController {
 
     private final ICustomerService customerService;
+    private final FileStorageService fileStorageService;
 
     @PostMapping(value = "/upload-picture/{customerId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Upload profile picture", 
@@ -72,6 +77,95 @@ public class ProfileController {
             errorResponse.put("success", false);
             errorResponse.put("message", "An unexpected error occurred. Please try again.");
             errorResponse.put("customerId", customerId);
+            
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    @GetMapping("/picture/{customerId}")
+    @CrossOrigin(origins = "*")
+    @Operation(summary = "Get profile picture", 
+               description = "Retrieve the profile picture for a customer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Profile picture retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Customer or profile picture not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<Resource> getProfilePicture(
+            @PathVariable("customerId") @Parameter(description = "Customer ID") Integer customerId) {
+        
+        log.info("Received profile picture request for customer: {}", customerId);
+        
+        try {
+            CustomerDto customer = customerService.getCustomerById(customerId);
+            
+            if (customer.getProfilePicture() == null || customer.getProfilePicture().trim().isEmpty()) {
+                log.info("No profile picture found for customer: {}", customerId);
+                return ResponseEntity.notFound().build();
+            }
+            
+            Resource resource = fileStorageService.loadProfilePictureAsResource(customer.getProfilePicture());
+            String contentType = fileStorageService.getContentType(customer.getProfilePicture());
+            
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + customer.getProfilePicture() + "\"")
+                    .header(HttpHeaders.CACHE_CONTROL, "max-age=3600")
+                    .header(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+                    .body(resource);
+                    
+        } catch (SendByOpException ex) {
+            log.error("Failed to get profile picture for customer {}: {}", customerId, ex.getMessage());
+            return ResponseEntity.status(ex.getHttpStatus()).build();
+        } catch (Exception ex) {
+            log.error("Unexpected error getting profile picture for customer {}: {}", customerId, ex.getMessage(), ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/info/{customerId}")
+    @Operation(summary = "Get profile info", 
+               description = "Retrieve profile information for a customer including profile picture URL")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Profile info retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Customer not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<Map<String, Object>> getProfileInfo(
+            @PathVariable("customerId") @Parameter(description = "Customer ID") Integer customerId) {
+        
+        log.info("Received profile info request for customer: {}", customerId);
+        
+        try {
+            CustomerDto customer = customerService.getCustomerById(customerId);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("customerId", customerId);
+            response.put("firstName", customer.getFirstName());
+            response.put("lastName", customer.getLastName());
+            response.put("email", customer.getEmail());
+            response.put("phoneNumber", customer.getPhoneNumber());
+            response.put("hasProfilePicture", customer.getProfilePicture() != null && !customer.getProfilePicture().trim().isEmpty());
+            response.put("profilePictureUrl", customer.getProfilePicture() != null && !customer.getProfilePicture().trim().isEmpty() 
+                    ? "/api/profile/picture/" + customerId 
+                    : null);
+            
+            return ResponseEntity.ok(response);
+                    
+        } catch (SendByOpException ex) {
+            log.error("Failed to get profile info for customer {}: {}", customerId, ex.getMessage());
+            
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", ex.getMessage());
+            
+            return ResponseEntity.status(ex.getHttpStatus()).body(errorResponse);
+        } catch (Exception ex) {
+            log.error("Unexpected error getting profile info for customer {}: {}", customerId, ex.getMessage(), ex);
+            
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "An unexpected error occurred. Please try again.");
             
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }

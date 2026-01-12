@@ -21,6 +21,8 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -46,8 +48,9 @@ public class FlightService implements IVolService {
     private final CustomerMapper customerMapper;
 
     @Override
+    @Cacheable(value = "flights", key = "#id")
     public FlightDto getVolById(int id) {
-        log.debug("Fetching flight with id: {}", id);
+        log.debug("Fetching flight with id: {} from database (cache miss)", id);
         Flight flight = flightRepository.findById(id)
                 .orElseThrow(() -> {
                     log.error("Flight not found with id: {}", id);
@@ -66,24 +69,27 @@ public class FlightService implements IVolService {
     }
 
     @Override
+    @Cacheable(value = "flights:active", key = "#status")
     public List<FlightDto> getAllVolValid(int status) {
-        log.debug("Fetching all flights with validation status: {}", status);
+        log.debug("Fetching flights with status {} from database (cache miss)", status);
         return flightRepository.findByValidationStatus(status).stream()
                 .map(flightMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
+    @CacheEvict(value = {"flights:active", "flights:public", "flights"}, allEntries = true)
     public FlightDto saveVol(FlightDto flightDto) {
-        log.debug("Saving flight: {}", flightDto);
+        log.debug("Saving flight and invalidating cache: {}", flightDto);
         Flight flight = flightMapper.toEntity(flightDto);
         Flight savedFlight = flightRepository.save(flight);
         return flightMapper.toDto(savedFlight);
     }
 
     @Override
+    @CacheEvict(value = {"flights:active", "flights:public", "flights"}, allEntries = true)
     public FlightDto saveVolWithEscales(VolEscaleDto flightWithStopoversDto) throws SendByOpException {
-        log.info("Saving flight with stopovers: {}", flightWithStopoversDto);
+        log.info("Saving flight with stopovers and invalidating cache: {}", flightWithStopoversDto);
         try {
             Flight flightEntity = flightMapper.toEntity(flightWithStopoversDto.getVol());
             

@@ -1,0 +1,187 @@
+package com.sendByOP.expedition.services.impl;
+
+import com.sendByOP.expedition.exception.ErrorInfo;
+import com.sendByOP.expedition.exception.SendByOpException;
+import com.sendByOP.expedition.models.dto.PayoutDto;
+import com.sendByOP.expedition.models.entities.Booking;
+import com.sendByOP.expedition.models.entities.Payout;
+import com.sendByOP.expedition.models.enums.BookingStatus;
+import com.sendByOP.expedition.models.enums.PayoutStatus;
+import com.sendByOP.expedition.repositories.BookingRepository;
+import com.sendByOP.expedition.repositories.PayoutRepository;
+import com.sendByOP.expedition.repositories.PlatformSettingsRepository;
+import com.sendByOP.expedition.services.iServices.IPayoutService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * Service d'implémentation des payouts aux voyageurs
+ */
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class PayoutService implements IPayoutService {
+
+    private final PayoutRepository payoutRepository;
+    private final BookingRepository bookingRepository;
+    private final PlatformSettingsRepository platformSettingsRepository;
+
+    @Override
+    @Transactional
+    public PayoutDto processPayoutToTraveler(Integer bookingId) throws SendByOpException {
+        log.info("Processing payout for booking {}", bookingId);
+
+        // Vérifier que la réservation existe
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new SendByOpException(ErrorInfo.RESOURCE_NOT_FOUND,
+                        "Réservation non trouvée"));
+
+        // Vérifier que la réservation est récupérée (PICKED_UP)
+        if (booking.getStatus() != BookingStatus.PICKED_UP) {
+            throw new SendByOpException(ErrorInfo.INVALID_STATUS,
+                    "La réservation doit être récupérée pour générer un payout");
+        }
+
+        // Vérifier qu'un payout n'existe pas déjà
+        if (payoutRepository.existsByBookingId(bookingId)) {
+            throw new SendByOpException(ErrorInfo.DUPLICATE_ENTRY,
+                    "Un payout existe déjà pour cette réservation");
+        }
+
+        // Récupérer les paramètres de la plateforme
+        var settings = platformSettingsRepository.findFirstByOrderByIdDesc()
+                .orElseThrow(() -> new SendByOpException(ErrorInfo.RESOURCE_NOT_FOUND,
+                        "Paramètres de la plateforme non trouvés"));
+
+        BigDecimal totalAmount = booking.getTotalPrice();
+        BigDecimal platformPercentage = settings.getPlatformCommissionRate();
+        BigDecimal vatPercentage = settings.getVatRate();
+
+        // Calculer les montants
+        BigDecimal platformAmount = totalAmount
+                .multiply(platformPercentage)
+                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+
+        BigDecimal vatAmount = totalAmount
+                .multiply(vatPercentage)
+                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+
+        BigDecimal travelerAmount = totalAmount
+                .subtract(platformAmount)
+                .subtract(vatAmount);
+
+        BigDecimal travelerPercentage = BigDecimal.valueOf(100)
+                .subtract(platformPercentage)
+                .subtract(vatPercentage);
+
+        // Créer le payout
+        Payout payout = new Payout();
+        payout.setBooking(booking);
+        payout.setTraveler(booking.getFlight().getCustomer());
+        payout.setTotalAmount(totalAmount);
+        payout.setTravelerAmount(travelerAmount);
+        payout.setPlatformAmount(platformAmount);
+        payout.setVatAmount(vatAmount);
+        payout.setTravelerPercentage(travelerPercentage);
+        payout.setPlatformPercentage(platformPercentage);
+        payout.setVatPercentage(vatPercentage);
+        payout.setStatus(PayoutStatus.PENDING);
+        payout.setPaymentMethod("BANK_TRANSFER"); // Par défaut
+
+        // Sauvegarder
+        Payout savedPayout = payoutRepository.save(payout);
+        log.info("Payout {} created for booking {}", savedPayout.getId(), bookingId);
+
+        // TODO: Déclencher le processus de paiement réel
+        // processPayment(savedPayout);
+
+        return convertToDto(savedPayout);
+    }
+
+    @Override
+    public List<PayoutDto> getPayoutsForTraveler(Integer travelerId) {
+        log.info("Fetching payouts for traveler {}", travelerId);
+
+        return payoutRepository.findByTravelerIdOrderByCreatedAtDesc(travelerId)
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public PayoutDto getPayoutForBooking(Integer bookingId) {
+        log.info("Fetching payout for booking {}", bookingId);
+
+        return payoutRepository.findByBookingId(bookingId)
+                .map(this::convertToDto)
+                .orElse(null);
+    }
+
+    @Override
+    @Transactional
+    public int processAutomaticPayouts() {
+        log.info("Processing automatic payouts for completed bookings");
+
+        int processedCount = 0;
+
+        try {
+            // Récupérer toutes les réservations PICKED_UP
+            List<Booking> completedBookings = bookingRepository.findByStatus(BookingStatus.PICKED_UP);
+
+            log.debug("Found {} completed bookings", completedBookings.size());
+
+            for (Booking booking : completedBookings) {
+                // Vérifier si payout existe déjà
+                if (!payoutRepository.existsByBookingId(booking.getId())) {
+                    try {
+                        processPayoutToTraveler(booking.getId());
+                        processedCount++;
+                        log.debug("Payout processed for booking {}", booking.getId());
+                    } catch (SendByOpException e) {
+                        log.error("Failed to process payout for booking {}: {}",
+                                booking.getId(), e.getMessage());
+                    }
+                }
+            }
+
+            log.info("Processed {} automatic payouts", processedCount);
+        } catch (Exception e) {
+            log.error("Error during automatic payout processing", e);
+        }
+
+        return processedCount;
+    }
+
+    /**
+     * Convertit une entité Payout en DTO
+     */
+    private PayoutDto convertToDto(Payout payout) {
+        var traveler = payout.getTraveler();
+        var booking = payout.getBooking();
+
+        return PayoutDto.builder()
+                .id(payout.getId().intValue())
+                .bookingId(booking.getId())
+                .travelerId(traveler.getId())
+                .travelerEmail(traveler.getEmail())
+                .travelerName(traveler.getFirstName() + " " + traveler.getLastName())
+                .bookingAmount(payout.getTotalAmount())
+                .platformCommission(payout.getPlatformAmount())
+                .commissionRate(payout.getPlatformPercentage().doubleValue())
+                .payoutAmount(payout.getTravelerAmount())
+                .status(payout.getStatus())
+                .createdAt(payout.getCreatedAt())
+                .processedAt(payout.getCompletedAt())
+                .paymentMethod(payout.getPaymentMethod())
+                .externalTransactionId(payout.getTransactionId())
+                .notes(payout.getErrorMessage())
+                .build();
+    }
+}

@@ -33,10 +33,10 @@ public class FileStorageService {
         
         try {
             // Create upload directory if it doesn't exist
-            Path uploadPath = createUploadDirectory();
+            Path uploadPath = createProfilePicturesDirectory();
             
             // Generate unique filename
-            String filename = generateUniqueFilename(file, customerId);
+            String filename = generateUniqueFilename(file, "customer", customerId);
             
             // Store the file
             Path targetLocation = uploadPath.resolve(filename);
@@ -48,6 +48,32 @@ public class FileStorageService {
         } catch (IOException ex) {
             log.error("Failed to store profile picture for customer {}: {}", customerId, ex.getMessage());
             throw new SendByOpException("Could not store file. Please try again!", org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Stores a parcel photo with security validations
+     */
+    public String storeParcelPhoto(MultipartFile file, Integer bookingId) throws SendByOpException {
+        validateFile(file);
+        
+        try {
+            // Create upload directory for parcel photos
+            Path uploadPath = createParcelPhotosDirectory();
+            
+            // Generate unique filename for parcel
+            String filename = generateUniqueFilename(file, "parcel", bookingId);
+            
+            // Store the file
+            Path targetLocation = uploadPath.resolve(filename);
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            
+            log.info("Parcel photo stored successfully for booking {} at: {}", bookingId, filename);
+            return filename;
+            
+        } catch (IOException ex) {
+            log.error("Failed to store parcel photo for booking {}: {}", bookingId, ex.getMessage());
+            throw new SendByOpException("Could not store parcel photo. Please try again!", org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -117,23 +143,33 @@ public class FileStorageService {
     }
 
     /**
-     * Creates upload directory if it doesn't exist
+     * Creates profile pictures upload directory if it doesn't exist
      */
-    private Path createUploadDirectory() throws IOException {
+    private Path createProfilePicturesDirectory() throws IOException {
         Path uploadPath = Paths.get(fileStorageConfig.getProfilePicturesPath()).toAbsolutePath().normalize();
         Files.createDirectories(uploadPath);
         return uploadPath;
     }
 
     /**
-     * Generates unique filename with customer ID and timestamp
+     * Creates parcel photos upload directory if it doesn't exist
      */
-    private String generateUniqueFilename(MultipartFile file, Integer customerId) {
+    private Path createParcelPhotosDirectory() throws IOException {
+        Path uploadPath = Paths.get(fileStorageConfig.getParcelPhotosPath()).toAbsolutePath().normalize();
+        Files.createDirectories(uploadPath);
+        return uploadPath;
+    }
+
+    /**
+     * Generates unique filename with prefix and ID
+     */
+    private String generateUniqueFilename(MultipartFile file, String prefix, Integer id) {
         String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
         String extension = getFileExtension(originalFilename);
         
-        return String.format("customer_%d_%s%s", 
-            customerId, 
+        return String.format("%s_%d_%s%s", 
+            prefix,
+            id, 
             UUID.randomUUID().toString().replace("-", ""), 
             extension);
     }
@@ -153,5 +189,82 @@ public class FileStorageService {
      */
     public Path getProfilePicturePath(String filename) {
         return Paths.get(fileStorageConfig.getProfilePicturesPath()).resolve(filename);
+    }
+
+    /**
+     * Gets the full path to a parcel photo
+     */
+    public Path getParcelPhotoPath(String filename) {
+        return Paths.get(fileStorageConfig.getParcelPhotosPath()).resolve(filename);
+    }
+
+    /**
+     * Loads a profile picture as a Resource for serving via HTTP
+     */
+    public org.springframework.core.io.Resource loadProfilePictureAsResource(String filename) throws SendByOpException {
+        try {
+            Path filePath = getProfilePicturePath(filename).toAbsolutePath().normalize();
+            org.springframework.core.io.Resource resource = new org.springframework.core.io.UrlResource(filePath.toUri());
+            
+            if (resource.exists() && resource.isReadable()) {
+                return resource;
+            } else {
+                log.error("Profile picture not found or not readable: {}", filename);
+                throw new SendByOpException("Profile picture not found", org.springframework.http.HttpStatus.NOT_FOUND);
+            }
+        } catch (java.net.MalformedURLException ex) {
+            log.error("Malformed URL for profile picture {}: {}", filename, ex.getMessage());
+            throw new SendByOpException("Profile picture not found", org.springframework.http.HttpStatus.NOT_FOUND);
+        }
+    }
+
+    /**
+     * Loads a parcel photo as a Resource for serving via HTTP
+     */
+    public org.springframework.core.io.Resource loadParcelPhotoAsResource(String filename) throws SendByOpException {
+        try {
+            Path filePath = getParcelPhotoPath(filename).toAbsolutePath().normalize();
+            org.springframework.core.io.Resource resource = new org.springframework.core.io.UrlResource(filePath.toUri());
+            
+            if (resource.exists() && resource.isReadable()) {
+                return resource;
+            } else {
+                log.error("Parcel photo not found or not readable: {}", filename);
+                throw new SendByOpException("Parcel photo not found", org.springframework.http.HttpStatus.NOT_FOUND);
+            }
+        } catch (java.net.MalformedURLException ex) {
+            log.error("Malformed URL for parcel photo {}: {}", filename, ex.getMessage());
+            throw new SendByOpException("Parcel photo not found", org.springframework.http.HttpStatus.NOT_FOUND);
+        }
+    }
+
+    /**
+     * Deletes a parcel photo file
+     */
+    public void deleteParcelPhoto(String filename) {
+        if (filename == null || filename.trim().isEmpty()) {
+            return;
+        }
+        
+        try {
+            Path filePath = Paths.get(fileStorageConfig.getParcelPhotosPath()).resolve(filename);
+            Files.deleteIfExists(filePath);
+            log.info("Parcel photo deleted: {}", filename);
+        } catch (IOException ex) {
+            log.error("Failed to delete parcel photo {}: {}", filename, ex.getMessage());
+        }
+    }
+
+    /**
+     * Gets the content type of a file based on its extension
+     */
+    public String getContentType(String filename) {
+        String extension = getFileExtension(filename).toLowerCase();
+        return switch (extension) {
+            case ".jpg", ".jpeg" -> "image/jpeg";
+            case ".png" -> "image/png";
+            case ".webp" -> "image/webp";
+            default -> "application/octet-stream";
+        };
     }
 }
