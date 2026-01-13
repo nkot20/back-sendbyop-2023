@@ -1,8 +1,7 @@
 package com.sendByOP.expedition.services;
 
-import com.sendByOP.expedition.models.dto.EmailDto;
-import com.sendByOP.expedition.models.entities.Customer;
-import com.sendByOP.expedition.repositories.CustomerRepository;
+import com.sendByOP.expedition.models.entities.User;
+import com.sendByOP.expedition.repositories.UserRepository;
 import com.sendByOP.expedition.services.impl.SendMailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,7 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class OtpService {
     
-    private final CustomerRepository customerRepository;
+    private final UserRepository userRepository;
     private final SendMailService emailService;
     
     private static final int OTP_LENGTH = 6;
@@ -43,26 +42,21 @@ public class OtpService {
     @Transactional
     public boolean sendOtpEmail(String email) {
         try {
-            Customer customer = customerRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Client non trouvé"));
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
             
             String otpCode = generateOtpCode();
             
             // Stocker le code OTP et la date d'envoi
-            customer.setOtpSecret(otpCode);
-            customer.setOtpSentAt(new Date());
-            customerRepository.save(customer);
+            user.setOtpSecret(otpCode);
+            user.setOtpSentAt(new Date());
+            userRepository.save(user);
             
-            // Envoyer l'email
+            // Envoyer l'email en HTML
             String subject = "Code de vérification SendByOp";
-            String body = buildOtpEmailBody(customer.getFirstName(), otpCode);
+            String htmlBody = buildOtpEmailBody(user.getFirstName(), otpCode);
             
-            EmailDto emailDto = EmailDto.builder()
-                    .to(email)
-                    .topic(subject)
-                    .body(body)
-                    .build();
-            emailService.sendEmail(emailDto);
+            emailService.sendHtmlEmail(email, subject, htmlBody);
             
             log.info("OTP envoyé avec succès à {}", email);
             return true;
@@ -77,23 +71,23 @@ public class OtpService {
      */
     public boolean verifyOtp(String email, String otpCode) {
         try {
-            Customer customer = customerRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Client non trouvé"));
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
             
             // Vérifier si un OTP a été envoyé
-            if (customer.getOtpSecret() == null || customer.getOtpSentAt() == null) {
+            if (user.getOtpSecret() == null || user.getOtpSentAt() == null) {
                 log.warn("Aucun OTP trouvé pour {}", email);
                 return false;
             }
             
             // Vérifier si le code correspond
-            if (!customer.getOtpSecret().equals(otpCode)) {
+            if (!user.getOtpSecret().equals(otpCode)) {
                 log.warn("Code OTP incorrect pour {}", email);
                 return false;
             }
             
             // Vérifier si le code n'a pas expiré
-            LocalDateTime sentAt = customer.getOtpSentAt().toInstant()
+            LocalDateTime sentAt = user.getOtpSentAt().toInstant()
                     .atZone(ZoneId.systemDefault())
                     .toLocalDateTime();
             LocalDateTime expiryTime = sentAt.plusMinutes(OTP_VALIDITY_MINUTES);
@@ -117,12 +111,12 @@ public class OtpService {
     @Transactional
     public void clearOtp(String email) {
         try {
-            Customer customer = customerRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Client non trouvé"));
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
             
-            customer.setOtpSecret(null);
-            customer.setOtpSentAt(null);
-            customerRepository.save(customer);
+            user.setOtpSecret(null);
+            user.setOtpSentAt(null);
+            userRepository.save(user);
             
             log.info("OTP effacé pour {}", email);
         } catch (Exception e) {
@@ -141,27 +135,29 @@ public class OtpService {
                     <style>
                         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
                         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                        .header { background-color: #007bff; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }
-                        .content { background-color: #f9f9f9; padding: 30px; border: 1px solid #ddd; }
-                        .otp-code { font-size: 32px; font-weight: bold; color: #007bff; text-align: center; letter-spacing: 5px; padding: 20px; background-color: white; border: 2px dashed #007bff; border-radius: 5px; margin: 20px 0; }
-                        .warning { color: #dc3545; font-size: 14px; margin-top: 20px; }
-                        .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+                        .header { background: linear-gradient(135deg, #FF6B35, #F9A826); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+                        .content { background-color: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+                        .otp-code { font-size: 36px; font-weight: bold; color: #FF6B35; text-align: center; letter-spacing: 8px; padding: 30px; background-color: white; border: 2px dashed #FF6B35; border-radius: 10px; margin: 30px 0; }
+                        .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; font-size: 14px; }
+                        .footer { text-align: center; margin-top: 30px; color: #666; font-size: 12px; }
                     </style>
                 </head>
                 <body>
                     <div class="container">
                         <div class="header">
-                            <h2>SendByOp - Code de vérification</h2>
+                            <h1>🔐 Code de vérification</h1>
                         </div>
                         <div class="content">
-                            <p>Bonjour %s,</p>
-                            <p>Vous avez demandé un code de vérification pour accéder à votre compte SendByOp.</p>
-                            <p>Voici votre code de vérification :</p>
+                            <p>Bonjour <strong>%s</strong>,</p>
+                            <p>Voici votre code de vérification pour activer l'authentification à deux facteurs :</p>
                             <div class="otp-code">%s</div>
-                            <p>Ce code est valide pendant <strong>%d minutes</strong>.</p>
+                            <p style="color: #666; text-align: center;">Code valide pendant <strong>%d minutes</strong></p>
                             <div class="warning">
-                                ⚠️ Si vous n'avez pas demandé ce code, veuillez ignorer cet email et contacter notre support.
+                                <strong>⚠️ Sécurité :</strong> Ne partagez jamais ce code avec qui que ce soit. 
+                                L'équipe SendByOp ne vous demandera jamais votre code de vérification.
                             </div>
+                            <p>Si vous n'avez pas demandé ce code, vous pouvez ignorer cet email.</p>
+                            <p>Cordialement,<br>L'équipe SendByOp</p>
                         </div>
                         <div class="footer">
                             <p>© 2026 SendByOp. Tous droits réservés.</p>

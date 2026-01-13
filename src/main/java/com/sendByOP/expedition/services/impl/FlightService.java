@@ -12,9 +12,11 @@ import com.sendByOP.expedition.models.dto.PublicFlightDto;
 import com.sendByOP.expedition.models.dto.PublicStopoverDto;
 import com.sendByOP.expedition.models.dto.VolEscaleDto;
 import com.sendByOP.expedition.models.entities.Flight;
+import com.sendByOP.expedition.models.entities.Review;
 import com.sendByOP.expedition.models.entities.Stopover;
 import com.sendByOP.expedition.repositories.FlightRepository;
 import com.sendByOP.expedition.repositories.ParcelRepository;
+import com.sendByOP.expedition.repositories.ReviewRepository;
 import com.sendByOP.expedition.repositories.StopoverRepository;
 import com.sendByOP.expedition.services.iServices.IVolService;
 import jakarta.persistence.EntityNotFoundException;
@@ -41,6 +43,7 @@ public class FlightService implements IVolService {
     private final FlightMapper flightMapper;
     private final ParcelRepository parcelRepository;
     private final StopoverRepository stopoverRepository;
+    private final ReviewRepository reviewRepository;
     private final StopoverService stopoverService;
     private final AirportService airportService;
     private final AirportMapper airportMapper;
@@ -229,7 +232,6 @@ public class FlightService implements IVolService {
     @Override
     public Page<PublicFlightDto> getPublicValidAndActiveFlights(Pageable pageable) {
         log.debug("Fetching paginated public valid and active flights with detailed information");
-        Date currentDate = new Date();
         
         // Get paginated flights from repository
         Page<Flight> flightsPage = flightRepository.findByValidationStatusAndCancelledAndDepartureDateAfterOrderByDepartureDateDesc(1, 0, pageable);
@@ -273,6 +275,34 @@ public class FlightService implements IVolService {
                 .map(this::convertToPublicStopoverDto)
                 .collect(Collectors.toList());
         
+        // Calculate traveler average rating and review count
+        List<Review> travelerReviews = reviewRepository.findByTransporterIdAndBookingIsNotNull(flight.getCustomer().getId());
+        Double averageRating = null;
+        Integer reviewCount = travelerReviews.size();
+        
+        if (!travelerReviews.isEmpty()) {
+            double sum = travelerReviews.stream()
+                    .mapToDouble(review -> {
+                        try {
+                            // Convertir String rating en double
+                            return review.getRating() != null ? Double.parseDouble(review.getRating()) : 0.0;
+                        } catch (NumberFormatException e) {
+                            log.warn("Invalid rating format for review id {}: {}", review.getId(), review.getRating());
+                            return 0.0;
+                        }
+                    })
+                    .sum();
+            averageRating = sum / travelerReviews.size();
+            // Arrondir à 1 décimale
+            averageRating = Math.round(averageRating * 10.0) / 10.0;
+        }
+        
+        // Get traveler profile picture URL
+        String profilePictureUrl = null;
+        if (flight.getCustomer().getProfilePicture() != null && !flight.getCustomer().getProfilePicture().isEmpty()) {
+            profilePictureUrl = "/uploads/profile-pictures/" + flight.getCustomer().getProfilePicture();
+        }
+        
         return PublicFlightDto.builder()
                 .flightId(flight.getFlightId())
                 .departureDate(flight.getDepartureDate())
@@ -297,6 +327,9 @@ public class FlightService implements IVolService {
                 .arrivalCountryName(flight.getArrivalAirport().getCity().getCountry().getName())
                 .customerFirstName(flight.getCustomer().getFirstName())
                 .customerLastName(flight.getCustomer().getLastName())
+                .travelerProfilePictureUrl(profilePictureUrl)
+                .travelerAverageRating(averageRating)
+                .travelerReviewCount(reviewCount)
                 .stopovers(stopoverDtos)
                 .build();
     }

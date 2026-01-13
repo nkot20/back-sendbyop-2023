@@ -86,15 +86,8 @@ public class AuthServiceImpl implements IAuthService {
             throw new SendByOpException(ErrorInfo.ACCOUNT_INACTIVE);
         }
         
-        // 4. Vérifier si le 2FA est activé
-        CustomerDto customer = null;
-        try {
-            customer = clientService.getCustomerByEmail(user.getEmail());
-        } catch (SendByOpException e) {
-            log.warn("No customer found for user email: {}", user.getEmail());
-        }
-        
-        if (customer != null && Boolean.TRUE.equals(customer.getTwoFactorEnabled())) {
+        // 4. Vérifier si le 2FA est activé dans la table user
+        if (Boolean.TRUE.equals(user.getTwoFactorEnabled())) {
             log.info("2FA is enabled for user: {}", loginRequest.getUsername());
             
             // Si aucun code OTP n'est fourni, envoyer un OTP et demander à l'utilisateur de le saisir
@@ -135,13 +128,12 @@ public class AuthServiceImpl implements IAuthService {
         String firstName = null;
         String lastName = null;
         
-        // Utiliser le customer déjà récupéré pour le 2FA
-        if (customer == null) {
-            try {
-                customer = clientService.getCustomerByEmail(user.getEmail());
-            } catch (SendByOpException e) {
-                log.warn("No customer found for user email: {}", user.getEmail());
-            }
+        // Récupérer le customer pour les informations de profil
+        CustomerDto customer = null;
+        try {
+            customer = clientService.getCustomerByEmail(user.getEmail());
+        } catch (SendByOpException e) {
+            log.warn("No customer found for user email: {}", user.getEmail());
         }
         
         if (customer != null) {

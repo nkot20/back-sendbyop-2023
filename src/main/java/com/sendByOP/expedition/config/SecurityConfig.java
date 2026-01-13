@@ -45,6 +45,8 @@ public class SecurityConfig {
                         .requestMatchers("/customer/verify/**").permitAll()
                         .requestMatchers("/customer/resend/**").permitAll()
                         .requestMatchers("/customer/password/**").permitAll()
+                        .requestMatchers("/security/forgot-password").permitAll()
+                        .requestMatchers("/security/reset-password").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/swagger-ui.html").permitAll()

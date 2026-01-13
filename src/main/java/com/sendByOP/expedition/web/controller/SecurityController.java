@@ -176,4 +176,42 @@ public class SecurityController {
             return ResponseEntity.badRequest().body(response);
         }
     }
+    
+    /**
+     * Demande de réinitialisation de mot de passe
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        log.info("Demande de réinitialisation de mot de passe pour: {}", request.getEmail());
+        
+        try {
+            ApiResponse response = securityService.forgotPassword(request);
+            return ResponseEntity.ok(response);
+        } catch (SendByOpException e) {
+            log.error("Erreur lors de la demande de réinitialisation: {}", e.getMessage());
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    /**
+     * Réinitialisation du mot de passe avec OTP
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        log.info("Tentative de réinitialisation de mot de passe pour: {}", request.getEmail());
+        
+        try {
+            ApiResponse response = securityService.resetPassword(request);
+            return ResponseEntity.ok(response);
+        } catch (SendByOpException e) {
+            log.error("Erreur lors de la réinitialisation: {}", e.getMessage());
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
 }

@@ -44,6 +44,7 @@ public class BookingService implements IBookingService {
     private final IReceiverService receiverService;
     private final IPlatformSettingsService platformSettingsService;
     private final FileStorageService fileStorageService;
+    private final SendMailService sendMailService;
 
     @Override
     public BookingResponseDto createBooking(
@@ -285,6 +286,14 @@ public class BookingService implements IBookingService {
         // Sauvegarder
         Booking saved = bookingRepository.save(booking);
         log.info("Booking {} confirmed successfully", bookingId);
+        
+        // 7. Envoyer un email de notification au client
+        try {
+            sendBookingConfirmedEmail(saved);
+        } catch (Exception e) {
+            log.error("Erreur lors de l'envoi de l'email de confirmation: {}", e.getMessage());
+            // Ne pas faire échouer la confirmation si l'email échoue
+        }
         
         // Retourner la réponse
         return buildBookingResponse(saved);
@@ -871,5 +880,398 @@ public class BookingService implements IBookingService {
         }
         
         return convertToCustomerBookingDto(booking);
+    }
+    
+    // ===========================
+    // Méthodes de suivi de livraison
+    // ===========================
+    
+    /**
+     * Le client marque qu'il a donné le colis au voyageur
+     */
+    @Override
+    public BookingResponseDto markParcelHandedToTraveler(Integer bookingId, Integer customerId) throws SendByOpException {
+        log.info("Client {} marks parcel handed to traveler for booking {}", customerId, bookingId);
+        
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new SendByOpException(ErrorInfo.RESOURCE_NOT_FOUND,
+                        "Réservation non trouvée"));
+        
+        // Vérifier que le client est propriétaire de la réservation
+        if (!booking.getCustomer().getId().equals(customerId)) {
+            throw new SendByOpException(ErrorInfo.UNAUTHORIZED,
+                    "Vous n'êtes pas autorisé à modifier cette réservation");
+        }
+        
+        // Vérifier que le statut est CONFIRMED_PAID
+        if (booking.getStatus() != BookingStatus.CONFIRMED_PAID) {
+            throw new SendByOpException(ErrorInfo.INVALID_STATUS,
+                    "La réservation doit être payée pour effectuer cette action");
+        }
+        
+        // Mettre à jour le statut
+        booking.setStatus(BookingStatus.PARCEL_HANDED_TO_TRAVELER);
+        Booking saved = bookingRepository.save(booking);
+        
+        // Envoyer email au voyageur
+        try {
+            sendParcelHandedToTravelerEmail(saved);
+        } catch (Exception e) {
+            log.error("Erreur lors de l'envoi de l'email: {}", e.getMessage());
+        }
+        
+        log.info("Parcel marked as handed to traveler for booking {}", bookingId);
+        return buildBookingResponse(saved);
+    }
+    
+    /**
+     * Le voyageur confirme avoir reçu le colis
+     */
+    @Override
+    public BookingResponseDto confirmParcelReceivedByTraveler(Integer bookingId, Integer travelerId) throws SendByOpException {
+        log.info("Traveler {} confirms parcel received for booking {}", travelerId, bookingId);
+        
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new SendByOpException(ErrorInfo.RESOURCE_NOT_FOUND,
+                        "Réservation non trouvée"));
+        
+        // Vérifier que le voyageur est propriétaire du vol
+        if (!booking.getFlight().getCustomer().getId().equals(travelerId)) {
+            throw new SendByOpException(ErrorInfo.UNAUTHORIZED,
+                    "Vous n'êtes pas autorisé à modifier cette réservation");
+        }
+        
+        // Vérifier que le statut est PARCEL_HANDED_TO_TRAVELER
+        if (booking.getStatus() != BookingStatus.PARCEL_HANDED_TO_TRAVELER) {
+            throw new SendByOpException(ErrorInfo.INVALID_STATUS,
+                    "Le colis doit d'abord être remis au voyageur");
+        }
+        
+        // Mettre à jour le statut
+        booking.setStatus(BookingStatus.PARCEL_RECEIVED_BY_TRAVELER);
+        Booking saved = bookingRepository.save(booking);
+        
+        // Envoyer email au client
+        try {
+            sendParcelReceivedByTravelerEmail(saved);
+        } catch (Exception e) {
+            log.error("Erreur lors de l'envoi de l'email: {}", e.getMessage());
+        }
+        
+        log.info("Parcel marked as received by traveler for booking {}", bookingId);
+        return buildBookingResponse(saved);
+    }
+    
+    /**
+     * Le voyageur confirme avoir remis le colis au destinataire
+     */
+    @Override
+    public BookingResponseDto confirmParcelDeliveredToReceiver(Integer bookingId, Integer travelerId) throws SendByOpException {
+        log.info("Traveler {} confirms parcel delivered to receiver for booking {}", travelerId, bookingId);
+        
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new SendByOpException(ErrorInfo.RESOURCE_NOT_FOUND,
+                        "Réservation non trouvée"));
+        
+        // Vérifier que le voyageur est propriétaire du vol
+        if (!booking.getFlight().getCustomer().getId().equals(travelerId)) {
+            throw new SendByOpException(ErrorInfo.UNAUTHORIZED,
+                    "Vous n'êtes pas autorisé à modifier cette réservation");
+        }
+        
+        // Vérifier que le statut est PARCEL_RECEIVED_BY_TRAVELER ou IN_TRANSIT
+        if (booking.getStatus() != BookingStatus.PARCEL_RECEIVED_BY_TRAVELER && 
+            booking.getStatus() != BookingStatus.IN_TRANSIT) {
+            throw new SendByOpException(ErrorInfo.INVALID_STATUS,
+                    "Le colis doit être en possession du voyageur ou en transit");
+        }
+        
+        // Mettre à jour le statut
+        booking.setStatus(BookingStatus.PARCEL_DELIVERED_TO_RECEIVER);
+        Booking saved = bookingRepository.save(booking);
+        
+        // Envoyer email au client et au destinataire
+        try {
+            sendParcelDeliveredToReceiverEmail(saved);
+        } catch (Exception e) {
+            log.error("Erreur lors de l'envoi de l'email: {}", e.getMessage());
+        }
+        
+        log.info("Parcel marked as delivered to receiver for booking {}", bookingId);
+        return buildBookingResponse(saved);
+    }
+    
+    // ===========================
+    // Méthodes d'envoi d'emails
+    // ===========================
+    
+    /**
+     * Envoie un email au client lorsque le voyageur confirme la réservation
+     */
+    private void sendBookingConfirmedEmail(Booking booking) throws Exception {
+        String customerEmail = booking.getCustomer().getEmail();
+        String customerName = booking.getCustomer().getFirstName() + " " + booking.getCustomer().getLastName();
+        String travelerName = booking.getFlight().getCustomer().getFirstName() + " " + 
+                            booking.getFlight().getCustomer().getLastName();
+        
+        String subject = "Réservation confirmée - SendByOp";
+        String body = buildBookingConfirmedEmailTemplate(customerName, travelerName, booking);
+        
+        sendMailService.sendHtmlEmail(customerEmail, subject, body);
+        log.info("Email de confirmation envoyé à: {}", customerEmail);
+    }
+    
+    /**
+     * Envoie un email au voyageur lorsque le client remet le colis
+     */
+    private void sendParcelHandedToTravelerEmail(Booking booking) throws Exception {
+        String travelerEmail = booking.getFlight().getCustomer().getEmail();
+        String travelerName = booking.getFlight().getCustomer().getFirstName() + " " + 
+                            booking.getFlight().getCustomer().getLastName();
+        String customerName = booking.getCustomer().getFirstName() + " " + booking.getCustomer().getLastName();
+        
+        String subject = "Colis remis - SendByOp";
+        String body = buildParcelHandedEmailTemplate(travelerName, customerName, booking);
+        
+        sendMailService.sendHtmlEmail(travelerEmail, subject, body);
+        log.info("Email de remise de colis envoyé à: {}", travelerEmail);
+    }
+    
+    /**
+     * Envoie un email au client lorsque le voyageur confirme avoir reçu le colis
+     */
+    private void sendParcelReceivedByTravelerEmail(Booking booking) throws Exception {
+        String customerEmail = booking.getCustomer().getEmail();
+        String customerName = booking.getCustomer().getFirstName() + " " + booking.getCustomer().getLastName();
+        String travelerName = booking.getFlight().getCustomer().getFirstName() + " " + 
+                            booking.getFlight().getCustomer().getLastName();
+        
+        String subject = "Colis reçu par le voyageur - SendByOp";
+        String body = buildParcelReceivedEmailTemplate(customerName, travelerName, booking);
+        
+        sendMailService.sendHtmlEmail(customerEmail, subject, body);
+        log.info("Email de réception de colis envoyé à: {}", customerEmail);
+    }
+    
+    /**
+     * Envoie un email au client et au destinataire lorsque le colis est livré
+     */
+    private void sendParcelDeliveredToReceiverEmail(Booking booking) throws Exception {
+        String customerEmail = booking.getCustomer().getEmail();
+        String customerName = booking.getCustomer().getFirstName() + " " + booking.getCustomer().getLastName();
+        String travelerName = booking.getFlight().getCustomer().getFirstName() + " " + 
+                            booking.getFlight().getCustomer().getLastName();
+        
+        String subject = "Colis livré au destinataire - SendByOp";
+        String body = buildParcelDeliveredEmailTemplate(customerName, travelerName, booking);
+        
+        sendMailService.sendHtmlEmail(customerEmail, subject, body);
+        
+        // Envoyer aussi au destinataire si l'email existe
+        if (booking.getReceiver() != null && booking.getReceiver().getEmail() != null) {
+            String receiverName = booking.getReceiver().getFirstName() + " " + booking.getReceiver().getLastName();
+            String receiverBody = buildReceiverDeliveredEmailTemplate(receiverName, customerName, booking);
+            sendMailService.sendHtmlEmail(booking.getReceiver().getEmail(), subject, receiverBody);
+        }
+        
+        log.info("Email de livraison envoyé à: {}", customerEmail);
+    }
+    
+    // ===========================
+    // Templates d'emails
+    // ===========================
+    
+    private String buildBookingConfirmedEmailTemplate(String customerName, String travelerName, Booking booking) {
+        String flightInfo = booking.getFlight().getDepartureAirport().getCity() + " → " + 
+                          booking.getFlight().getArrivalAirport().getCity();
+        
+        return "<!DOCTYPE html>" +
+            "<html>" +
+            "<head>" +
+            "<style>" +
+            "body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }" +
+            ".container { max-width: 600px; margin: 0 auto; padding: 20px; }" +
+            ".header { background: linear-gradient(135deg, #FF6B35, #F9A826); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }" +
+            ".content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }" +
+            ".info-box { background: white; border-left: 4px solid #FF6B35; padding: 15px; margin: 20px 0; }" +
+            ".button { display: inline-block; background: #FF6B35; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }" +
+            ".footer { text-align: center; margin-top: 30px; color: #666; font-size: 12px; }" +
+            "</style>" +
+            "</head>" +
+            "<body>" +
+            "<div class='container'>" +
+            "<div class='header'>" +
+            "<h1>✅ Réservation Confirmée</h1>" +
+            "</div>" +
+            "<div class='content'>" +
+            "<p>Bonjour <strong>" + customerName + "</strong>,</p>" +
+            "<p>Excellente nouvelle ! Le voyageur <strong>" + travelerName + "</strong> a confirmé votre réservation.</p>" +
+            "<div class='info-box'>" +
+            "<p><strong>📦 Référence:</strong> " + booking.getId() + "</p>" +
+            "<p><strong>✈️ Trajet:</strong> " + flightInfo + "</p>" +
+            "<p><strong>💰 Montant:</strong> " + booking.getTotalPrice() + " €</p>" +
+            "</div>" +
+            "<p><strong>Prochaines étapes:</strong></p>" +
+            "<ol>" +
+            "<li>Vous avez jusqu'à <strong>" + booking.getPaymentDeadline() + "</strong> pour effectuer le paiement</li>" +
+            "<li>Une fois le paiement validé, vous pourrez remettre votre colis au voyageur</li>" +
+            "</ol>" +
+            "<p style='text-align: center;'>" +
+            "<a href='http://localhost:4200/profile' class='button'>Voir ma réservation</a>" +
+            "</p>" +
+            "<p>Cordialement,<br>L'équipe SendByOp</p>" +
+            "</div>" +
+            "<div class='footer'>" +
+            "<p>© 2026 SendByOp. Tous droits réservés.</p>" +
+            "</div>" +
+            "</div>" +
+            "</body>" +
+            "</html>";
+    }
+    
+    private String buildParcelHandedEmailTemplate(String travelerName, String customerName, Booking booking) {
+        return "<!DOCTYPE html>" +
+            "<html>" +
+            "<head>" +
+            "<style>" +
+            "body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }" +
+            ".container { max-width: 600px; margin: 0 auto; padding: 20px; }" +
+            ".header { background: linear-gradient(135deg, #FF6B35, #F9A826); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }" +
+            ".content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }" +
+            ".info-box { background: white; border-left: 4px solid #FF6B35; padding: 15px; margin: 20px 0; }" +
+            ".button { display: inline-block; background: #FF6B35; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }" +
+            ".footer { text-align: center; margin-top: 30px; color: #666; font-size: 12px; }" +
+            "</style>" +
+            "</head>" +
+            "<body>" +
+            "<div class='container'>" +
+            "<div class='header'>" +
+            "<h1>📦 Colis Remis</h1>" +
+            "</div>" +
+            "<div class='content'>" +
+            "<p>Bonjour <strong>" + travelerName + "</strong>,</p>" +
+            "<p>" + customerName + " confirme vous avoir remis le colis pour la réservation #" + booking.getId() + ".</p>" +
+            "<div class='info-box'>" +
+            "<p><strong>⚠️ Action requise:</strong></p>" +
+            "<p>Veuillez confirmer la réception du colis en vous connectant à votre compte.</p>" +
+            "</div>" +
+            "<p style='text-align: center;'>" +
+            "<a href='http://localhost:4200/profile' class='button'>Confirmer la réception</a>" +
+            "</p>" +
+            "<p>Cordialement,<br>L'équipe SendByOp</p>" +
+            "</div>" +
+            "<div class='footer'>" +
+            "<p>© 2026 SendByOp. Tous droits réservés.</p>" +
+            "</div>" +
+            "</div>" +
+            "</body>" +
+            "</html>";
+    }
+    
+    private String buildParcelReceivedEmailTemplate(String customerName, String travelerName, Booking booking) {
+        return "<!DOCTYPE html>" +
+            "<html>" +
+            "<head>" +
+            "<style>" +
+            "body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }" +
+            ".container { max-width: 600px; margin: 0 auto; padding: 20px; }" +
+            ".header { background: linear-gradient(135deg, #FF6B35, #F9A826); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }" +
+            ".content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }" +
+            ".info-box { background: white; border-left: 4px solid #4CAF50; padding: 15px; margin: 20px 0; }" +
+            ".footer { text-align: center; margin-top: 30px; color: #666; font-size: 12px; }" +
+            "</style>" +
+            "</head>" +
+            "<body>" +
+            "<div class='container'>" +
+            "<div class='header'>" +
+            "<h1>✅ Colis Reçu</h1>" +
+            "</div>" +
+            "<div class='content'>" +
+            "<p>Bonjour <strong>" + customerName + "</strong>,</p>" +
+            "<p>" + travelerName + " confirme avoir reçu votre colis pour la réservation #" + booking.getId() + ".</p>" +
+            "<div class='info-box'>" +
+            "<p><strong>✈️ Statut:</strong> Votre colis est maintenant entre de bonnes mains et sera livré à destination.</p>" +
+            "</div>" +
+            "<p>Vous recevrez une notification dès que le colis sera remis au destinataire.</p>" +
+            "<p>Cordialement,<br>L'équipe SendByOp</p>" +
+            "</div>" +
+            "<div class='footer'>" +
+            "<p>© 2026 SendByOp. Tous droits réservés.</p>" +
+            "</div>" +
+            "</div>" +
+            "</body>" +
+            "</html>";
+    }
+    
+    private String buildParcelDeliveredEmailTemplate(String customerName, String travelerName, Booking booking) {
+        return "<!DOCTYPE html>" +
+            "<html>" +
+            "<head>" +
+            "<style>" +
+            "body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }" +
+            ".container { max-width: 600px; margin: 0 auto; padding: 20px; }" +
+            ".header { background: linear-gradient(135deg, #FF6B35, #F9A826); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }" +
+            ".content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }" +
+            ".info-box { background: white; border-left: 4px solid #4CAF50; padding: 15px; margin: 20px 0; }" +
+            ".footer { text-align: center; margin-top: 30px; color: #666; font-size: 12px; }" +
+            "</style>" +
+            "</head>" +
+            "<body>" +
+            "<div class='container'>" +
+            "<div class='header'>" +
+            "<h1>🎉 Colis Livré !</h1>" +
+            "</div>" +
+            "<div class='content'>" +
+            "<p>Bonjour <strong>" + customerName + "</strong>,</p>" +
+            "<p>" + travelerName + " confirme avoir remis votre colis au destinataire pour la réservation #" + booking.getId() + ".</p>" +
+            "<div class='info-box'>" +
+            "<p><strong>✅ Livraison réussie !</strong></p>" +
+            "<p>Votre colis a été remis au destinataire.</p>" +
+            "</div>" +
+            "<p>Merci d'avoir utilisé SendByOp ! Nous espérons vous revoir bientôt.</p>" +
+            "<p>Cordialement,<br>L'équipe SendByOp</p>" +
+            "</div>" +
+            "<div class='footer'>" +
+            "<p>© 2026 SendByOp. Tous droits réservés.</p>" +
+            "</div>" +
+            "</div>" +
+            "</body>" +
+            "</html>";
+    }
+    
+    private String buildReceiverDeliveredEmailTemplate(String receiverName, String senderName, Booking booking) {
+        return "<!DOCTYPE html>" +
+            "<html>" +
+            "<head>" +
+            "<style>" +
+            "body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }" +
+            ".container { max-width: 600px; margin: 0 auto; padding: 20px; }" +
+            ".header { background: linear-gradient(135deg, #FF6B35, #F9A826); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }" +
+            ".content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }" +
+            ".info-box { background: white; border-left: 4px solid #4CAF50; padding: 15px; margin: 20px 0; }" +
+            ".footer { text-align: center; margin-top: 30px; color: #666; font-size: 12px; }" +
+            "</style>" +
+            "</head>" +
+            "<body>" +
+            "<div class='container'>" +
+            "<div class='header'>" +
+            "<h1>📦 Colis Reçu</h1>" +
+            "</div>" +
+            "<div class='content'>" +
+            "<p>Bonjour <strong>" + receiverName + "</strong>,</p>" +
+            "<p>Vous avez reçu un colis envoyé par <strong>" + senderName + "</strong> via SendByOp.</p>" +
+            "<div class='info-box'>" +
+            "<p><strong>📦 Référence:</strong> " + booking.getId() + "</p>" +
+            "<p><strong>✅ Statut:</strong> Livré</p>" +
+            "</div>" +
+            "<p>Si vous n'avez pas reçu ce colis, veuillez contacter l'expéditeur.</p>" +
+            "<p>Cordialement,<br>L'équipe SendByOp</p>" +
+            "</div>" +
+            "<div class='footer'>" +
+            "<p>© 2026 SendByOp. Tous droits réservés.</p>" +
+            "</div>" +
+            "</div>" +
+            "</body>" +
+            "</html>";
     }
 }

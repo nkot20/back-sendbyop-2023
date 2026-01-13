@@ -86,6 +86,15 @@ public class PublicFlightDto {
     @Schema(description = "Customer last name", example = "Doe")
     private String customerLastName;
 
+    @Schema(description = "Traveler profile picture URL", example = "/uploads/profile-pictures/123.jpg")
+    private String travelerProfilePictureUrl;
+
+    @Schema(description = "Traveler average rating from reviews", example = "4.5")
+    private Double travelerAverageRating;
+
+    @Schema(description = "Total number of reviews for the traveler", example = "12")
+    private Integer travelerReviewCount;
+
     // Stopovers Information
     @Schema(description = "List of stopovers for this flight")
     private List<PublicStopoverDto> stopovers;

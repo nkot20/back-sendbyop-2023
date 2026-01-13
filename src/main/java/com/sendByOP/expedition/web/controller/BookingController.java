@@ -6,7 +6,12 @@ import com.sendByOP.expedition.models.dto.BookingResponseDto;
 import com.sendByOP.expedition.models.dto.CreateBookingRequest;
 import com.sendByOP.expedition.models.dto.CustomerBookingDto;
 import com.sendByOP.expedition.models.dto.PaymentRequest;
+import com.sendByOP.expedition.models.entities.Booking;
+import com.sendByOP.expedition.models.entities.Transaction;
+import com.sendByOP.expedition.repositories.BookingRepository;
+import com.sendByOP.expedition.repositories.TransactionRepository;
 import com.sendByOP.expedition.services.iServices.IBookingService;
+import com.sendByOP.expedition.services.impl.InvoiceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +34,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -41,6 +48,9 @@ import java.util.List;
 public class BookingController {
 
     private final IBookingService bookingService;
+    private final InvoiceService invoiceService;
+    private final TransactionRepository transactionRepository;
+    private final BookingRepository bookingRepository;
 
     /**
      * Créer une nouvelle réservation de transport de colis
@@ -568,5 +578,167 @@ public class BookingController {
         CustomerBookingDto booking = bookingService.getBookingDetails(bookingId, authentication.getName());
         
         return ResponseEntity.ok(booking);
+    }
+    
+    /**
+     * Le client marque qu'il a donné le colis au voyageur
+     */
+    @PutMapping("/{bookingId}/parcel-handed")
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('USER')")
+    @Operation(
+            summary = "Marquer le colis comme remis au voyageur",
+            description = "Le client confirme avoir donné le colis au voyageur. " +
+                    "Envoie une notification au voyageur."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Colis marqué comme remis"),
+            @ApiResponse(responseCode = "401", description = "Non authentifié", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Non autorisé", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Réservation non trouvée", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Statut invalide", content = @Content)
+    })
+    public ResponseEntity<BookingResponseDto> markParcelHandedToTraveler(
+            @PathVariable Integer bookingId,
+            @RequestParam Integer customerId,
+            Authentication authentication
+    ) throws SendByOpException {
+        // Vérifier que l'utilisateur authentifié est bien le client
+        // (le customerId est passé pour double vérification)
+        
+        log.info("PUT /api/bookings/{}/parcel-handed by customer {}", bookingId, customerId);
+        
+        BookingResponseDto response = bookingService.markParcelHandedToTraveler(bookingId, customerId);
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    /**
+     * Le voyageur confirme avoir reçu le colis
+     */
+    @PutMapping("/{bookingId}/parcel-received")
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('USER')")
+    @Operation(
+            summary = "Confirmer la réception du colis par le voyageur",
+            description = "Le voyageur confirme avoir reçu le colis du client. " +
+                    "Envoie une notification au client."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Réception confirmée"),
+            @ApiResponse(responseCode = "401", description = "Non authentifié", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Non autorisé", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Réservation non trouvée", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Statut invalide", content = @Content)
+    })
+    public ResponseEntity<BookingResponseDto> confirmParcelReceived(
+            @PathVariable Integer bookingId,
+            @RequestParam Integer travelerId,
+            Authentication authentication
+    ) throws SendByOpException {
+        
+        log.info("PUT /api/bookings/{}/parcel-received by traveler {}", bookingId, travelerId);
+        
+        BookingResponseDto response = bookingService.confirmParcelReceivedByTraveler(bookingId, travelerId);
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    /**
+     * Le voyageur confirme avoir remis le colis au destinataire
+     */
+    @PutMapping("/{bookingId}/parcel-delivered")
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('USER')")
+    @Operation(
+            summary = "Confirmer la livraison du colis au destinataire",
+            description = "Le voyageur confirme avoir remis le colis au destinataire. " +
+                    "Envoie des notifications au client et au destinataire."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Livraison confirmée"),
+            @ApiResponse(responseCode = "401", description = "Non authentifié", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Non autorisé", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Réservation non trouvée", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Statut invalide", content = @Content)
+    })
+    public ResponseEntity<BookingResponseDto> confirmParcelDelivered(
+            @PathVariable Integer bookingId,
+            @RequestParam Integer travelerId,
+            Authentication authentication
+    ) throws SendByOpException {
+        
+        log.info("PUT /api/bookings/{}/parcel-delivered by traveler {}", bookingId, travelerId);
+        
+        BookingResponseDto response = bookingService.confirmParcelDeliveredToReceiver(bookingId, travelerId);
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    /**
+     * Télécharge le reçu/facture pour une réservation
+     */
+    @GetMapping("/{bookingId}/receipt")
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('USER')")
+    @Operation(
+            summary = "Télécharger le reçu d'une réservation",
+            description = "Génère et télécharge le reçu/facture pour une réservation payée"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Reçu téléchargé avec succès"),
+            @ApiResponse(responseCode = "403", description = "Accès non autorisé", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Réservation ou transaction non trouvée", content = @Content)
+    })
+    public ResponseEntity<byte[]> downloadReceipt(
+            @PathVariable @Parameter(description = "ID de la réservation") Integer bookingId,
+            Principal principal) {
+        
+        log.info("Téléchargement du reçu pour la réservation: {} par {}", 
+                bookingId, principal.getName());
+        
+        try {
+            // Récupérer la réservation
+            Booking booking = bookingRepository.findById(bookingId)
+                    .orElseThrow(() -> new SendByOpException(ErrorInfo.RESOURCE_NOT_FOUND, 
+                            "Réservation non trouvée"));
+            
+            // Vérifier que la réservation appartient bien au client connecté
+            if (!booking.getCustomer().getEmail().equals(principal.getName())) {
+                log.warn("Tentative d'accès non autorisé au reçu de la réservation {} par {}", 
+                        bookingId, principal.getName());
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            
+            // Trouver la transaction associée à cette réservation
+            Transaction transaction = transactionRepository.findByBookingIdOrderByCreatedAtDesc(bookingId)
+                    .stream()
+                    .filter(t -> "COMPLETED".equals(t.getStatus().name()) || 
+                                 "SUCCESS".equals(t.getStatus().name()))
+                    .findFirst()
+                    .orElseThrow(() -> new SendByOpException(ErrorInfo.RESOURCE_NOT_FOUND, 
+                            "Aucune transaction payée trouvée pour cette réservation"));
+            
+            // Générer la facture
+            byte[] invoicePdf = invoiceService.generateInvoice(transaction);
+            
+            // Préparer les headers pour le téléchargement
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", 
+                    "recu_reservation_" + bookingId + ".pdf");
+            headers.setContentLength(invoicePdf.length);
+            
+            log.info("Reçu généré et prêt au téléchargement pour la réservation: {}", bookingId);
+            
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(invoicePdf);
+            
+        } catch (SendByOpException e) {
+            log.error("Erreur lors du téléchargement du reçu: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            
+        } catch (Exception e) {
+            log.error("Erreur inattendue lors du téléchargement du reçu: {}", 
+                    e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

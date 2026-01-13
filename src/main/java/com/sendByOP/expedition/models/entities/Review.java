@@ -40,6 +40,18 @@ public class Review extends BaseEntity implements Serializable {
     @ManyToOne(optional = false)
     private Customer shipper;
 
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JoinColumn(name = "booking_id", referencedColumnName = "id")
+    @ManyToOne(optional = true)
+    private Booking booking;
+
+    @Column(name = "response")
+    private String response;
+
+    @Column(name = "response_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date responseDate;
+
 }
 
 

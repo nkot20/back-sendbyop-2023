@@ -26,10 +26,28 @@ public enum BookingStatus {
     CONFIRMED_PAID("Confirmée et payée"),
     
     /**
+     * Colis remis au voyageur par le client
+     * Le client confirme avoir donné le colis au voyageur
+     */
+    PARCEL_HANDED_TO_TRAVELER("Colis remis au voyageur"),
+    
+    /**
+     * Voyageur confirme avoir reçu le colis
+     * Le colis est en possession du voyageur
+     */
+    PARCEL_RECEIVED_BY_TRAVELER("Colis reçu par le voyageur"),
+    
+    /**
      * Colis en transit
      * Le vol a décollé avec le colis
      */
     IN_TRANSIT("En transit"),
+    
+    /**
+     * Voyageur confirme avoir remis le colis au destinataire
+     * En attente de confirmation du destinataire
+     */
+    PARCEL_DELIVERED_TO_RECEIVER("Colis remis au destinataire"),
     
     /**
      * Colis livré au destinataire

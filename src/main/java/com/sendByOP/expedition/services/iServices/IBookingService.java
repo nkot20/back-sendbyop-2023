@@ -221,4 +221,34 @@ public interface IBookingService {
      * @throws SendByOpException Si la réservation n'existe pas ou si l'utilisateur n'est pas autorisé
      */
     CustomerBookingDto getBookingDetails(Integer bookingId, String requesterId) throws SendByOpException;
+    
+    /**
+     * Le client marque qu'il a donné le colis au voyageur
+     * 
+     * @param bookingId ID de la réservation
+     * @param customerId ID du client
+     * @return Les détails de la réservation mise à jour
+     * @throws SendByOpException Si la réservation n'existe pas ou si l'utilisateur n'est pas autorisé
+     */
+    BookingResponseDto markParcelHandedToTraveler(Integer bookingId, Integer customerId) throws SendByOpException;
+    
+    /**
+     * Le voyageur confirme avoir reçu le colis
+     * 
+     * @param bookingId ID de la réservation
+     * @param travelerId ID du voyageur
+     * @return Les détails de la réservation mise à jour
+     * @throws SendByOpException Si la réservation n'existe pas ou si l'utilisateur n'est pas autorisé
+     */
+    BookingResponseDto confirmParcelReceivedByTraveler(Integer bookingId, Integer travelerId) throws SendByOpException;
+    
+    /**
+     * Le voyageur confirme avoir remis le colis au destinataire
+     * 
+     * @param bookingId ID de la réservation
+     * @param travelerId ID du voyageur
+     * @return Les détails de la réservation mise à jour
+     * @throws SendByOpException Si la réservation n'existe pas ou si l'utilisateur n'est pas autorisé
+     */
+    BookingResponseDto confirmParcelDeliveredToReceiver(Integer bookingId, Integer travelerId) throws SendByOpException;
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -44,4 +45,15 @@ public class User implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private AccountStatus status;
+    
+    @Builder.Default
+    @Column(name = "two_factor_enabled", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private Boolean twoFactorEnabled = false;
+    
+    @Column(name = "otp_secret")
+    private String otpSecret;
+    
+    @Column(name = "otp_sent_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date otpSentAt;
 }

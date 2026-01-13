@@ -79,6 +79,44 @@ public class SendMailService {
             throw new MessagingException("Erreur lors de l'envoi de l'email: " + e.getMessage(), e);
         }
     }
+    
+    /**
+     * Envoie un email HTML avec une pièce jointe
+     */
+    public void sendEmailWithAttachment(String toEmail, String subject, String htmlContent, 
+                                       byte[] attachment, String attachmentName) 
+            throws MessagingException, UnsupportedEncodingException {
+        log.info("Envoi d'un email avec pièce jointe à {}", toEmail);
+        
+        try {
+            String senderName = "SendByOp";
+
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.name());
+
+            helper.setFrom(emailFrom, senderName);
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+            
+            // Ajouter la pièce jointe
+            if (attachment != null && attachment.length > 0) {
+                helper.addAttachment(attachmentName, () -> new java.io.ByteArrayInputStream(attachment));
+                log.info("Pièce jointe ajoutée: {} ({} bytes)", attachmentName, attachment.length);
+            }
+
+            javaMailSender.send(message);
+            log.info("Email avec pièce jointe envoyé avec succès à {}", toEmail);
+        } catch (MessagingException e) {
+            log.error("Erreur MessagingException lors de l'envoi de l'email à {} : {}", 
+                     toEmail, e.getMessage(), e);
+            throw e;
+        } catch (Exception e) {
+            log.error("Erreur inattendue lors de l'envoi de l'email à {} : {}", 
+                     toEmail, e.getMessage(), e);
+            throw new MessagingException("Erreur lors de l'envoi de l'email: " + e.getMessage(), e);
+        }
+    }
 
     /**
      * @deprecated Utiliser sendHtmlEmail() avec EmailTemplateService à la place
