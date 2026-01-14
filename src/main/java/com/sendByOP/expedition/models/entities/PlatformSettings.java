@@ -97,6 +97,69 @@ public class PlatformSettings implements Serializable {
     private BigDecimal lateCancellationPenalty = BigDecimal.valueOf(0.50); // 50%
     
     // ==========================================
+    // COMMISSIONS ET FRAIS
+    // ==========================================
+    
+    @NotNull
+    @DecimalMin(value = "0", message = "La commission doit être positive")
+    @DecimalMax(value = "100", message = "La commission ne peut pas dépasser 100%")
+    @Column(name = "commission_percentage", nullable = false, precision = 5, scale = 2)
+    private BigDecimal commissionPercentage = BigDecimal.valueOf(15.00); // 15%
+    
+    @NotNull
+    @DecimalMin(value = "0", message = "Le montant minimum de reversement doit être positif")
+    @Column(name = "minimum_payout_amount", nullable = false, precision = 10, scale = 2)
+    private BigDecimal minimumPayoutAmount = BigDecimal.valueOf(50.00); // 50 EUR
+    
+    @NotNull
+    @DecimalMin(value = "0", message = "Les frais couverts doivent être positifs")
+    @Column(name = "transfer_fee_covered", nullable = false, precision = 10, scale = 2)
+    private BigDecimal transferFeeCovered = BigDecimal.valueOf(5.00); // 5 EUR
+    
+    @NotNull
+    @DecimalMin(value = "0", message = "Le montant d'assurance doit être positif")
+    @Column(name = "insurance_amount", nullable = false, precision = 10, scale = 2)
+    private BigDecimal insuranceAmount = BigDecimal.valueOf(5.00); // 5 EUR
+    
+    @NotNull
+    @DecimalMin(value = "0", message = "Le taux de TVA doit être positif")
+    @DecimalMax(value = "100", message = "Le taux de TVA ne peut pas dépasser 100%")
+    @Column(name = "vat_rate_europe", nullable = false, precision = 5, scale = 2)
+    private BigDecimal vatRateEurope = BigDecimal.valueOf(20.00); // 20%
+    
+    // ==========================================
+    // DÉLAIS SUPPLÉMENTAIRES
+    // ==========================================
+    
+    @NotNull
+    @Min(value = 24, message = "Le délai minimum est de 24 heures")
+    @Max(value = 168, message = "Le délai maximum est de 168 heures (7 jours)")
+    @Column(name = "reception_confirmation_hours", nullable = false)
+    private Integer receptionConfirmationHours = 72; // 72h
+    
+    @NotNull
+    @Min(value = 30, message = "Le délai minimum est de 30 jours")
+    @Max(value = 365, message = "Le délai maximum est de 365 jours")
+    @Column(name = "review_deadline_days", nullable = false)
+    private Integer reviewDeadlineDays = 90; // 90 jours
+    
+    @NotNull
+    @Min(value = 1, message = "Le délai critique minimum est de 1 heure")
+    @Max(value = 24, message = "Le délai critique maximum est de 24 heures")
+    @Column(name = "critical_cancellation_hours", nullable = false)
+    private Integer criticalCancellationHours = 4; // 4h
+    
+    // ==========================================
+    // REMBOURSEMENTS
+    // ==========================================
+    
+    @NotNull
+    @DecimalMin(value = "0", message = "Le taux de remboursement doit être positif")
+    @DecimalMax(value = "100", message = "Le taux de remboursement ne peut pas dépasser 100%")
+    @Column(name = "refund_rate_before_deadline", nullable = false, precision = 5, scale = 2)
+    private BigDecimal refundRateBeforeDeadline = BigDecimal.valueOf(90.00); // 90%
+    
+    // ==========================================
     // AUDIT
     // ==========================================
     

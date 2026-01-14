@@ -1,5 +1,6 @@
 package com.sendByOP.expedition.web.controller;
 
+import com.sendByOP.expedition.exception.ErrorInfo;
 import com.sendByOP.expedition.exception.SendByOpException;
 import com.sendByOP.expedition.models.dto.*;
 import com.sendByOP.expedition.services.iServices.IVolService;
@@ -198,6 +199,59 @@ public class FlightController {
     @PutMapping("/cancellation")
     public ResponseEntity<CancellationTripDto> updateCancellation(@RequestBody @Parameter(description = "Updated cancellation data") CancellationTripDto cancellation) throws SendByOpException {
         return ResponseEntity.ok(cancelTripService.update(cancellation));
+    }
+
+    /**
+     * Endpoint simplifié pour annuler un vol par ID
+     * Utilisé par le frontend Angular
+     * Version simplifiée qui ne passe pas par CancelTripService pour éviter les problèmes de lazy loading
+     */
+    @Operation(summary = "Cancel flight by ID", description = "Cancels a flight using only the flight ID with an optional reason")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Flight cancelled successfully"),
+            @ApiResponse(responseCode = "404", description = "Flight not found")
+    })
+    @PutMapping("/{flightId}/cancel")
+    public ResponseEntity<FlightDto> cancelFlightById(
+            @PathVariable("flightId") @Parameter(description = "Flight ID to cancel") Integer flightId,
+            @RequestParam(required = false, defaultValue = "Annulé par le voyageur") @Parameter(description = "Cancellation reason") String reason) throws SendByOpException {
+        
+        // #region agent log
+        try{java.nio.file.Files.write(java.nio.file.Paths.get("d:\\SendByOp2023\\Backend\\.cursor\\debug.log"),String.format("{\"location\":\"FlightController.java:215\",\"message\":\"Entry cancelFlightById\",\"data\":{\"flightId\":%d,\"reason\":\"%s\"},\"timestamp\":%d,\"sessionId\":\"debug-session\",\"hypothesisId\":\"H1,H2,H3\"}%n",flightId,reason,System.currentTimeMillis()).getBytes(),java.nio.file.StandardOpenOption.CREATE,java.nio.file.StandardOpenOption.APPEND);}catch(Exception e){}
+        // #endregion
+        
+        log.info("PUT /trips/{}/cancel - Cancellation request with reason: {}", flightId, reason);
+        
+        // Récupérer le vol
+        FlightDto flight = flightService.getVolById(flightId);
+        
+        // #region agent log
+        try{java.nio.file.Files.write(java.nio.file.Paths.get("d:\\SendByOp2023\\Backend\\.cursor\\debug.log"),String.format("{\"location\":\"FlightController.java:220\",\"message\":\"After getVolById\",\"data\":{\"flightIsNull\":%b,\"departureAirportId\":%s,\"arrivalAirportId\":%s,\"cancelled\":%s},\"timestamp\":%d,\"sessionId\":\"debug-session\",\"hypothesisId\":\"H3\"}%n",flight==null,flight!=null?flight.getDepartureAirportId():"null",flight!=null?flight.getArrivalAirportId():"null",flight!=null?flight.getCancelled():"null",System.currentTimeMillis()).getBytes(),java.nio.file.StandardOpenOption.CREATE,java.nio.file.StandardOpenOption.APPEND);}catch(Exception e){}
+        // #endregion
+        
+        if (flight == null) {
+            throw new SendByOpException(ErrorInfo.RESOURCE_NOT_FOUND, "Vol non trouvé");
+        }
+        
+        // Marquer comme annulé
+        flight.setCancelled(1);
+        
+        // #region agent log
+        try{java.nio.file.Files.write(java.nio.file.Paths.get("d:\\SendByOp2023\\Backend\\.cursor\\debug.log"),String.format("{\"location\":\"FlightController.java:228\",\"message\":\"Before updateVol\",\"data\":{\"flightId\":%d,\"cancelled\":%d,\"departureAirportId\":%s,\"arrivalAirportId\":%s},\"timestamp\":%d,\"sessionId\":\"debug-session\",\"hypothesisId\":\"H4,H5\"}%n",flight.getFlightId(),flight.getCancelled(),flight.getDepartureAirportId(),flight.getArrivalAirportId(),System.currentTimeMillis()).getBytes(),java.nio.file.StandardOpenOption.CREATE,java.nio.file.StandardOpenOption.APPEND);}catch(Exception e){}
+        // #endregion
+        
+        FlightDto cancelledFlight = flightService.updateVol(flight);
+        
+        // #region agent log
+        try{java.nio.file.Files.write(java.nio.file.Paths.get("d:\\SendByOp2023\\Backend\\.cursor\\debug.log"),String.format("{\"location\":\"FlightController.java:232\",\"message\":\"After updateVol SUCCESS\",\"data\":{\"flightId\":%d},\"timestamp\":%d,\"sessionId\":\"debug-session\",\"hypothesisId\":\"ALL\"}%n",cancelledFlight.getFlightId(),System.currentTimeMillis()).getBytes(),java.nio.file.StandardOpenOption.CREATE,java.nio.file.StandardOpenOption.APPEND);}catch(Exception e){}
+        // #endregion
+        
+        log.info("Flight {} cancelled successfully", flightId);
+        
+        // TODO: Notifier les clients avec des réservations sur ce vol
+        // TODO: Créer des remboursements automatiques selon les règles
+        
+        return ResponseEntity.ok(cancelledFlight);
     }
 
 }

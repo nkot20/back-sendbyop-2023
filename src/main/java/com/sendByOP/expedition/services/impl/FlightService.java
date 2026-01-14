@@ -14,6 +14,7 @@ import com.sendByOP.expedition.models.dto.VolEscaleDto;
 import com.sendByOP.expedition.models.entities.Flight;
 import com.sendByOP.expedition.models.entities.Review;
 import com.sendByOP.expedition.models.entities.Stopover;
+import com.sendByOP.expedition.models.enums.FlightStatus;
 import com.sendByOP.expedition.repositories.FlightRepository;
 import com.sendByOP.expedition.repositories.ParcelRepository;
 import com.sendByOP.expedition.repositories.ReviewRepository;
@@ -217,9 +218,10 @@ public class FlightService implements IVolService {
         Date currentDate = new Date();
         List<Flight> flights = flightRepository.findByValidationStatusAndCancelledOrderByDepartureDateDesc(1, 0);
         
-        // Filter flights with departure date in the future
+        // Filter flights with departure date in the future AND status ACTIVE (not EXPIRED or CANCELLED)
         List<Flight> activeFuture = flights.stream()
                 .filter(flight -> flight.getDepartureDate().after(currentDate))
+                .filter(flight -> flight.getStatus() == FlightStatus.ACTIVE)
                 .collect(Collectors.toList());
         
         log.info("Found {} valid and active flights for public API", activeFuture.size());
@@ -255,6 +257,12 @@ public class FlightService implements IVolService {
                     log.error("Flight not found with flight id: {}", id);
                     return new EntityNotFoundException("Flight not found with flight id: " + id);
                 });
+        
+        // Vérifier que le vol n'est pas expiré
+        if (flight.getStatus() == FlightStatus.EXPIRED) {
+            log.warn("Attempt to access expired flight: {}", id);
+            throw new EntityNotFoundException("Ce vol n'est plus disponible (expiré)");
+        }
         
         PublicFlightDto publicFlightDto = convertToPublicFlightDto(flight);
         log.info("Successfully retrieved public flight details for flight id: {}", id);

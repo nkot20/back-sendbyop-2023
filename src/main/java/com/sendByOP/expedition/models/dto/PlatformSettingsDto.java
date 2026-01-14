@@ -79,6 +79,60 @@ public class PlatformSettingsDto implements Serializable {
     private BigDecimal lateCancellationPenalty;
     
     // ==========================================
+    // COMMISSIONS ET FRAIS
+    // ==========================================
+    
+    @NotNull(message = "La commission plateforme est requise")
+    @DecimalMin(value = "0", message = "La commission doit être positive")
+    @DecimalMax(value = "100", message = "La commission ne peut dépasser 100%")
+    private BigDecimal commissionPercentage;
+    
+    @NotNull(message = "Le montant minimum de reversement est requis")
+    @DecimalMin(value = "0", message = "Le montant doit être positif")
+    private BigDecimal minimumPayoutAmount;
+    
+    @NotNull(message = "Les frais couverts sont requis")
+    @DecimalMin(value = "0", message = "Les frais doivent être positifs")
+    private BigDecimal transferFeeCovered;
+    
+    @NotNull(message = "Le montant d'assurance est requis")
+    @DecimalMin(value = "0", message = "Le montant d'assurance doit être positif")
+    private BigDecimal insuranceAmount;
+    
+    @NotNull(message = "Le taux de TVA Europe est requis")
+    @DecimalMin(value = "0", message = "Le taux de TVA doit être positif")
+    @DecimalMax(value = "100", message = "Le taux de TVA ne peut dépasser 100%")
+    private BigDecimal vatRateEurope;
+    
+    // ==========================================
+    // DÉLAIS SUPPLÉMENTAIRES
+    // ==========================================
+    
+    @NotNull(message = "Le délai de confirmation de réception est requis")
+    @Min(value = 24, message = "Le délai minimum est de 24 heures")
+    @Max(value = 168, message = "Le délai maximum est de 168 heures")
+    private Integer receptionConfirmationHours;
+    
+    @NotNull(message = "Le délai pour donner un avis est requis")
+    @Min(value = 30, message = "Le délai minimum est de 30 jours")
+    @Max(value = 365, message = "Le délai maximum est de 365 jours")
+    private Integer reviewDeadlineDays;
+    
+    @NotNull(message = "Le délai critique d'annulation est requis")
+    @Min(value = 1, message = "Le délai minimum est de 1 heure")
+    @Max(value = 24, message = "Le délai maximum est de 24 heures")
+    private Integer criticalCancellationHours;
+    
+    // ==========================================
+    // REMBOURSEMENTS
+    // ==========================================
+    
+    @NotNull(message = "Le taux de remboursement est requis")
+    @DecimalMin(value = "0", message = "Le taux doit être positif")
+    @DecimalMax(value = "100", message = "Le taux ne peut dépasser 100%")
+    private BigDecimal refundRateBeforeDeadline;
+    
+    // ==========================================
     // AUDIT
     // ==========================================
     
