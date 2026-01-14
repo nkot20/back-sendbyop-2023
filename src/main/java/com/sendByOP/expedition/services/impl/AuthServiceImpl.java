@@ -1,5 +1,6 @@
 package com.sendByOP.expedition.services.impl;
 
+import com.sendByOP.expedition.exception.ErrorInfo;
 import com.sendByOP.expedition.exception.SendByOpException;
 import com.sendByOP.expedition.message.LoginForm;
 import com.sendByOP.expedition.message.SignUpForm;
@@ -7,12 +8,14 @@ import com.sendByOP.expedition.models.dto.CustomerDto;
 import com.sendByOP.expedition.models.dto.EmailDto;
 import com.sendByOP.expedition.models.entities.Role;
 import com.sendByOP.expedition.models.entities.User;
+import com.sendByOP.expedition.models.enums.AccountStatus;
 import com.sendByOP.expedition.models.enums.RoleEnum;
 import com.sendByOP.expedition.reponse.JwtResponse;
 import com.sendByOP.expedition.reponse.ResponseMessage;
 import com.sendByOP.expedition.security.jwt.JwtProvider;
+import com.sendByOP.expedition.services.OtpService;
 import com.sendByOP.expedition.services.iServices.IAuthService;
-import com.sendByOP.expedition.services.iServices.IClientServivce;
+import com.sendByOP.expedition.services.iServices.ICustomerService;
 import com.sendByOP.expedition.services.iServices.IRoleService;
 import com.sendByOP.expedition.services.iServices.IUserService;
 import jakarta.mail.MessagingException;
@@ -39,7 +42,8 @@ public class AuthServiceImpl implements IAuthService {
     private final PasswordEncoder encoder;
     private final JwtProvider jwtProvider;
     private final SendMailService sendMailService;
-    private final IClientServivce clientService;
+    private final ICustomerService clientService;
+    private final OtpService otpService;
 
     @Override
     public JwtResponse authenticateUser(@Valid LoginForm loginRequest) throws SendByOpException {
@@ -47,17 +51,107 @@ public class AuthServiceImpl implements IAuthService {
             throw new SendByOpException("Email or password cannot be null", HttpStatus.BAD_REQUEST);
         }
 
-
+        log.info("Login attempt for username: {}", loginRequest.getUsername());
+        
+        // 1. Authentifier avec Spring Security
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
+        // 2. Récupérer le User et vérifier son statut
+        User user = userService.findByEmail(loginRequest.getUsername());
+        
+        // 3. Vérifier le statut du compte
+        if (user.getStatus() == AccountStatus.PENDING_VERIFICATION) {
+            log.warn("Login attempt with unverified email: {}", loginRequest.getUsername());
+            // Renvoyer automatiquement l'email de vérification
+            CustomerDto customer = clientService.getCustomerByEmail(user.getEmail());
+            if (customer != null) {
+                try {
+                    // Déclencher le renvoi d'email via UserRegistrationService si disponible
+                    log.info("Resending verification email to: {}", user.getEmail());
+                } catch (Exception e) {
+                    log.error("Failed to resend verification email: {}", e.getMessage());
+                }
+            }
+            throw new SendByOpException(ErrorInfo.EMAIL_NOT_VERIFIED);
+        }
+        
+        if (user.getStatus() == AccountStatus.BLOCKED) {
+            log.warn("Login attempt with blocked account: {}", loginRequest.getUsername());
+            throw new SendByOpException(ErrorInfo.ACCOUNT_BLOCKED);
+        }
+        
+        if (user.getStatus() == AccountStatus.INACTIVE) {
+            log.warn("Login attempt with inactive account: {}", loginRequest.getUsername());
+            throw new SendByOpException(ErrorInfo.ACCOUNT_INACTIVE);
+        }
+        
+        // 4. Vérifier si le 2FA est activé dans la table user
+        if (Boolean.TRUE.equals(user.getTwoFactorEnabled())) {
+            log.info("2FA is enabled for user: {}", loginRequest.getUsername());
+            
+            // Si aucun code OTP n'est fourni, envoyer un OTP et demander à l'utilisateur de le saisir
+            if (loginRequest.getOtpCode() == null || loginRequest.getOtpCode().trim().isEmpty()) {
+                log.info("Sending OTP to user: {}", loginRequest.getUsername());
+                otpService.sendOtpEmail(user.getEmail());
+                
+                // Retourner une réponse indiquant qu'un code OTP est requis
+                JwtResponse response = new JwtResponse(null, null, user.getEmail(), null);
+                response.setRequiresOtp(true);
+                response.setMessage("Un code de vérification a été envoyé à votre email");
+                return response;
+            }
+            
+            // Si un code OTP est fourni, le vérifier
+            log.info("Verifying OTP for user: {}", loginRequest.getUsername());
+            if (!otpService.verifyOtp(user.getEmail(), loginRequest.getOtpCode())) {
+                log.warn("Invalid or expired OTP for user: {}", loginRequest.getUsername());
+                throw new SendByOpException(ErrorInfo.VALIDATION_ERROR, 
+                        "Code de vérification invalide ou expiré");
+            }
+            
+            // OTP valide, effacer le code et continuer le login
+            otpService.clearOtp(user.getEmail());
+            log.info("OTP verified successfully for user: {}", loginRequest.getUsername());
+        }
+        
+        // 5. Statut ACTIVE et (2FA désactivé ou OTP vérifié) - Générer le JWT
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtProvider.generateJwtToken(authentication);
         String refreshToken = jwtProvider.generateRefreshToken(authentication);
-        log.debug("JWT Token and Refresh Token generated for user: {}", loginRequest.getUsername());
+        log.info("Login successful for user: {} with status: {}", loginRequest.getUsername(), user.getStatus());
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        return new JwtResponse(jwt, refreshToken, userDetails.getUsername(), userDetails.getAuthorities());
+        // 6. Récupérer les informations du Customer pour le profil
+        Integer customerId = null;
+        String profilePictureUrl = null;
+        String firstName = null;
+        String lastName = null;
+        
+        // Récupérer le customer pour les informations de profil
+        CustomerDto customer = null;
+        try {
+            customer = clientService.getCustomerByEmail(user.getEmail());
+        } catch (SendByOpException e) {
+            log.warn("No customer found for user email: {}", user.getEmail());
+        }
+        
+        if (customer != null) {
+            customerId = customer.getId();
+            firstName = customer.getFirstName();
+            lastName = customer.getLastName();
+            
+            // Construire l'URL de la photo de profil si elle existe
+            if (customer.getProfilePicture() != null && !customer.getProfilePicture().trim().isEmpty()) {
+                profilePictureUrl = "/api/profile/picture/" + customerId;
+            }
+            
+            log.info("Customer info found for user {}: id={}, profilePicture={}", 
+                user.getEmail(), customerId, profilePictureUrl);
+        }
+
+        return new JwtResponse(jwt, refreshToken, userDetails.getUsername(), customerId, 
+                               profilePictureUrl, firstName, lastName, userDetails.getAuthorities());
     }
 
     @Override

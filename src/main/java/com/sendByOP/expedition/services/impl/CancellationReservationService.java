@@ -7,7 +7,7 @@ import com.sendByOP.expedition.models.dto.BookingDto;
 import com.sendByOP.expedition.models.entities.CancellationReservation;
 import com.sendByOP.expedition.models.entities.Booking;
 import com.sendByOP.expedition.repositories.CancelReservationRepository;
-import com.sendByOP.expedition.repositories.ReservationRepository;
+import com.sendByOP.expedition.repositories.BookingRepository;
 import com.sendByOP.expedition.services.iServices.IAnnulationReservationService;
 import com.sendByOP.expedition.mappers.CancellationReservationMapper;
 import com.sendByOP.expedition.mappers.BookingMapper;
@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CancellationReservationService implements IAnnulationReservationService {
 
     private final CancelReservationRepository cancelReservationRepository;
-    private final ReservationRepository reservationRepository;
+    private final BookingRepository reservationRepository;
     private final CancellationReservationMapper cancellationMapper;
     private final BookingMapper bookingMapper;
 

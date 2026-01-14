@@ -16,4 +16,14 @@ public class ReviewDto {
     private Date date;
     private Integer transporterId;
     private Integer shipperId;
+    private Integer bookingId; // ID de la réservation (optionnel)
+    
+    // Informations supplémentaires pour l'affichage
+    private String reviewerName; // Nom du client qui a laissé l'avis
+    private String travelerId; // ID du voyageur noté
+    private String flightInfo; // Info du vol (départ -> arrivée)
+    
+    // Réponse du voyageur
+    private String response;
+    private Date responseDate;
 }

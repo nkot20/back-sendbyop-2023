@@ -6,14 +6,14 @@ import com.sendByOP.expedition.models.dto.CustomerDto;
 import com.sendByOP.expedition.models.dto.CustomerRegistrationDto;
 import com.sendByOP.expedition.models.entities.User;
 import com.sendByOP.expedition.models.entities.VerifyToken;
+import com.sendByOP.expedition.models.enums.AccountStatus;
 import com.sendByOP.expedition.models.enums.RoleEnum;
-import com.sendByOP.expedition.services.iServices.IClientServivce;
+import com.sendByOP.expedition.services.iServices.ICustomerService;
 import com.sendByOP.expedition.utils.AppConstants;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +25,10 @@ import java.io.UnsupportedEncodingException;
 @Slf4j
 @Transactional
 public class UserRegistrationService {
-    private final IClientServivce customerService;
+    private final ICustomerService customerService;
     private final VerifyTokenService verifyTokenService;
     private final SendMailService emailService;
+    private final EmailTemplateService emailTemplateService;
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
 
@@ -50,43 +51,64 @@ public class UserRegistrationService {
             .build();
 
         CustomerDto savedCustomer = customerService.saveClient(customer);
-        userService.saveUser(User.builder()
+        
+        // Créer et sauvegarder le compte User
+        User savedUser = userService.saveUser(User.builder()
                         .email(customer.getEmail())
                         .firstName(customer.getFirstName())
                         .lastName(customer.getLastName())
                         .username(customer.getEmail())
                         .password(passwordEncoder.encode(registrationDto.getPassword()))
                         .role(RoleEnum.CUSTOMER.name())
+                        .status(AccountStatus.PENDING_VERIFICATION)  // Compte en attente de vérification
                 .build());
 
-        if (savedCustomer == null) {
-            throw new SendByOpException(ErrorInfo.INTERNAL_ERROR);
+        if (savedCustomer == null || savedUser == null) {
+            throw new SendByOpException(ErrorInfo.INTERNAL_ERROR, "Failed to create customer or user account");
         }
+        
+        log.info("Customer and User account created successfully for email: {}", customer.getEmail());
 
         sendVerificationEmail(savedCustomer);
         return savedCustomer;
     }
 
-    @Async
-    public void sendVerificationEmail(CustomerDto customer) throws SendByOpException {
-        VerifyToken verifyToken = verifyTokenService.save(customer.getEmail());
-        String content = "Hello [[name]],<br>"
-                + "We need to verify your email address and phone number before you can access <br>"
-                + "<h3><a href=\"[[URLSENDBYOP]]\" target=\"_self\">SendByOp.</a></h3><br>"
-                + "Verify your email address"
-                + "<h3><a href=\"[[URL]]\" target=\"_self\">Click here</a></h3>"
-                + "This link will expire in 24 hours <br>"
-                + "Best regards,<br>"
-                + "The <h3><a href=\"[[URLSENDBYOP]]\" target=\"_self\">SendByOp</a></h3> team<br>"
-                + "This is an automated email<br>";
-
+    /**
+     * Envoie l'email de vérification de manière SYNCHRONE pour garantir le rollback transactionnel
+     * Si l'envoi échoue, toute l'inscription (Customer + User) sera annulée
+     */
+    private void sendVerificationEmail(CustomerDto customer) throws SendByOpException {
+        log.info("Début de l'envoi de l'email de vérification pour: {}", customer.getEmail());
+        
         try {
-            emailService.sendVerificationEmail(customer, baseUrl+"/verification",
-                verifyToken.getToken(), "/verify?code=", "Account Verification", content);
+            // Génération du token de vérification
+            VerifyToken verifyToken = verifyTokenService.save(customer.getEmail());
+            
+            // Construction de l'URL de vérification complète
+            String verificationUrl = baseUrl + "/verification/verify?code=" + verifyToken.getToken();
+            
+            // Génération du contenu HTML à partir du template Thymeleaf
+            String customerName = customer.getFirstName() + " " + customer.getLastName();
+            String htmlContent = emailTemplateService.generateVerificationEmail(customerName, verificationUrl);
+            
+            // Envoi de l'email - SYNCHRONE pour permettre le rollback si échec
+            emailService.sendHtmlEmail(
+                customer.getEmail(),
+                "Vérification de votre compte SendByOp",
+                htmlContent
+            );
+            
+            log.info("Email de vérification envoyé avec succès à: {}", customer.getEmail());
         } catch (MessagingException e) {
-            throw new SendByOpException(ErrorInfo.EMAIL_SEND_ERROR);
+            log.error("Erreur d'envoi d'email pour {}: {}", customer.getEmail(), e.getMessage());
+            // Cette exception provoquera un rollback de toute la transaction
+            throw new SendByOpException(ErrorInfo.EMAIL_SEND_ERROR, "Impossible d'envoyer l'email de vérification");
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            log.error("Erreur d'encodage pour l'email de {}: {}", customer.getEmail(), e.getMessage());
+            throw new SendByOpException(ErrorInfo.INTERNAL_ERROR, "Erreur d'encodage de l'email");
+        } catch (Exception e) {
+            log.error("Erreur inattendue lors de l'envoi de l'email pour {}: {}", customer.getEmail(), e.getMessage(), e);
+            throw new SendByOpException(ErrorInfo.INTERNAL_ERROR, "Erreur lors de l'envoi de l'email de vérification");
         }
     }
 
@@ -110,6 +132,13 @@ public class UserRegistrationService {
         if (result.equals(AppConstants.TOKEN_VALID)) {
             VerifyToken verifyToken = verifyTokenService.getByTokent(token);
             CustomerDto customer = customerService.getCustomerByEmail(verifyToken.getEmail());
+            
+            // Mettre à jour le statut du compte User à ACTIVE
+            User user = userService.findByEmail(verifyToken.getEmail());
+            user.setStatus(AccountStatus.ACTIVE);
+            userService.updateUser(user);
+            
+            // Marquer l'email comme vérifié dans Customer (pour l'affichage du profil)
             customer.setEmailVerified(1);
             return customerService.saveClient(customer);
         }

@@ -1,13 +1,12 @@
 package com.sendByOP.expedition.web.controller;
 
 import com.sendByOP.expedition.models.dto.CustomerDto;
-import com.sendByOP.expedition.models.dto.CustomerRegistrationDto;
 import com.sendByOP.expedition.models.dto.EmailDto;
 import com.sendByOP.expedition.exception.SendByOpException;
 import com.sendByOP.expedition.reponse.ResponseMessage;
 import com.sendByOP.expedition.services.impl.UserRegistrationService;
 import com.sendByOP.expedition.services.impl.PasswordResetService;
-import com.sendByOP.expedition.services.iServices.IClientServivce;
+import com.sendByOP.expedition.services.iServices.ICustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,7 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Customer Registration", description = "API endpoints for customer registration and management")
 public class RegisterController{
-    private final IClientServivce customerService;
+    private final ICustomerService customerService;
     private final UserRegistrationService userRegistrationService;
     private final PasswordResetService passwordResetService;
 

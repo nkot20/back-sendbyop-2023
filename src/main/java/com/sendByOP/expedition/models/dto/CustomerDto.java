@@ -47,4 +47,7 @@ public class CustomerDto {
     @JsonIgnore
     private String iban;
     private String address;
+    
+    @Schema(description = "Indicates if two-factor authentication is enabled", example = "false")
+    private Boolean twoFactorEnabled;
 }

@@ -1,0 +1,328 @@
+package com.sendByOP.expedition.web.controller;
+
+import com.sendByOP.expedition.exception.SendByOpException;
+import com.sendByOP.expedition.models.dto.BookingResponseDto;
+import com.sendByOP.expedition.models.dto.CreateBookingRequest;
+import com.sendByOP.expedition.models.dto.PaymentRequest;
+import com.sendByOP.expedition.services.iServices.IBookingService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+/**
+ * Contrôleur pour la gestion des réservations
+ */
+@Slf4j
+@RestController
+@RequestMapping("/api/bookings")
+@RequiredArgsConstructor
+@Tag(name = "Bookings", description = "Gestion des réservations de transport de colis")
+public class BookingController {
+
+    private final IBookingService bookingService;
+
+    /**
+     * Créer une nouvelle réservation
+     */
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('USER')")
+    @Operation(
+            summary = "Créer une nouvelle réservation",
+            description = "Crée une réservation pour transporter un colis sur un vol. " +
+                    "Une photo du colis est requise. Le destinataire sera créé ou récupéré " +
+                    "s'il existe déjà (basé sur email ou téléphone)."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Réservation créée avec succès",
+                    content = @Content(schema = @Schema(implementation = BookingResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Données invalides",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Non authentifié",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Vol ou client non trouvé",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Erreur serveur",
+                    content = @Content
+            )
+    })
+    public ResponseEntity<BookingResponseDto> createBooking(
+            @Parameter(description = "Données de la réservation")
+            @Valid @ModelAttribute CreateBookingRequest request,
+            
+            @Parameter(description = "Photos du colis (1 à 5 photos recommandées)")
+            @RequestParam("parcelPhotos") MultipartFile[] parcelPhotos,
+            
+            @Parameter(description = "ID du client")
+            @RequestParam String email,
+            
+            Authentication authentication
+    ) throws SendByOpException {
+        
+        log.info("POST /api/bookings - Creating booking for customer {} on flight {} with {} photos", 
+                email, request.getFlightId(), parcelPhotos.length);
+        
+        // Créer la réservation avec plusieurs photos
+        BookingResponseDto booking = bookingService.createBooking(request, parcelPhotos, email);
+        
+        log.info("Booking created successfully: {} with {} photos", booking.getId(), parcelPhotos.length);
+        return ResponseEntity.status(HttpStatus.CREATED).body(booking);
+    }
+
+    /**
+     * Confirmer une réservation (voyageur)
+     */
+    @PutMapping("/{bookingId}/confirm")
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('USER')")
+    @Operation(
+            summary = "Confirmer une réservation",
+            description = "Permet au voyageur propriétaire du vol de confirmer une réservation en attente. " +
+                    "Change le statut vers CONFIRMED_UNPAID et définit la deadline de paiement."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Réservation confirmée avec succès",
+                    content = @Content(schema = @Schema(implementation = BookingResponseDto.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "Statut invalide", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Non authentifié", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Non autorisé (pas le propriétaire du vol)", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Réservation non trouvée", content = @Content)
+    })
+    public ResponseEntity<BookingResponseDto> confirmBooking(
+            @Parameter(description = "ID de la réservation")
+            @PathVariable Integer bookingId,
+            
+            @Parameter(description = "ID du voyageur")
+            @RequestParam Integer travelerId
+    ) throws SendByOpException {
+        
+        log.info("PUT /api/bookings/{}/confirm by traveler {}", bookingId, travelerId);
+        
+        BookingResponseDto booking = bookingService.confirmBooking(bookingId, travelerId);
+        
+        log.info("Booking {} confirmed successfully", bookingId);
+        return ResponseEntity.ok(booking);
+    }
+
+    /**
+     * Rejeter une réservation (voyageur)
+     */
+    @PutMapping("/{bookingId}/reject")
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('USER')")
+    @Operation(
+            summary = "Rejeter une réservation",
+            description = "Permet au voyageur propriétaire du vol de rejeter une réservation en attente. " +
+                    "Change le statut vers CANCELLED_BY_TRAVELER."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Réservation rejetée avec succès",
+                    content = @Content(schema = @Schema(implementation = BookingResponseDto.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "Statut invalide", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Non authentifié", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Non autorisé (pas le propriétaire du vol)", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Réservation non trouvée", content = @Content)
+    })
+    public ResponseEntity<BookingResponseDto> rejectBooking(
+            @Parameter(description = "ID de la réservation")
+            @PathVariable Integer bookingId,
+            
+            @Parameter(description = "ID du voyageur")
+            @RequestParam Integer travelerId,
+            
+            @Parameter(description = "Raison du rejet (optionnel)")
+            @RequestParam(required = false) String reason
+    ) throws SendByOpException {
+        
+        log.info("PUT /api/bookings/{}/reject by traveler {}", bookingId, travelerId);
+        
+        BookingResponseDto booking = bookingService.rejectBooking(bookingId, travelerId, reason);
+        
+        log.info("Booking {} rejected successfully", bookingId);
+        return ResponseEntity.ok(booking);
+    }
+
+    /**
+     * Traiter le paiement d'une réservation (client)
+     */
+    @PostMapping("/{bookingId}/payment")
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('USER')")
+    @Operation(
+            summary = "Payer une réservation",
+            description = "Permet au client de payer une réservation confirmée. " +
+                    "Change le statut vers CONFIRMED_PAID. Le montant doit correspondre au prix de la réservation."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Paiement traité avec succès",
+                    content = @Content(schema = @Schema(implementation = BookingResponseDto.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "Données invalides ou montant incorrect", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Non authentifié", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Non autorisé (pas le propriétaire de la réservation)", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Réservation non trouvée", content = @Content),
+            @ApiResponse(responseCode = "402", description = "Deadline de paiement dépassée", content = @Content)
+    })
+    public ResponseEntity<BookingResponseDto> processPayment(
+            @Parameter(description = "ID de la réservation")
+            @PathVariable Integer bookingId,
+            
+            @Parameter(description = "Détails du paiement")
+            @Valid @RequestBody PaymentRequest paymentRequest,
+            
+            @Parameter(description = "ID du client")
+            @RequestParam Integer customerId
+    ) throws SendByOpException {
+        
+        log.info("POST /api/bookings/{}/payment by customer {}", bookingId, customerId);
+        
+        BookingResponseDto booking = bookingService.processPayment(bookingId, paymentRequest, customerId);
+        
+        log.info("Payment processed successfully for booking {}", bookingId);
+        return ResponseEntity.ok(booking);
+    }
+
+    /**
+     * Annuler une réservation (client)
+     */
+    @PutMapping("/{bookingId}/cancel")
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('USER')")
+    @Operation(
+            summary = "Annuler une réservation",
+            description = "Permet au client d'annuler sa réservation. " +
+                    "Possible pour les statuts: PENDING_CONFIRMATION, CONFIRMED_UNPAID, CONFIRMED_PAID"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Réservation annulée avec succès",
+                    content = @Content(schema = @Schema(implementation = BookingResponseDto.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "Statut invalide pour annulation", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Non authentifié", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Non autorisé", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Réservation non trouvée", content = @Content)
+    })
+    public ResponseEntity<BookingResponseDto> cancelBooking(
+            @Parameter(description = "ID de la réservation")
+            @PathVariable Integer bookingId,
+            
+            @Parameter(description = "ID du client")
+            @RequestParam Integer customerId,
+            
+            @Parameter(description = "Raison de l'annulation (optionnel)")
+            @RequestParam(required = false) String reason
+    ) throws SendByOpException {
+        
+        log.info("PUT /api/bookings/{}/cancel by customer {}", bookingId, customerId);
+        
+        BookingResponseDto booking = bookingService.cancelByClient(bookingId, customerId, reason);
+        
+        log.info("Booking {} cancelled successfully", bookingId);
+        return ResponseEntity.ok(booking);
+    }
+
+    /**
+     * Marquer comme livrée (voyageur)
+     */
+    @PutMapping("/{bookingId}/delivered")
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('USER')")
+    @Operation(
+            summary = "Marquer une réservation comme livrée",
+            description = "Permet au voyageur de marquer une réservation payée comme livrée"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Réservation marquée comme livrée",
+                    content = @Content(schema = @Schema(implementation = BookingResponseDto.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "Statut invalide (doit être payée)", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Non authentifié", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Non autorisé (pas le propriétaire du vol)", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Réservation non trouvée", content = @Content)
+    })
+    public ResponseEntity<BookingResponseDto> markAsDelivered(
+            @Parameter(description = "ID de la réservation")
+            @PathVariable Integer bookingId,
+            
+            @Parameter(description = "ID du voyageur")
+            @RequestParam Integer travelerId
+    ) throws SendByOpException {
+        
+        log.info("PUT /api/bookings/{}/delivered by traveler {}", bookingId, travelerId);
+        
+        BookingResponseDto booking = bookingService.markAsDelivered(bookingId, travelerId);
+        
+        log.info("Booking {} marked as delivered", bookingId);
+        return ResponseEntity.ok(booking);
+    }
+
+    /**
+     * Marquer comme récupérée (client)
+     */
+    @PutMapping("/{bookingId}/picked-up")
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('USER')")
+    @Operation(
+            summary = "Marquer une réservation comme récupérée",
+            description = "Permet au client de confirmer qu'il a récupéré le colis"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Réservation marquée comme récupérée",
+                    content = @Content(schema = @Schema(implementation = BookingResponseDto.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "Statut invalide (doit être livrée)", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Non authentifié", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Non autorisé", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Réservation non trouvée", content = @Content)
+    })
+    public ResponseEntity<BookingResponseDto> markAsPickedUp(
+            @Parameter(description = "ID de la réservation")
+            @PathVariable Integer bookingId,
+            
+            @Parameter(description = "ID du client")
+            @RequestParam Integer customerId
+    ) throws SendByOpException {
+        
+        log.info("PUT /api/bookings/{}/picked-up by customer {}", bookingId, customerId);
+        
+        BookingResponseDto booking = bookingService.markAsPickedUp(bookingId, customerId);
+        
+        log.info("Booking {} marked as picked up", bookingId);
+        return ResponseEntity.ok(booking);
+    }
+}

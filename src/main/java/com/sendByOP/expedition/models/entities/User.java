@@ -1,14 +1,16 @@
 package com.sendByOP.expedition.models.entities;
 
+import com.sendByOP.expedition.models.enums.AccountStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "app_user")
+@Table(name = "user")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -39,4 +41,19 @@ public class User implements Serializable {
 
     @Column(name = "role")
     private String role;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private AccountStatus status;
+    
+    @Builder.Default
+    @Column(name = "two_factor_enabled", columnDefinition = "TINYINT(1) DEFAULT 0")
+    private Boolean twoFactorEnabled = false;
+    
+    @Column(name = "otp_secret")
+    private String otpSecret;
+    
+    @Column(name = "otp_sent_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date otpSentAt;
 }

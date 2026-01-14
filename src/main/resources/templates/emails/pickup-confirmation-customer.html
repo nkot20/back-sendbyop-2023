@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colis récupéré</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 26px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .success-box {
+            background: #f0fdf4;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #16a34a;
+            text-align: center;
+        }
+        .success-icon {
+            font-size: 48px;
+            color: #16a34a;
+            margin-bottom: 10px;
+        }
+        .info-row {
+            margin: 10px 0;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #4b5563;
+        }
+        .footer {
+            background-color: #f9fafb;
+            padding: 20px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✓ Colis récupéré !</h1>
+        </div>
+        
+        <div class="content">
+            <p style="font-size: 18px;">Bonjour <strong th:text="${customerName}">Client</strong>,</p>
+            
+            <p>Le destinataire a confirmé la réception de votre colis !</p>
+            
+            <div class="success-box">
+                <div class="success-icon">🎉</div>
+                <p style="color: #16a34a; font-weight: bold; font-size: 18px; margin: 10px 0;">
+                    Transaction terminée avec succès !
+                </p>
+                <div class="info-row">
+                    <span class="info-label">Réservation :</span>
+                    <span style="color: #16a34a; font-weight: bold;">#<span th:text="${bookingId}">12345</span></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Date de récupération :</span>
+                    <span th:text="${pickupDate} + ' à ' + ${pickupTime}">25/10/2025 à 16:00</span>
+                </div>
+            </div>
+            
+            <p>Merci d'avoir utilisé SendByOp pour l'envoi de votre colis. Nous espérons vous revoir très bientôt pour de nouveaux envois !</p>
+            
+            <p style="margin-top: 30px;">Cordialement,<br><strong>L'équipe SendByOp</strong></p>
+        </div>
+        
+        <div class="footer">
+            <p>© <span th:text="${currentYear}">2025</span> SendByOp. Tous droits réservés.</p>
+            <p><a th:href="${websiteUrl}" style="color: #16a34a; text-decoration: none;">www.sendbyop.com</a></p>
+        </div>
+    </div>
+</body>
+</html>

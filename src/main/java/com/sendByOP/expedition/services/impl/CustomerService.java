@@ -6,10 +6,14 @@ import com.sendByOP.expedition.exception.ErrorInfo;
 import com.sendByOP.expedition.exception.SendByOpException;
 import com.sendByOP.expedition.models.entities.Customer;
 import com.sendByOP.expedition.repositories.CustomerRepository;
-import com.sendByOP.expedition.services.iServices.IClientServivce;
+import com.sendByOP.expedition.services.FileStorageService;
+import com.sendByOP.expedition.services.iServices.ICustomerService;
 import com.sendByOP.expedition.utils.CHeckNull;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,10 +25,12 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class CustomerService implements IClientServivce {
+@Slf4j
+public class CustomerService implements ICustomerService {
 
     private final CustomerRepository clientRepository;
     private final CustomerMapper customerMapper;
+    private final FileStorageService fileStorageService;
 
     @Override
     public List<CustomerDto> getListClient() {
@@ -70,7 +76,9 @@ public class CustomerService implements IClientServivce {
     }
 
     @Override
+    @CacheEvict(value = {"customers:email"}, key = "#clientDto.email")
     public CustomerDto updateClient(CustomerDto clientDto) throws SendByOpException {
+        log.debug("Updating customer {} and invalidating cache", clientDto.getId());
         Customer existingClient = clientRepository.findById(clientDto.getId())
                 .orElseThrow(() -> new RuntimeException("Client not found"));
         customerMapper.copy(clientDto, existingClient);
@@ -106,7 +114,9 @@ public class CustomerService implements IClientServivce {
     }
 
     @Override
+    @Cacheable(value = "customers:email", key = "#email")
     public CustomerDto getCustomerByEmail(String email) throws SendByOpException {
+        log.debug("Fetching customer {} from database (cache miss)", email);
         Customer client = clientRepository.findByEmail(email)
                 .orElseThrow(() -> new SendByOpException(ErrorInfo.RESOURCE_NOT_FOUND));
         return customerMapper.toDto(client);
@@ -138,5 +148,29 @@ public class CustomerService implements IClientServivce {
         Customer client = clientRepository.findByPhoneNumber(tel)
                 .orElseThrow(() -> new SendByOpException(ErrorInfo.RESOURCE_NOT_FOUND));
         return customerMapper.toDto(client);
+    }
+
+    @Override
+    public String uploadProfilePicture(Integer customerId, MultipartFile file) throws SendByOpException {
+        log.info("Uploading profile picture for customer: {}", customerId);
+        
+        // Verify customer exists
+        Customer customer = clientRepository.findById(customerId)
+                .orElseThrow(() -> new SendByOpException(ErrorInfo.RESOURCE_NOT_FOUND));
+        
+        // Delete old profile picture if exists
+        if (customer.getProfilePicture() != null && !customer.getProfilePicture().trim().isEmpty()) {
+            fileStorageService.deleteProfilePicture(customer.getProfilePicture());
+        }
+        
+        // Store new profile picture
+        String filename = fileStorageService.storeProfilePicture(file, customerId);
+        
+        // Update customer record
+        customer.setProfilePicture(filename);
+        clientRepository.save(customer);
+        
+        log.info("Profile picture uploaded successfully for customer: {}, filename: {}", customerId, filename);
+        return filename;
     }
 }

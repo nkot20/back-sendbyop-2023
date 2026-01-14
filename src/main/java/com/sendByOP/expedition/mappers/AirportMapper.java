@@ -13,8 +13,12 @@ import org.mapstruct.factory.Mappers;
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface AirportMapper {
     @Mapping(source = "city.cityId", target = "cityId")
+    @Mapping(source = "city.name", target = "city")
+    @Mapping(source = "city.country.name", target = "country")
     AirportDto toDto(Airport airport);
 
     @Mapping(source = "cityId", target = "city.cityId")
+    @Mapping(target = "city.name", ignore = true)
+    @Mapping(target = "city.country", ignore = true)
     Airport toEntity(AirportDto airportDTO);
 }

@@ -23,7 +23,7 @@ public class VerifyToken implements Serializable {
     String token;
 
     @Column(name = "expirated_token")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     Date expiratedToken;
 
     @Basic(optional = false)

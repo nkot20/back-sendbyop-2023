@@ -12,6 +12,8 @@ public enum ErrorInfo {
     RESOURCE_NOT_FOUND("Resource not found", HttpStatus.NOT_FOUND),
     RESOURCE_ALREADY_EXISTS("This resource already exists", HttpStatus.BAD_REQUEST),
     INVALID_RESOURCE_DATA("Invalid resource data provided", HttpStatus.BAD_REQUEST),
+    INVALID_DATA("Invalid data provided", HttpStatus.BAD_REQUEST),
+    DUPLICATE_ENTRY("Duplicate entry detected", HttpStatus.CONFLICT),
     
     // Authentication and registration errors
     EMAIL_ALREADY_EXISTS("Email address is already registered", HttpStatus.BAD_REQUEST),
@@ -19,6 +21,10 @@ public enum ErrorInfo {
     INVALID_CREDENTIALS("Invalid username or password", HttpStatus.UNAUTHORIZED),
     ACCOUNT_LOCKED("Account has been locked. Please contact support", HttpStatus.FORBIDDEN),
     ACCOUNT_NOT_VERIFIED("Account email not verified", HttpStatus.FORBIDDEN),
+    EMAIL_NOT_VERIFIED("Email not verified. Please check your inbox for verification link", HttpStatus.FORBIDDEN),
+    ACCOUNT_BLOCKED("Account has been blocked. Please contact support", HttpStatus.FORBIDDEN),
+    ACCOUNT_INACTIVE("Account is inactive. Please reactivate your account", HttpStatus.FORBIDDEN),
+    ACCOUNT_PENDING_VERIFICATION("Account is pending verification. Please verify your email", HttpStatus.FORBIDDEN),
     TOKEN_EXPIRED("Verification token has expired", HttpStatus.BAD_REQUEST),
     TOKEN_INVALID("Invalid verification token", HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD("Invalid password format", HttpStatus.BAD_REQUEST),
@@ -36,6 +42,8 @@ public enum ErrorInfo {
     BOOKING_NOT_FOUND("Booking not found", HttpStatus.NOT_FOUND),
     BOOKING_ALREADY_CANCELLED("Booking has already been cancelled", HttpStatus.BAD_REQUEST),
     OPERATION_NOT_ALLOWED("This operation is not allowed", HttpStatus.FORBIDDEN),
+    UNAUTHORIZED("You are not authorized to perform this action", HttpStatus.FORBIDDEN),
+    INVALID_STATUS("Invalid status for this operation", HttpStatus.BAD_REQUEST),
     
     // Parcel and shipping errors
     PARCEL_CREATION_FAILED("Failed to create parcel", HttpStatus.INTERNAL_SERVER_ERROR),

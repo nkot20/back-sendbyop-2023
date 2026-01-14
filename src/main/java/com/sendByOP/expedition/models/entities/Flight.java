@@ -1,6 +1,7 @@
 package com.sendByOP.expedition.models.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sendByOP.expedition.models.enums.FlightStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -76,5 +77,10 @@ public class Flight extends BaseEntity implements Serializable {
 
         @Column(name = "cancelled")
         private int cancelled;
+
+        @Enumerated(EnumType.STRING)
+        @Column(name = "status", nullable = false, length = 20)
+        @Builder.Default
+        private FlightStatus status = FlightStatus.ACTIVE;
 
 }

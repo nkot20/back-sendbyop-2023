@@ -28,4 +28,11 @@ public class AirportDto {
 
     @Schema(description = "IATA code of the airport", example = "JFK")
     private String iataCode;
+
+    @Schema(description = "Country of the airport", example = "italy")
+    private String country;
+
+    @Schema(description = "City of the airport", example = "rome")
+    private String city;
+
 }

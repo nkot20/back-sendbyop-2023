@@ -66,4 +66,73 @@ public class ReviewController {
         }
         return ResponseEntity.ok(reviews);
     }
+
+    @Operation(summary = "Submit a review for a booking", 
+               description = "Allows a customer to review a booking/trip after delivery")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Review submitted successfully",
+                content = @Content(schema = @Schema(implementation = ReviewDto.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid input or booking not eligible for review"),
+        @ApiResponse(responseCode = "404", description = "Booking not found")
+    })
+    @PostMapping("/booking/{bookingId}")
+    public ResponseEntity<?> submitBookingReview(
+            @Parameter(description = "Booking ID") @PathVariable("bookingId") Integer bookingId,
+            @Valid @RequestBody @Parameter(description = "Review details") ReviewDto reviewDto) {
+        reviewDto.setBookingId(bookingId);
+        ReviewDto savedReview = reviewService.saveBookingReview(reviewDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedReview);
+    }
+
+    @Operation(summary = "Get reviews for a traveler", 
+               description = "Retrieves all reviews received by a traveler from booking reviews")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Reviews found",
+                content = @Content(schema = @Schema(implementation = ReviewDto.class))),
+        @ApiResponse(responseCode = "404", description = "No reviews found")
+    })
+    @GetMapping("/traveler/{travelerId}")
+    public ResponseEntity<?> getTravelerReviews(
+            @Parameter(description = "Traveler (Customer) ID") @PathVariable("travelerId") Integer travelerId) {
+        List<ReviewDto> reviews = reviewService.getTravelerReviews(travelerId);
+        if (reviews.isEmpty()) {
+            return ResponseEntity.ok("Aucun avis pour ce voyageur");
+        }
+        return ResponseEntity.ok(reviews);
+    }
+
+    @Operation(summary = "Get reviews given by a customer", 
+               description = "Retrieves all reviews that a customer has left on their bookings")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Reviews found",
+                content = @Content(schema = @Schema(implementation = ReviewDto.class))),
+        @ApiResponse(responseCode = "404", description = "No reviews found")
+    })
+    @GetMapping("/customer/{customerId}/given")
+    public ResponseEntity<?> getCustomerGivenReviews(
+            @Parameter(description = "Customer ID") @PathVariable("customerId") Integer customerId) {
+        List<ReviewDto> reviews = reviewService.getCustomerGivenReviews(customerId);
+        if (reviews.isEmpty()) {
+            return ResponseEntity.ok("Aucun avis donné par ce client");
+        }
+        return ResponseEntity.ok(reviews);
+    }
+
+    @Operation(summary = "Respond to a review", 
+               description = "Allows a traveler to respond to a review they received")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Response added successfully",
+                content = @Content(schema = @Schema(implementation = ReviewDto.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid input"),
+        @ApiResponse(responseCode = "403", description = "Not authorized to respond to this review"),
+        @ApiResponse(responseCode = "404", description = "Review not found")
+    })
+    @PutMapping("/{reviewId}/respond")
+    public ResponseEntity<?> respondToReview(
+            @Parameter(description = "Review ID") @PathVariable("reviewId") Integer reviewId,
+            @Parameter(description = "Traveler ID") @RequestParam("travelerId") Integer travelerId,
+            @Parameter(description = "Response text") @RequestBody String responseText) {
+        ReviewDto updatedReview = reviewService.respondToReview(reviewId, responseText, travelerId);
+        return ResponseEntity.ok(updatedReview);
+    }
 }

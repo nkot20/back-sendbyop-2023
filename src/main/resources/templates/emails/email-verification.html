@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérification de votre compte SendByOp</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            padding: 30px;
+            background-color: #f9f9f9;
+        }
+        .content p {
+            margin: 15px 0;
+        }
+        .greeting {
+            font-size: 18px;
+            color: #333;
+        }
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 15px 40px;
+            background-color: #4CAF50;
+            color: white !important;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .link-fallback {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            word-break: break-all;
+            font-size: 12px;
+            color: #666;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .warning strong {
+            color: #856404;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #777;
+            font-size: 12px;
+            border-top: 1px solid #ddd;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+        .footer a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        .logo {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">📦 SendByOp</div>
+            <h1>Bienvenue sur SendByOp!</h1>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <p class="greeting">Bonjour <strong th:text="${customerName}">Client</strong>,</p>
+            
+            <p>
+                Merci de vous être inscrit sur <strong>SendByOp</strong>, votre plateforme de confiance 
+                pour l'expédition de colis via des voyageurs.
+            </p>
+            
+            <p>
+                Pour activer votre compte et commencer à utiliser nos services, veuillez vérifier 
+                votre adresse email en cliquant sur le bouton ci-dessous :
+            </p>
+
+            <!-- Verification Button -->
+            <div class="button-container">
+                <a th:href="${verificationUrl}" class="button">
+                    ✓ Vérifier mon email
+                </a>
+            </div>
+
+            <!-- Fallback Link -->
+            <p style="text-align: center; color: #666; font-size: 14px;">
+                Ou copiez et collez ce lien dans votre navigateur :
+            </p>
+            <div class="link-fallback">
+                <a th:href="${verificationUrl}" th:text="${verificationUrl}" style="color: #4CAF50;">
+                    Lien de vérification
+                </a>
+            </div>
+
+            <!-- Warning Box -->
+            <div class="warning">
+                <strong>⚠️ Important :</strong> Ce lien expirera dans <strong>24 heures</strong>. 
+                Si vous n'avez pas demandé cette vérification, veuillez ignorer cet email.
+            </div>
+
+            <p>
+                Si vous rencontrez des difficultés, n'hésitez pas à nous contacter à 
+                <a href="mailto:support@sendbyop.com" style="color: #4CAF50;">support@sendbyop.com</a>
+            </p>
+
+            <p style="margin-top: 30px;">
+                Cordialement,<br>
+                <strong>L'équipe SendByOp</strong>
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Ceci est un email automatique, merci de ne pas y répondre.</p>
+            <p>&copy; <span th:text="${currentYear}">2024</span> SendByOp. Tous droits réservés.</p>
+            <p>
+                <a th:href="${websiteUrl}" th:text="${websiteUrl}">www.sendbyop.com</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

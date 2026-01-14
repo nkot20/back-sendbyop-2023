@@ -4,7 +4,7 @@ import com.sendByOP.expedition.mappers.ParcelMapper;
 import com.sendByOP.expedition.mappers.BookingMapper;
 import com.sendByOP.expedition.models.dto.ParcelDto;
 import com.sendByOP.expedition.models.dto.BookingDto;
-import com.sendByOP.expedition.repositories.ReservationRepository;
+import com.sendByOP.expedition.repositories.BookingRepository;
 import com.sendByOP.expedition.services.iServices.IParcelService;
 import com.sendByOP.expedition.exception.ErrorInfo;
 import com.sendByOP.expedition.exception.SendByOpException;
@@ -24,7 +24,7 @@ public class ParcelService implements IParcelService {
     private final ParcelRepository parcelRepository;
     private final ParcelMapper parcelMapper;
     private final BookingMapper bookingMapper;
-    private final ReservationRepository reservationRepository;
+    private final BookingRepository reservationRepository;
 
     @Override
     public ParcelDto saveParcel(ParcelDto parcel) throws SendByOpException {

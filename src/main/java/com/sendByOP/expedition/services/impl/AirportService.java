@@ -10,6 +10,9 @@ import com.sendByOP.expedition.services.iServices.IAirPortService;
 import com.sendByOP.expedition.utils.CHeckNull;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,13 +21,16 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class AirportService implements IAirPortService {
 
     private final AirPortRepository airportRepository;
     private final AirportMapper airportMapper;
 
     @Override
+    @CacheEvict(value = {"airports:all", "airports"}, allEntries = true)
     public AirportDto saveAeroPort(AirportDto airportDto) throws SendByOpException {
+        log.debug("Saving airport and invalidating cache");
         CHeckNull.checkIntitule(airportDto.getName());
         Airport airportEntity = airportMapper.toEntity(airportDto);
         Airport savedAirport = airportRepository.save(airportEntity);
@@ -32,17 +38,42 @@ public class AirportService implements IAirPortService {
     }
 
     @Override
+    @Cacheable(value = "airports:all")
     public List<AirportDto> getAllAirport() {
+        log.info("Fetching all airports from database (cache miss)");
         List<Airport> airportEntities = airportRepository.findAll();
+        log.info("Airport number {}", airportEntities.size());
+
         return airportEntities.stream()
-                .map(airportMapper::toDto)
+                .map(airport -> {
+                    // Conversion de base
+                    AirportDto dto = airportMapper.toDto(airport);
+                    // Remplissage du nom de la ville
+                    if (airport.getCity() != null) {
+                        dto.setCity(airport.getCity().getName());
+                        // Remplissage du nom du pays
+                        if (airport.getCity().getCountry() != null) {
+                            dto.setCountry(airport.getCity().getCountry().getName());
+                        }
+                    }
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 
     @Override
+    @Cacheable(value = "airports", key = "#id")
     public AirportDto getAirport(int id) throws SendByOpException {
+        log.debug("Fetching airport {} from database (cache miss)", id);
         Airport airport = airportRepository.findById(id)
                 .orElseThrow(() -> new SendByOpException(ErrorInfo.RESOURCE_NOT_FOUND));
-        return airportMapper.toDto(airport);
+        AirportDto dto = airportMapper.toDto(airport);
+        if (airport.getCity() != null) {
+            dto.setCity(airport.getCity().getName());
+            if (airport.getCity().getCountry() != null) {
+                dto.setCountry(airport.getCity().getCountry().getName());
+            }
+        }
+        return dto;
     }
 }

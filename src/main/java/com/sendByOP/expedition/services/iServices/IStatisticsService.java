@@ -1,15 +1,38 @@
 package com.sendByOP.expedition.services.iServices;
 
-import java.util.Map;
-import java.util.List;
+import com.sendByOP.expedition.models.dto.BookingStatsDto;
+import com.sendByOP.expedition.models.dto.RevenueStatsDto;
+import com.sendByOP.expedition.models.dto.UserStatsDto;
 
+import java.time.LocalDate;
+
+/**
+ * Service de statistiques et analytics pour SendByOp
+ */
 public interface IStatisticsService {
-    Map<String, Long> getFlightStatusDistribution();
-    Map<String, Double> getMonthlyRevenue();
-    Map<String, Long> getBookingTrends();
-    Map<String, Long> getPopularRoutes();
-    Map<String, Double> getAverageBookingValueByMonth();
-    Long getTotalActiveFlights();
-    Double getTotalRevenue();
-    Long getTotalBookings();
+    
+    /**
+     * Récupère les statistiques de réservations pour une période donnée
+     *
+     * @param from Date de début (null = depuis le début)
+     * @param to Date de fin (null = jusqu'à maintenant)
+     * @return Statistiques de réservations
+     */
+    BookingStatsDto getBookingStatistics(LocalDate from, LocalDate to);
+    
+    /**
+     * Récupère les statistiques de revenus pour une période donnée
+     *
+     * @param from Date de début (null = depuis le début)
+     * @param to Date de fin (null = jusqu'à maintenant)
+     * @return Statistiques de revenus
+     */
+    RevenueStatsDto getRevenueStatistics(LocalDate from, LocalDate to);
+    
+    /**
+     * Récupère les statistiques utilisateurs
+     *
+     * @return Statistiques utilisateurs
+     */
+    UserStatsDto getUserStatistics();
 }

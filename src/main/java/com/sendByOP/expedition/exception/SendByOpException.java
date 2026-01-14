@@ -2,7 +2,7 @@ package com.sendByOP.expedition.exception;
 
 import org.springframework.http.HttpStatus;
 
-import lombok.Data;
+import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,8 +10,8 @@ import java.util.List;
 /**
  * The Class SendByOpException.
  */
-@Data
-public class SendByOpException extends Exception {
+@Getter
+public class SendByOpException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
     private final HttpStatus httpStatus;
@@ -44,12 +44,6 @@ public class SendByOpException extends Exception {
         this.httpStatus = httpStatus;
     }
 
-    /**
-     * @return the httpStatus
-     */
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
-    }
 
 
 }

@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReceiverController {
     private final ReceiverService receveurService;
 
-    @Operation(summary = "Create a new receiver", description = "Creates a new receiver entry in the system")
+    /*@Operation(summary = "Create a new receiver", description = "Creates a new receiver entry in the system")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Receiver created successfully",
                 content = @Content(schema = @Schema(implementation = ReceiverDto.class))),
@@ -33,8 +33,8 @@ public class ReceiverController {
     })
     @PostMapping(value = "/save")
     public ResponseEntity<?> save(@RequestBody @Parameter(description = "Receiver details") Receiver receiver) {
-        ReceiverDto newReceiver = receveurService.save(receiver);
+        ReceiverDto newReceiver = receveurService.sa(receiver);
         return new ResponseEntity<>(newReceiver, HttpStatus.CREATED);
-    }
+    }*/
 
 }

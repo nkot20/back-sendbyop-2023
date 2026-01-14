@@ -13,6 +13,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Service
@@ -42,37 +43,89 @@ public class SendMailService {
         }
     }
 
-    public void sendVerificationEmail(CustomerDto user, String siteURL, String token, String header, String subject, String content)
+    /**
+     * Envoie un email HTML
+     * 
+     * @param toEmail Email du destinataire
+     * @param subject Sujet de l'email
+     * @param htmlContent Contenu HTML de l'email
+     * @throws MessagingException En cas d'erreur d'envoi
+     * @throws UnsupportedEncodingException En cas d'erreur d'encodage
+     */
+    public void sendHtmlEmail(String toEmail, String subject, String htmlContent)
             throws MessagingException, UnsupportedEncodingException {
+        log.info("Envoi d'un email HTML à {}", toEmail);
+        
         try {
-            log.info("Envoi de l'email de vérification à {}", user.getEmail());
-            String toAddress = user.getEmail();
             String senderName = "SendByOp";
 
             MimeMessage message = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message);
+            MimeMessageHelper helper = new MimeMessageHelper(message, StandardCharsets.UTF_8.name());
 
             helper.setFrom(emailFrom, senderName);
-            helper.setTo(toAddress);
+            helper.setTo(toEmail);
             helper.setSubject(subject);
+            helper.setText(htmlContent, true);
 
-            content = content.replace("[[name]]", user.getLastName() + user.getFirstName());
-            String verifyURL = siteURL + header + token;
-
-            content = content.replace("[[URL]]", verifyURL);
-
-            content = content.replace("[[URLSENDBYOP]]", "www.sendbyop.com");
-
-            helper.setText(content, true);
-
-            System.out.println("send email....");
             javaMailSender.send(message);
-            System.out.println("Email is send !");
+            log.info("Email HTML envoyé avec succès à {}", toEmail);
+        } catch (MessagingException e) {
+            log.error("Erreur MessagingException lors de l'envoi de l'email à {} : {}", 
+                     toEmail, e.getMessage(), e);
+            throw e;
         } catch (Exception e) {
-            log.error("Erreur lors de l'envoi de l'email de vérification à {} : {}", user.getEmail(), e.getMessage(), e);
+            log.error("Erreur inattendue lors de l'envoi de l'email à {} : {}", 
+                     toEmail, e.getMessage(), e);
+            throw new MessagingException("Erreur lors de l'envoi de l'email: " + e.getMessage(), e);
         }
+    }
+    
+    /**
+     * Envoie un email HTML avec une pièce jointe
+     */
+    public void sendEmailWithAttachment(String toEmail, String subject, String htmlContent, 
+                                       byte[] attachment, String attachmentName) 
+            throws MessagingException, UnsupportedEncodingException {
+        log.info("Envoi d'un email avec pièce jointe à {}", toEmail);
+        
+        try {
+            String senderName = "SendByOp";
 
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.name());
 
+            helper.setFrom(emailFrom, senderName);
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+            
+            // Ajouter la pièce jointe
+            if (attachment != null && attachment.length > 0) {
+                helper.addAttachment(attachmentName, () -> new java.io.ByteArrayInputStream(attachment));
+                log.info("Pièce jointe ajoutée: {} ({} bytes)", attachmentName, attachment.length);
+            }
+
+            javaMailSender.send(message);
+            log.info("Email avec pièce jointe envoyé avec succès à {}", toEmail);
+        } catch (MessagingException e) {
+            log.error("Erreur MessagingException lors de l'envoi de l'email à {} : {}", 
+                     toEmail, e.getMessage(), e);
+            throw e;
+        } catch (Exception e) {
+            log.error("Erreur inattendue lors de l'envoi de l'email à {} : {}", 
+                     toEmail, e.getMessage(), e);
+            throw new MessagingException("Erreur lors de l'envoi de l'email: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * @deprecated Utiliser sendHtmlEmail() avec EmailTemplateService à la place
+     */
+    @Deprecated
+    public void sendVerificationEmail(CustomerDto user, String siteURL, String token, String header, String subject, String content)
+            throws MessagingException, UnsupportedEncodingException {
+        log.warn("Méthode dépréciée sendVerificationEmail() appelée. Utiliser sendHtmlEmail() avec EmailTemplateService.");
+        sendHtmlEmail(user.getEmail(), subject, content);
     }
 
     public void simpleHtmlMessage(CustomerDto user, String content, String subject) throws MessagingException, UnsupportedEncodingException {
