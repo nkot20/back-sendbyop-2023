@@ -10,7 +10,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -47,7 +47,7 @@ public class User implements Serializable {
     private AccountStatus status;
     
     @Builder.Default
-    @Column(name = "two_factor_enabled", columnDefinition = "TINYINT(1) DEFAULT 0")
+    @Column(name = "two_factor_enabled")
     private Boolean twoFactorEnabled = false;
     
     @Column(name = "otp_secret")
