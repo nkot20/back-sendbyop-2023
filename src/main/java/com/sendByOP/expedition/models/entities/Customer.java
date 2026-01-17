@@ -79,7 +79,8 @@ public class Customer extends BaseEntity implements Serializable {
     @Column(name = "address")
     private String address;
     
-    @Column(name = "two_factor_enabled", columnDefinition = "TINYINT(1) DEFAULT 0")
+    @Builder.Default
+    @Column(name = "two_factor_enabled")
     private Boolean twoFactorEnabled = false;
     
     @Column(name = "otp_secret")
