@@ -13,7 +13,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 @Table(name = "parcel")
-public class Parcel implements Serializable {
+public class Parcel extends BaseEntity implements Serializable {
 
     @Id
     @Basic(optional = false)

@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Table(name = "role")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Role implements Serializable {
+public class Role extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "role_id", nullable = false, updatable = false)

@@ -15,7 +15,7 @@ import java.util.Date;
 @Entity
 @Table(name = "invoice")
 @NoArgsConstructor
-public class Invoice implements Serializable {
+public class Invoice extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)

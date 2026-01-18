@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
     @Index(name = "idx_payout_status", columnList = "status"),
     @Index(name = "idx_payout_created_at", columnList = "created_at")
 })
-public class Payout implements Serializable {
+public class Payout extends BaseEntity implements Serializable {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -77,10 +77,7 @@ public class Payout implements Serializable {
     
     @Column(name = "error_message", columnDefinition = "TEXT")
     private String errorMessage;
-    
-    // Dates
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+
     
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
@@ -90,7 +87,6 @@ public class Payout implements Serializable {
     
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
         if (status == null) {
             status = PayoutStatus.PENDING;
         }
