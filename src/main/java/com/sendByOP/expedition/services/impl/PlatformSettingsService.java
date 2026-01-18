@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * Service de gestion des paramètres de la plateforme
@@ -67,7 +66,7 @@ public class PlatformSettingsService implements IPlatformSettingsService {
         settings.setAutoPayoutDelayHours(settingsDto.getAutoPayoutDelayHours());
         settings.setCancellationDeadlineHours(settingsDto.getCancellationDeadlineHours());
         settings.setLateCancellationPenalty(settingsDto.getLateCancellationPenalty());
-        settings.setUpdatedAt(LocalDateTime.now());
+        // updatedAt est géré automatiquement par @UpdateTimestamp dans BaseEntity
         
         // Sauvegarder
         PlatformSettings saved = platformSettingsRepository.save(settings);
@@ -99,8 +98,7 @@ public class PlatformSettingsService implements IPlatformSettingsService {
         // Pénalité
         settings.setLateCancellationPenalty(BigDecimal.valueOf(0.50));
         
-        // Audit
-        settings.setUpdatedAt(LocalDateTime.now());
+        // Audit - updatedAt est géré automatiquement par @UpdateTimestamp dans BaseEntity
         
         return platformSettingsRepository.save(settings);
     }

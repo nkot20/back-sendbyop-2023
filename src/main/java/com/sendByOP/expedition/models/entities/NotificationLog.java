@@ -62,13 +62,10 @@ public class NotificationLog extends BaseEntity implements Serializable {
     
     @Column(name = "retry_count", nullable = false)
     private Integer retryCount = 0;
-    
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+
     
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
         if (sent == null) {
             sent = false;
         }

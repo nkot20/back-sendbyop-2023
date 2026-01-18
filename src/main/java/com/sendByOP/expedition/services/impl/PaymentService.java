@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import com.sendByOP.expedition.utils.DateTimeUtils;
 
 /**
  * Service principal de gestion des paiements
@@ -330,7 +331,7 @@ public class PaymentService {
                 .paymentMethod(transaction.getPaymentMethod())
                 .status(transaction.getStatus())
                 .statusMessage(getStatusMessage(transaction.getStatus()))
-                .createdAt(transaction.getCreatedAt())
+                .createdAt(DateTimeUtils.dateToLocalDateTime(transaction.getCreatedAt()))
                 .completedAt(transaction.getCompletedAt())
                 .build();
     }
@@ -496,7 +497,7 @@ public class PaymentService {
                 .bookingId(booking != null ? booking.getId() : null)
                 .amount(transaction.getAmount().doubleValue())
                 .paymentType(transaction.getPaymentMethod().name())
-                .paymentDate(transaction.getCompletedAt() != null ? transaction.getCompletedAt() : transaction.getCreatedAt())
+                .paymentDate(transaction.getCompletedAt() != null ? transaction.getCompletedAt() : DateTimeUtils.dateToLocalDateTime(transaction.getCreatedAt()))
                 .status(transaction.getStatus().name())
                 .statusDisplayName(transaction.getStatus().getDisplayName())
                 .description(description)
