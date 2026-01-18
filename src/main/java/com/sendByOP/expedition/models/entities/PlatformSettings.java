@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Table(name = "platform_settings")
-public class PlatformSettings implements Serializable {
+public class PlatformSettings extends BaseEntity implements Serializable {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

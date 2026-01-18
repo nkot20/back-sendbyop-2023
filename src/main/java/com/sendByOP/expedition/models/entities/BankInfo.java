@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Setter
 @Entity
 @Table(name = "bank_info")
-public class BankInfo implements Serializable {
+public class BankInfo extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

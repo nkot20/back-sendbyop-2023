@@ -11,7 +11,7 @@ import java.util.Date;
 @Setter
 @Entity
 @Table(name = "visites")
-public class Visite implements Serializable {
+public class Visite extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)

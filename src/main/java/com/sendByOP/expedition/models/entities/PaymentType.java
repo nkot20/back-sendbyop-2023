@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Setter
 @Entity
 @Table(name = "payment_type")
-public class PaymentType implements Serializable {
+public class PaymentType extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

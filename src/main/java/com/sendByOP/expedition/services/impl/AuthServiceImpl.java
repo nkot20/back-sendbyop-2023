@@ -129,7 +129,7 @@ public class AuthServiceImpl implements IAuthService {
         String lastName = null;
         
         // Récupérer le customer pour les informations de profil
-        CustomerDto customer = null;
+        CustomerDto customer = CustomerDto.builder().build();
         try {
             customer = clientService.getCustomerByEmail(user.getEmail());
         } catch (SendByOpException e) {
@@ -275,20 +275,6 @@ public class AuthServiceImpl implements IAuthService {
         if (!password.matches(".*\\d.*")) {
             throw new SendByOpException("Password must contain at least one number", 
                                       HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    private void sendVerificationEmail(CustomerDto client) throws MessagingException, UnsupportedEncodingException, SendByOpException {
-        try {
-            String verificationUrl = "http://localhost:4200/verification";
-            sendMailService.sendVerificationEmail(client, verificationUrl, "token", 
-                                                "/verify?code=", "Account Verification", 
-                                                "Please verify your account");
-            log.info("Verification email sent to: {}", client.getEmail());
-        } catch (Exception e) {
-            log.error("Failed to send verification email: {}", e.getMessage());
-            throw new SendByOpException("Failed to send verification email", 
-                                      HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

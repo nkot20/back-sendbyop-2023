@@ -5,6 +5,7 @@ import com.sendByOP.expedition.models.enums.TransactionStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Transaction {
+public class Transaction extends BaseEntity implements Serializable {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

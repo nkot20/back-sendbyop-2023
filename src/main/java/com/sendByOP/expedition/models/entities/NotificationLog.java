@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
     @Index(name = "idx_notification_type", columnList = "type"),
     @Index(name = "idx_notification_sent_at", columnList = "sent_at")
 })
-public class NotificationLog implements Serializable {
+public class NotificationLog extends BaseEntity implements Serializable {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

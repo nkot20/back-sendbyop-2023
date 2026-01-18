@@ -10,7 +10,7 @@ import java.util.Date;
 @Setter
 @Entity
 @Table(name = "report")
-public class Report implements Serializable {
+public class Report extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)

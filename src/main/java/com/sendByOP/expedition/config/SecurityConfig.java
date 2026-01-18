@@ -5,6 +5,7 @@ import com.sendByOP.expedition.security.jwt.JwtAuthTokenFilter;
 import com.sendByOP.expedition.security.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +25,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -32,6 +34,9 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final JwtAuthTokenFilter authenticationJwtTokenFilter;
+    
+    @Value("${cors.allowed-origins:http://localhost:4200}")
+    private String allowedOrigins;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -95,11 +100,18 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
+        
+        // Parse allowed origins from comma-separated string
+        List<String> origins = Arrays.asList(allowedOrigins.split(","));
+        configuration.setAllowedOrigins(origins);
+        
+        log.info("CORS Configuration - Allowed origins: {}", origins);
+        
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setExposedHeaders(Arrays.asList("Content-Type", "Content-Length", "Content-Disposition"));
+        configuration.setExposedHeaders(Arrays.asList("Content-Type", "Content-Length", "Content-Disposition", "Authorization"));
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L); // Cache preflight response for 1 hour
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

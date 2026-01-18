@@ -11,7 +11,7 @@ import java.util.Objects;
 @Setter
 @Entity
 @Table(name = "verify_token")
-public class VerifyToken implements Serializable {
+public class VerifyToken extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
