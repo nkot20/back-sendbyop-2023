@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * DTO pour les paiements aux voyageurs
@@ -71,7 +72,7 @@ public class PayoutDto {
     /**
      * Date de création
      */
-    private LocalDateTime createdAt;
+    private Date createdAt;
     
     /**
      * Date de traitement (paiement effectué)

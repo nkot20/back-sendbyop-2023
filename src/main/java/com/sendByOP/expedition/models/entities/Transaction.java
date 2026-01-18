@@ -64,12 +64,6 @@ public class Transaction extends BaseEntity implements Serializable {
     @Column(name = "error_code", length = 50)
     private String errorCode;
     
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
-    
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-    
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
     
@@ -92,7 +86,6 @@ public class Transaction extends BaseEntity implements Serializable {
     
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
         if (transactionReference == null) {
             transactionReference = generateTransactionReference();
         }
@@ -100,7 +93,6 @@ public class Transaction extends BaseEntity implements Serializable {
     
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
         if (status == TransactionStatus.COMPLETED && completedAt == null) {
             completedAt = LocalDateTime.now();
         }

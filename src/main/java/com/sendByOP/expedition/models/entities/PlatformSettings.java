@@ -162,17 +162,10 @@ public class PlatformSettings extends BaseEntity implements Serializable {
     // ==========================================
     // AUDIT
     // ==========================================
-    
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+
     
     @Column(name = "updated_by")
     private String updatedBy;
-    
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
     
     /**
      * Valide que la somme des pourcentages est égale à 100%

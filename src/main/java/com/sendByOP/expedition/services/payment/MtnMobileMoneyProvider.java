@@ -8,6 +8,7 @@ import com.sendByOP.expedition.models.dto.WebhookPaymentNotification;
 import com.sendByOP.expedition.models.entities.Transaction;
 import com.sendByOP.expedition.models.enums.PaymentMethod;
 import com.sendByOP.expedition.models.enums.TransactionStatus;
+import com.sendByOP.expedition.utils.DateTimeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -57,7 +58,7 @@ public class MtnMobileMoneyProvider implements PaymentProvider {
                     .paymentMethod(PaymentMethod.MTN_MOBILE_MONEY)
                     .status(TransactionStatus.PENDING)
                     .statusMessage("Paiement en attente de confirmation MTN Mobile Money")
-                    .createdAt(transaction.getCreatedAt())
+                    .createdAt(DateTimeUtils.dateToLocalDateTime(transaction.getCreatedAt()))
                     .ussdCode(ussdCode)
                     .requiresConfirmation(true)
                     .confirmationMessage("Composez le code USSD " + ussdCode + 
@@ -84,7 +85,7 @@ public class MtnMobileMoneyProvider implements PaymentProvider {
                 .paymentMethod(PaymentMethod.MTN_MOBILE_MONEY)
                 .status(transaction.getStatus())
                 .statusMessage("Statut actuel du paiement")
-                .createdAt(transaction.getCreatedAt())
+                .createdAt(DateTimeUtils.dateToLocalDateTime(transaction.getCreatedAt()))
                 .completedAt(transaction.getCompletedAt())
                 .build();
     }

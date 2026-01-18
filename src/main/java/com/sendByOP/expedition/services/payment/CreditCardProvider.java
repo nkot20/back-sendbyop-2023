@@ -8,6 +8,7 @@ import com.sendByOP.expedition.models.dto.WebhookPaymentNotification;
 import com.sendByOP.expedition.models.entities.Transaction;
 import com.sendByOP.expedition.models.enums.PaymentMethod;
 import com.sendByOP.expedition.models.enums.TransactionStatus;
+import com.sendByOP.expedition.utils.DateTimeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -59,7 +60,7 @@ public class CreditCardProvider implements PaymentProvider {
                     .paymentMethod(PaymentMethod.CREDIT_CARD)
                     .status(TransactionStatus.PENDING)
                     .statusMessage("Paiement en attente de validation")
-                    .createdAt(transaction.getCreatedAt())
+                    .createdAt(DateTimeUtils.dateToLocalDateTime(transaction.getCreatedAt()))
                     .paymentUrl(paymentUrl)
                     .requiresConfirmation(true)
                     .confirmationMessage("Cliquez sur le lien pour compléter le paiement par carte")
@@ -84,7 +85,7 @@ public class CreditCardProvider implements PaymentProvider {
                 .paymentMethod(PaymentMethod.CREDIT_CARD)
                 .status(transaction.getStatus())
                 .statusMessage("Statut actuel du paiement")
-                .createdAt(transaction.getCreatedAt())
+                .createdAt(DateTimeUtils.dateToLocalDateTime(transaction.getCreatedAt()))
                 .completedAt(transaction.getCompletedAt())
                 .build();
     }
