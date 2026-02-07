@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/admin/settings")
+@RequestMapping("/admin/settings")
 @RequiredArgsConstructor
 @Tag(name = "Platform Settings (Admin)", description = "Gestion des paramètres de la plateforme")
 @PreAuthorize("hasRole('ADMIN')")
@@ -47,7 +47,7 @@ public class PlatformSettingsController {
                     content = @Content)
     })
     public ResponseEntity<PlatformSettingsDto> getSettings() throws SendByOpException {
-        log.info("GET /api/admin/settings - Récupération des paramètres");
+        log.info("GET /admin/settings - Récupération des paramètres");
         
         PlatformSettingsDto settings = platformSettingsService.getSettings();
         
@@ -78,7 +78,7 @@ public class PlatformSettingsController {
     public ResponseEntity<PlatformSettingsDto> updateSettings(
             @Valid @RequestBody PlatformSettingsDto settingsDto) throws SendByOpException {
         
-        log.info("PUT /api/admin/settings - Mise à jour des paramètres");
+        log.info("PUT /admin/settings - Mise à jour des paramètres");
         log.debug("New settings: {}", settingsDto);
         
         PlatformSettingsDto updated = platformSettingsService.updateSettings(settingsDto);
@@ -104,7 +104,7 @@ public class PlatformSettingsController {
                     content = @Content)
     })
     public ResponseEntity<PlatformSettingsDto> resetToDefaults() throws SendByOpException {
-        log.info("POST /api/admin/settings/reset - Réinitialisation des paramètres");
+        log.info("POST /admin/settings/reset - Réinitialisation des paramètres");
         
         // Créer un DTO avec les valeurs par défaut
         PlatformSettingsDto defaultSettings = PlatformSettingsDto.builder()

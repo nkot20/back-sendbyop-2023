@@ -3,9 +3,12 @@ package com.sendByOP.expedition.services.impl;
 import com.sendByOP.expedition.models.dto.BookingStatsDto;
 import com.sendByOP.expedition.models.dto.RevenueStatsDto;
 import com.sendByOP.expedition.models.dto.UserStatsDto;
+import com.sendByOP.expedition.models.entities.Booking;
+import com.sendByOP.expedition.models.entities.Customer;
 import com.sendByOP.expedition.models.enums.BookingStatus;
 import com.sendByOP.expedition.repositories.BookingRepository;
 import com.sendByOP.expedition.repositories.CustomerRepository;
+import com.sendByOP.expedition.repositories.FlightRepository;
 import com.sendByOP.expedition.services.iServices.IStatisticsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +17,11 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Service d'implémentation des statistiques
@@ -27,6 +33,7 @@ public class StatisticsService implements IStatisticsService {
 
     private final BookingRepository bookingRepository;
     private final CustomerRepository customerRepository;
+    private final FlightRepository flightRepository;
 
     @Override
     public BookingStatsDto getBookingStatistics(LocalDate from, LocalDate to) {
@@ -95,20 +102,28 @@ public class StatisticsService implements IStatisticsService {
         // Calculer revenus
         BigDecimal totalRevenue = BigDecimal.ZERO;
         for (var booking : paidBookings) {
-            totalRevenue = totalRevenue.add(booking.getTotalPrice());
+            if (booking.getTotalPrice() != null) {
+                totalRevenue = totalRevenue.add(booking.getTotalPrice());
+            }
         }
         for (var booking : deliveredBookings) {
-            totalRevenue = totalRevenue.add(booking.getTotalPrice());
+            if (booking.getTotalPrice() != null) {
+                totalRevenue = totalRevenue.add(booking.getTotalPrice());
+            }
         }
         for (var booking : pickedUpBookings) {
-            totalRevenue = totalRevenue.add(booking.getTotalPrice());
+            if (booking.getTotalPrice() != null) {
+                totalRevenue = totalRevenue.add(booking.getTotalPrice());
+            }
         }
 
         // Revenu en attente (confirmées non payées)
         var unpaidBookings = bookingRepository.findByStatus(BookingStatus.CONFIRMED_UNPAID);
         BigDecimal pendingRevenue = BigDecimal.ZERO;
         for (var booking : unpaidBookings) {
-            pendingRevenue = pendingRevenue.add(booking.getTotalPrice());
+            if (booking.getTotalPrice() != null) {
+                pendingRevenue = pendingRevenue.add(booking.getTotalPrice());
+            }
         }
 
         // Commission (exemple: 10% de la plateforme)
@@ -121,9 +136,11 @@ public class StatisticsService implements IStatisticsService {
         // En attente de payout (PICKED_UP seulement)
         BigDecimal pendingPayout = BigDecimal.ZERO;
         for (var booking : pickedUpBookings) {
-            BigDecimal bookingPayout = booking.getTotalPrice()
-                    .multiply(BigDecimal.ONE.subtract(commissionRate));
-            pendingPayout = pendingPayout.add(bookingPayout);
+            if (booking.getTotalPrice() != null) {
+                BigDecimal bookingPayout = booking.getTotalPrice()
+                        .multiply(BigDecimal.ONE.subtract(commissionRate));
+                pendingPayout = pendingPayout.add(bookingPayout);
+            }
         }
 
         // Revenu moyen
@@ -152,19 +169,61 @@ public class StatisticsService implements IStatisticsService {
         // Compter tous les utilisateurs
         long totalUsers = customerRepository.count();
 
-        // Utilisateurs actifs (ayant au moins une réservation)
-        // TODO: Optimiser avec requête custom
-        long activeUsers = totalUsers; // Placeholder
+        // Calculer les nouveaux utilisateurs (dernière semaine)
+        LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
+        long newUsers = customerRepository.findAll().stream()
+                .filter(customer -> {
+                    if (customer.getCreatedAt() == null) return false;
+                    // Convertir Date en LocalDateTime pour comparaison
+                    LocalDateTime createdAt = customer.getCreatedAt().toInstant()
+                            .atZone(java.time.ZoneId.systemDefault())
+                            .toLocalDateTime();
+                    return createdAt.isAfter(oneWeekAgo);
+                })
+                .count();
 
-        // Statistiques basiques
+        // Utilisateurs avec au moins une réservation (actifs)
+        Set<Long> activeUserIds = new HashSet<>();
+        for (var booking : bookingRepository.findAll()) {
+            if (booking.getCustomer() != null) {
+                activeUserIds.add(booking.getCustomer().getId().longValue());
+            }
+        }
+        long activeUsers = activeUserIds.size();
+
+        // Compter les voyageurs (customers avec au moins un vol)
+        long travelers = flightRepository.findAll().stream()
+                .filter(flight -> flight.getCustomer() != null)
+                .map(flight -> flight.getCustomer().getId())
+                .distinct()
+                .count();
+
+        // Compter les expéditeurs (customers avec au moins une réservation)
+        long senders = bookingRepository.findAll().stream()
+                .filter(booking -> booking.getCustomer() != null)
+                .map(booking -> booking.getCustomer().getId())
+                .distinct()
+                .count();
+
+        // Calculer taux d'utilisateurs actifs
+        double activeUserRate = totalUsers > 0 
+                ? (double) activeUsers / totalUsers * 100 
+                : 0.0;
+
+        // Calculer nombre moyen de réservations par utilisateur actif
+        long totalBookings = bookingRepository.count();
+        double averageBookingsPerUser = activeUsers > 0 
+                ? (double) totalBookings / activeUsers 
+                : 0.0;
+
         return UserStatsDto.builder()
                 .totalUsers(totalUsers)
                 .activeUsers(activeUsers)
-                .newUsers(0L) // TODO: Filtrer par date création
-                .travelers(0L) // TODO: Compter customers avec vols
-                .senders(0L) // TODO: Compter customers avec réservations
-                .activeUserRate(totalUsers > 0 ? 100.0 : 0.0)
-                .averageBookingsPerUser(0.0) // TODO: Calculer moyenne
+                .newUsers(newUsers)
+                .travelers(travelers)
+                .senders(senders)
+                .activeUserRate(Math.round(activeUserRate * 100.0) / 100.0)
+                .averageBookingsPerUser(Math.round(averageBookingsPerUser * 100.0) / 100.0)
                 .build();
     }
 }
