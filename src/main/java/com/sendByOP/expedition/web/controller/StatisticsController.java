@@ -23,7 +23,7 @@ import java.time.LocalDate;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/statistics")
+@RequestMapping("/statistics")
 @RequiredArgsConstructor
 @Tag(name = "Statistics", description = "API pour les statistiques et analytics")
 public class StatisticsController {
@@ -53,7 +53,7 @@ public class StatisticsController {
             @RequestParam(required = false) 
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to
     ) {
-        log.info("GET /api/statistics/bookings from={} to={}", from, to);
+        log.info("GET /statistics/bookings from={} to={}", from, to);
         
         BookingStatsDto stats = statisticsService.getBookingStatistics(from, to);
         
@@ -83,7 +83,7 @@ public class StatisticsController {
             @RequestParam(required = false) 
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to
     ) {
-        log.info("GET /api/statistics/revenue from={} to={}", from, to);
+        log.info("GET /statistics/revenue from={} to={}", from, to);
         
         RevenueStatsDto stats = statisticsService.getRevenueStatistics(from, to);
         
@@ -105,7 +105,7 @@ public class StatisticsController {
             @ApiResponse(responseCode = "403", description = "Non autorisé (admin requis)")
     })
     public ResponseEntity<UserStatsDto> getUserStatistics() {
-        log.info("GET /api/statistics/users");
+        log.info("GET /statistics/users");
         
         UserStatsDto stats = statisticsService.getUserStatistics();
         

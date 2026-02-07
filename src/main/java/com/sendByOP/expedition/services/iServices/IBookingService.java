@@ -5,6 +5,7 @@ import com.sendByOP.expedition.models.dto.BookingResponseDto;
 import com.sendByOP.expedition.models.dto.CreateBookingRequest;
 import com.sendByOP.expedition.models.dto.CustomerBookingDto;
 import com.sendByOP.expedition.models.dto.PaymentRequest;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,7 +37,7 @@ public interface IBookingService {
      * @throws SendByOpException Si les données sont invalides ou si une ressource n'existe pas
      */
     BookingResponseDto createBooking(
-            CreateBookingRequest request,
+            @Valid CreateBookingRequest request,
             MultipartFile[] parcelPhotos,
             String customerId
     ) throws SendByOpException;
