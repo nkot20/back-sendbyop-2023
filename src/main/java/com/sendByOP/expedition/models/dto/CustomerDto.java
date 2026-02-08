@@ -11,7 +11,6 @@ import java.util.Date;
 @Builder
 @Schema(description = "DTO for customer information")
 public class CustomerDto {
-    @JsonIgnore
     @Schema(description = "Unique identifier for the customer", example = "1")
     private Integer id;
 
@@ -40,7 +39,7 @@ public class CustomerDto {
     private int emailVerified;
     private int phoneVerified;
     private String whatsappLink;
-    private Date registrationDate;
+    private Date createdAt;
     private String country;
     private int identityUploaded;
     private int identityVerified;

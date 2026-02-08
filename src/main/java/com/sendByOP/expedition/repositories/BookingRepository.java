@@ -76,4 +76,27 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             @Param("travelerEmail") String travelerEmail, 
             @Param("status") BookingStatus status
     );
+
+    /**
+     * Récupère toutes les réservations avec pagination (pour admin)
+     */
+    Page<Booking> findAllByOrderByBookingDateDesc(Pageable pageable);
+
+    /**
+     * Récupère toutes les réservations par statut avec pagination (pour admin)
+     */
+    Page<Booking> findByStatusOrderByBookingDateDesc(BookingStatus status, Pageable pageable);
+
+    /**
+     * Recherche les réservations par nom client ou destinataire (pour admin)
+     */
+    @Query("SELECT b FROM Booking b WHERE " +
+           "LOWER(b.customer.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(b.customer.lastName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(b.customer.email) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(b.receiver.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(b.receiver.lastName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "CAST(b.id AS string) LIKE CONCAT('%', :search, '%') " +
+           "ORDER BY b.bookingDate DESC")
+    Page<Booking> searchBookings(@Param("search") String search, Pageable pageable);
 }

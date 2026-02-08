@@ -105,7 +105,44 @@ public class UserService implements IUserService {
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
-                .roleId(user.getRole())
+                .role(user.getRole())
+                .status(user.getStatus())
                 .build();
+    }
+
+    @Override
+    public UserDto blockUser(String email) throws SendByOpException {
+        log.info("Admin blocking user: {}", email);
+        
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new SendByOpException(ErrorInfo.USER_NOT_FOUND));
+        
+        user.setStatus(com.sendByOP.expedition.models.enums.AccountStatus.BLOCKED);
+        User updatedUser = userRepository.save(user);
+        
+        log.info("User blocked: {}", email);
+        return convertToDto(updatedUser);
+    }
+
+    @Override
+    public UserDto unblockUser(String email) throws SendByOpException {
+        log.info("Admin unblocking user: {}", email);
+        
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new SendByOpException(ErrorInfo.USER_NOT_FOUND));
+        
+        user.setStatus(com.sendByOP.expedition.models.enums.AccountStatus.ACTIVE);
+        User updatedUser = userRepository.save(user);
+        
+        log.info("User unblocked: {}", email);
+        return convertToDto(updatedUser);
+    }
+
+    @Override
+    public UserDto getUserByEmail(String email) throws SendByOpException {
+        log.debug("Getting user DTO by email: {}", email);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new SendByOpException(ErrorInfo.USER_NOT_FOUND));
+        return convertToDto(user);
     }
 }

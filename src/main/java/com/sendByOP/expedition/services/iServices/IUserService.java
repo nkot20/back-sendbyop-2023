@@ -13,4 +13,7 @@ public interface IUserService {
     public User findByEmail(String email) throws SendByOpException;
     public void deleteuser(User user);
     public List<UserDto> getAllUser();
+    public UserDto blockUser(String email) throws SendByOpException;
+    public UserDto unblockUser(String email) throws SendByOpException;
+    public UserDto getUserByEmail(String email) throws SendByOpException;
 }

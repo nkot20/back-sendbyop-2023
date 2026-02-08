@@ -9,6 +9,7 @@ import com.sendByOP.expedition.models.enums.BookingStatus;
 import com.sendByOP.expedition.repositories.BookingRepository;
 import com.sendByOP.expedition.repositories.CustomerRepository;
 import com.sendByOP.expedition.repositories.FlightRepository;
+import com.sendByOP.expedition.repositories.UserRepository;
 import com.sendByOP.expedition.services.iServices.IStatisticsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,7 @@ public class StatisticsService implements IStatisticsService {
     private final BookingRepository bookingRepository;
     private final CustomerRepository customerRepository;
     private final FlightRepository flightRepository;
+    private final UserRepository userRepository;
 
     @Override
     public BookingStatsDto getBookingStatistics(LocalDate from, LocalDate to) {
@@ -166,16 +168,16 @@ public class StatisticsService implements IStatisticsService {
     public UserStatsDto getUserStatistics() {
         log.info("Fetching user statistics");
 
-        // Compter tous les utilisateurs
-        long totalUsers = customerRepository.count();
+        // Compter tous les utilisateurs depuis la table User
+        long totalUsers = userRepository.count();
 
         // Calculer les nouveaux utilisateurs (dernière semaine)
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
-        long newUsers = customerRepository.findAll().stream()
-                .filter(customer -> {
-                    if (customer.getCreatedAt() == null) return false;
+        long newUsers = userRepository.findAll().stream()
+                .filter(user -> {
+                    if (user.getCreatedAt() == null) return false;
                     // Convertir Date en LocalDateTime pour comparaison
-                    LocalDateTime createdAt = customer.getCreatedAt().toInstant()
+                    LocalDateTime createdAt = user.getCreatedAt().toInstant()
                             .atZone(java.time.ZoneId.systemDefault())
                             .toLocalDateTime();
                     return createdAt.isAfter(oneWeekAgo);
