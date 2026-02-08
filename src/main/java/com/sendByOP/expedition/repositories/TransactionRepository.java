@@ -42,4 +42,17 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
     Page<Transaction> findByCustomerEmailOrderByCreatedAtDesc(@Param("email") String email, Pageable pageable);
     
     boolean existsByBookingIdAndStatus(Integer bookingId, TransactionStatus status);
+    
+    // Méthodes pour l'administration
+    Page<Transaction> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    
+    Page<Transaction> findByStatus(TransactionStatus status, Pageable pageable);
+    
+    @Query("SELECT t FROM Transaction t WHERE " +
+           "LOWER(t.transactionReference) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(t.customer.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(t.customer.lastName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(t.customer.email) LIKE LOWER(CONCAT('%', :search, '%')) " +
+           "ORDER BY t.createdAt DESC")
+    Page<Transaction> searchTransactions(@Param("search") String search, Pageable pageable);
 }
