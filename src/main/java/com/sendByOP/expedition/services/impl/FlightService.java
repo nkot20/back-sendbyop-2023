@@ -235,7 +235,7 @@ public class FlightService implements IVolService {
     public List<PublicFlightDto> getPublicValidAndActiveFlights() {
         log.debug("Fetching public valid and active flights with detailed information");
         Date currentDate = new Date();
-        List<Flight> flights = flightRepository.findByValidationStatusAndCancelledOrderByDepartureDateDesc(1, 0);
+        List<Flight> flights = flightRepository.findByStatusOrderByPublicationDateDesc(FlightStatus.ACTIVE);
         
         // Filter flights with departure date in the future AND status ACTIVE (not EXPIRED or CANCELLED)
         List<Flight> activeFuture = flights.stream()
