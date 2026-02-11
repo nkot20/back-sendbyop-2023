@@ -160,6 +160,26 @@ public class PlatformSettings extends BaseEntity implements Serializable {
     private BigDecimal refundRateBeforeDeadline = BigDecimal.valueOf(90.00); // 90%
     
     // ==========================================
+    // LIMITES ANTI-FRAUDE
+    // ==========================================
+    
+    @NotNull
+    @Min(value = 1, message = "Le nombre maximum de réservations par semaine doit être au moins 1")
+    @Max(value = 50, message = "Le nombre maximum de réservations par semaine ne peut pas dépasser 50")
+    @Column(name = "max_bookings_per_week", nullable = false)
+    private Integer maxBookingsPerWeek = 2;
+    
+    @NotNull
+    @Min(value = 1, message = "Le nombre maximum de voyages par semaine doit être au moins 1")
+    @Max(value = 20, message = "Le nombre maximum de voyages par semaine ne peut pas dépasser 20")
+    @Column(name = "max_flights_per_week", nullable = false)
+    private Integer maxFlightsPerWeek = 2;
+    
+    @NotNull
+    @Column(name = "fraud_protection_enabled", nullable = false)
+    private Boolean fraudProtectionEnabled = true;
+    
+    // ==========================================
     // AUDIT
     // ==========================================
 

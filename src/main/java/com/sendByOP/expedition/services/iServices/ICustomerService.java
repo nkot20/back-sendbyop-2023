@@ -21,6 +21,6 @@ public interface ICustomerService {
     public List<CustomerDto> getAllRegister();
     public CustomerDto findByNumber(String tel) throws SendByOpException;
     public String uploadProfilePicture(Integer customerId, MultipartFile file) throws SendByOpException;
-
+    public CustomerDto verifyCustomerIdentity(Integer customerId, boolean verified) throws SendByOpException;
 
 }

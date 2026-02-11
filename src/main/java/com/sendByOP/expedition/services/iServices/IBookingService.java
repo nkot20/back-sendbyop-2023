@@ -252,4 +252,34 @@ public interface IBookingService {
      * @throws SendByOpException Si la réservation n'existe pas ou si l'utilisateur n'est pas autorisé
      */
     BookingResponseDto confirmParcelDeliveredToReceiver(Integer bookingId, Integer travelerId) throws SendByOpException;
+
+    // ==========================================
+    // ADMIN METHODS
+    // ==========================================
+
+    /**
+     * Récupère toutes les réservations avec pagination (Admin)
+     * 
+     * @param pageable Paramètres de pagination
+     * @return Page de réservations
+     */
+    Page<CustomerBookingDto> getAllBookingsPaginated(Pageable pageable);
+
+    /**
+     * Récupère les réservations par statut avec pagination (Admin)
+     * 
+     * @param status Statut des réservations
+     * @param pageable Paramètres de pagination
+     * @return Page de réservations
+     */
+    Page<CustomerBookingDto> getBookingsByStatusPaginated(String status, Pageable pageable);
+
+    /**
+     * Recherche des réservations (Admin)
+     * 
+     * @param search Terme de recherche
+     * @param pageable Paramètres de pagination
+     * @return Page de réservations
+     */
+    Page<CustomerBookingDto> searchBookings(String search, Pageable pageable);
 }

@@ -10,7 +10,9 @@ import java.util.Date;
 @Setter
 @Builder
 @Entity
-@Table(name = "customer")
+@Table(name = "customer", uniqueConstraints = {
+    @UniqueConstraint(name = "uk_customer_email", columnNames = "email")
+})
 @NoArgsConstructor
 @AllArgsConstructor
 public class Customer extends BaseEntity implements Serializable {

@@ -14,6 +14,7 @@ public enum ErrorInfo {
     INVALID_RESOURCE_DATA("Invalid resource data provided", HttpStatus.BAD_REQUEST),
     INVALID_DATA("Invalid data provided", HttpStatus.BAD_REQUEST),
     DUPLICATE_ENTRY("Duplicate entry detected", HttpStatus.CONFLICT),
+
     
     // Authentication and registration errors
     EMAIL_ALREADY_EXISTS("Email address is already registered", HttpStatus.BAD_REQUEST),
@@ -50,6 +51,10 @@ public enum ErrorInfo {
     INVALID_PARCEL_WEIGHT("Invalid parcel weight", HttpStatus.BAD_REQUEST),
     INVALID_SHIPPING_ADDRESS("Invalid shipping address", HttpStatus.BAD_REQUEST),
     SHIPPING_NOT_AVAILABLE("Shipping service not available for this destination", HttpStatus.BAD_REQUEST),
+    
+    // Fraud protection errors
+    FRAUD_LIMIT_REACHED("Weekly limit reached for this action", HttpStatus.TOO_MANY_REQUESTS),
+    FRAUD_SUSPICIOUS_ACTIVITY("Suspicious activity detected", HttpStatus.FORBIDDEN),
     
     // General errors
     INTERNAL_ERROR("An internal error occurred. Please try again later", HttpStatus.INTERNAL_SERVER_ERROR),

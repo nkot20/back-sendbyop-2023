@@ -1,5 +1,6 @@
 package com.sendByOP.expedition.models.dto;
 
+import com.sendByOP.expedition.models.enums.AccountStatus;
 import lombok.Builder;
 import lombok.Data;
 
@@ -12,6 +13,7 @@ public class UserDto {
     private String password;
     private String lastName;
     private String firstName;
-    private String roleId; // Role ID to be mapped in the DTO
+    private String role;
+    private AccountStatus status;
 
 }

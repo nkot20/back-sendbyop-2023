@@ -173,4 +173,20 @@ public class CustomerService implements ICustomerService {
         log.info("Profile picture uploaded successfully for customer: {}, filename: {}", customerId, filename);
         return filename;
     }
+
+    @Override
+    @CacheEvict(value = {"customers:email"}, key = "#result.email")
+    public CustomerDto verifyCustomerIdentity(Integer customerId, boolean verified) throws SendByOpException {
+        log.info("Admin verifying identity for customer: {}, verified: {}", customerId, verified);
+        
+        Customer customer = clientRepository.findById(customerId)
+                .orElseThrow(() -> new SendByOpException(ErrorInfo.RESOURCE_NOT_FOUND));
+        
+        customer.setIdentityVerified(verified ? 1 : 0);
+        Customer updatedCustomer = clientRepository.save(customer);
+        
+        log.info("Identity verification updated for customer: {}", customerId);
+        return customerMapper.toDto(updatedCustomer);
+    }
+
 }

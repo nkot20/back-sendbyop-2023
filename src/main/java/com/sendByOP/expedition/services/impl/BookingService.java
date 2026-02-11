@@ -1274,4 +1274,41 @@ public class BookingService implements IBookingService {
             "</body>" +
             "</html>";
     }
+
+    // ==========================================
+    // ADMIN METHODS IMPLEMENTATION
+    // ==========================================
+
+    @Override
+    public Page<CustomerBookingDto> getAllBookingsPaginated(Pageable pageable) {
+        log.debug("Admin: Fetching all bookings paginated, page: {}, size: {}", 
+                pageable.getPageNumber(), pageable.getPageSize());
+        
+        Page<Booking> bookingsPage = bookingRepository.findAllByOrderByBookingDateDesc(pageable);
+        return bookingsPage.map(this::convertToCustomerBookingDto);
+    }
+
+    @Override
+    public Page<CustomerBookingDto> getBookingsByStatusPaginated(String status, Pageable pageable) {
+        log.debug("Admin: Fetching bookings by status: {}, page: {}, size: {}", 
+                status, pageable.getPageNumber(), pageable.getPageSize());
+        
+        try {
+            BookingStatus bookingStatus = BookingStatus.valueOf(status);
+            Page<Booking> bookingsPage = bookingRepository.findByStatusOrderByBookingDateDesc(bookingStatus, pageable);
+            return bookingsPage.map(this::convertToCustomerBookingDto);
+        } catch (IllegalArgumentException e) {
+            log.warn("Invalid booking status: {}, returning all bookings", status);
+            return getAllBookingsPaginated(pageable);
+        }
+    }
+
+    @Override
+    public Page<CustomerBookingDto> searchBookings(String search, Pageable pageable) {
+        log.debug("Admin: Searching bookings with term: {}, page: {}, size: {}", 
+                search, pageable.getPageNumber(), pageable.getPageSize());
+        
+        Page<Booking> bookingsPage = bookingRepository.searchBookings(search, pageable);
+        return bookingsPage.map(this::convertToCustomerBookingDto);
+    }
 }

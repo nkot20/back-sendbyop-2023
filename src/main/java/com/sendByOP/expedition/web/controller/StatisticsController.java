@@ -1,6 +1,7 @@
 package com.sendByOP.expedition.web.controller;
 
 import com.sendByOP.expedition.models.dto.BookingStatsDto;
+import com.sendByOP.expedition.models.dto.RecentActivityDto;
 import com.sendByOP.expedition.models.dto.RevenueStatsDto;
 import com.sendByOP.expedition.models.dto.UserStatsDto;
 import com.sendByOP.expedition.services.iServices.IStatisticsService;
@@ -17,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Contrôleur pour les statistiques et analytics
@@ -110,5 +112,30 @@ public class StatisticsController {
         UserStatsDto stats = statisticsService.getUserStatistics();
         
         return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * Récupérer les activités récentes
+     */
+    @GetMapping("/recent-activity")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(
+            summary = "Activités récentes",
+            description = "Récupère les activités récentes de la plateforme (réservations, voyages, utilisateurs)"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Activités récupérées avec succès"),
+            @ApiResponse(responseCode = "401", description = "Non authentifié"),
+            @ApiResponse(responseCode = "403", description = "Non autorisé (admin requis)")
+    })
+    public ResponseEntity<List<RecentActivityDto>> getRecentActivity(
+            @Parameter(description = "Nombre maximum d'activités à retourner")
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        log.info("GET /statistics/recent-activity limit={}", limit);
+        
+        List<RecentActivityDto> activities = statisticsService.getRecentActivity(limit);
+        
+        return ResponseEntity.ok(activities);
     }
 }

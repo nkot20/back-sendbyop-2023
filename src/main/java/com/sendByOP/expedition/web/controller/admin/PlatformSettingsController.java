@@ -3,7 +3,11 @@ package com.sendByOP.expedition.web.controller.admin;
 import com.sendByOP.expedition.exception.SendByOpException;
 import com.sendByOP.expedition.models.dto.PlatformSettingsDto;
 import com.sendByOP.expedition.services.iServices.IPlatformSettingsService;
+import com.sendByOP.expedition.services.impl.FraudGuardService;
+import com.sendByOP.expedition.services.impl.FraudGuardService.FraudLimitsDto;
+import com.sendByOP.expedition.services.impl.FraudGuardService.UserFraudStatusDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -29,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 public class PlatformSettingsController {
 
     private final IPlatformSettingsService platformSettingsService;
+    private final FraudGuardService fraudGuardService;
 
     /**
      * Récupère les paramètres de la plateforme
@@ -117,11 +122,55 @@ public class PlatformSettingsController {
                 .autoPayoutDelayHours(24)
                 .cancellationDeadlineHours(24)
                 .lateCancellationPenalty(java.math.BigDecimal.valueOf(0.50))
+                .maxBookingsPerWeek(2)
+                .maxFlightsPerWeek(2)
+                .fraudProtectionEnabled(true)
                 .build();
         
         PlatformSettingsDto reset = platformSettingsService.updateSettings(defaultSettings);
         
         log.info("Settings reset to defaults successfully");
         return ResponseEntity.ok(reset);
+    }
+
+    // ==========================================
+    // ENDPOINTS ANTI-FRAUDE
+    // ==========================================
+
+    /**
+     * Récupère les limites anti-fraude actuelles
+     */
+    @GetMapping("/fraud-limits")
+    @Operation(summary = "Récupérer les limites anti-fraude",
+            description = "Récupère les limites anti-fraude actuellement configurées")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Limites récupérées avec succès",
+                    content = @Content(schema = @Schema(implementation = FraudLimitsDto.class))),
+            @ApiResponse(responseCode = "403", description = "Accès refusé",
+                    content = @Content)
+    })
+    public ResponseEntity<FraudLimitsDto> getFraudLimits() {
+        log.info("GET /admin/settings/fraud-limits - Récupération des limites anti-fraude");
+        FraudLimitsDto limits = fraudGuardService.getCurrentLimits();
+        return ResponseEntity.ok(limits);
+    }
+
+    /**
+     * Récupère le statut anti-fraude d'un utilisateur spécifique
+     */
+    @GetMapping("/fraud-status/{email}")
+    @Operation(summary = "Récupérer le statut anti-fraude d'un utilisateur",
+            description = "Récupère le statut anti-fraude d'un utilisateur spécifique, incluant le nombre de réservations et voyages cette semaine")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Statut récupéré avec succès",
+                    content = @Content(schema = @Schema(implementation = UserFraudStatusDto.class))),
+            @ApiResponse(responseCode = "403", description = "Accès refusé",
+                    content = @Content)
+    })
+    public ResponseEntity<UserFraudStatusDto> getUserFraudStatus(
+            @Parameter(description = "Email de l'utilisateur") @PathVariable String email) {
+        log.info("GET /admin/settings/fraud-status/{} - Récupération du statut anti-fraude", email);
+        UserFraudStatusDto status = fraudGuardService.getUserFraudStatus(email);
+        return ResponseEntity.ok(status);
     }
 }

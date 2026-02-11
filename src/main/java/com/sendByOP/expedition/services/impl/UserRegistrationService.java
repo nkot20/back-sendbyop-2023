@@ -140,7 +140,7 @@ public class UserRegistrationService {
             
             // Marquer l'email comme vérifié dans Customer (pour l'affichage du profil)
             customer.setEmailVerified(1);
-            return customerService.saveClient(customer);
+            return customerService.updateClient(customer);
         }
         throw new SendByOpException(ErrorInfo.INTERNAL_ERROR);
     }
@@ -151,6 +151,6 @@ public class UserRegistrationService {
             throw new SendByOpException(ErrorInfo.USER_NOT_FOUND);
         }
         customer.setPhoneVerified(1);
-        customerService.saveClient(customer);
+        customerService.updateClient(customer);
     }
 }

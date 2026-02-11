@@ -5,9 +5,20 @@ package com.sendByOP.expedition.models.enums;
  */
 public enum FlightStatus {
     /**
-     * Vol actif - peut recevoir des réservations
+     * Vol en attente de validation par l'administrateur
+     * Le voyageur a publié son vol mais il doit être validé avant d'être visible
+     */
+    PENDING_VALIDATION("En attente de validation"),
+    
+    /**
+     * Vol actif - validé par l'admin et peut recevoir des réservations
      */
     ACTIVE("Actif"),
+    
+    /**
+     * Vol rejeté par l'administrateur
+     */
+    REJECTED("Rejeté"),
     
     /**
      * Vol expiré - la date/heure d'arrivée est passée

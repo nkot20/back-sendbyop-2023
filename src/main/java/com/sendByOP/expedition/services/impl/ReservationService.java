@@ -29,6 +29,7 @@ public class ReservationService implements IReservationService {
     private final RejectionService rejectionService;
     private final BookingMapper bookingMapper;
     private final CustomerService customerService;
+    private final FraudGuardService fraudGuardService;
 
 
     @Override
@@ -49,6 +50,18 @@ public class ReservationService implements IReservationService {
     public BookingDto saveBookingWithParcels(BookingDto booking) throws SendByOpException {
         log.debug("Saving booking with parcels for customer ID: {}", booking.getCustomerId());
         try {
+            // Validation KYC : vérifier que le client est vérifié
+            CustomerDto customer = customerService.getCustomerById(booking.getCustomerId());
+            if (customer.getIdentityVerified() != 1) {
+                log.warn("Customer {} attempted to book without KYC verification", booking.getCustomerId());
+                throw new SendByOpException(ErrorInfo.UNAUTHORIZED, 
+                    "Votre identité doit être vérifiée avant de pouvoir effectuer une réservation. " +
+                    "Veuillez soumettre vos documents d'identité dans votre profil.");
+            }
+            
+            // Validation anti-fraude : vérifier la limite de réservations par semaine
+            fraudGuardService.validateBookingLimit(booking.getCustomerId(), null);
+            
             initializeBookingStatus(booking);
             booking.setReceiverId(booking.getReceiverId());
             
