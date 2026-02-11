@@ -67,5 +67,42 @@ public class FlightDto {
 
     @Schema(description = "Flight cancellation status (0: Active, 1: Cancelled)", example = "0")
     private int cancelled;
+    
+    // Informations enrichies pour l'affichage (non persistées en base)
+    @Schema(description = "Departure airport name", example = "Charles de Gaulle Airport")
+    private String departureAirportName;
+    
+    @Schema(description = "Departure airport IATA code", example = "CDG")
+    private String departureAirportCode;
+    
+    @Schema(description = "Departure city name", example = "Paris")
+    private String departureCityName;
+    
+    @Schema(description = "Departure country name", example = "France")
+    private String departureCountryName;
+    
+    @Schema(description = "Arrival airport name", example = "John F. Kennedy International Airport")
+    private String arrivalAirportName;
+    
+    @Schema(description = "Arrival airport IATA code", example = "JFK")
+    private String arrivalAirportCode;
+    
+    @Schema(description = "Arrival city name", example = "New York")
+    private String arrivalCityName;
+    
+    @Schema(description = "Arrival country name", example = "United States")
+    private String arrivalCountryName;
+    
+    @Schema(description = "Customer first name", example = "John")
+    private String customerFirstName;
+    
+    @Schema(description = "Customer last name", example = "Doe")
+    private String customerLastName;
+    
+    @Schema(description = "Customer email", example = "john.doe@example.com")
+    private String customerEmail;
+    
+    @Schema(description = "Flight status", example = "PENDING_VALIDATION")
+    private String status;
 }
 

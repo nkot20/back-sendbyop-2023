@@ -99,4 +99,21 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
            "CAST(b.id AS string) LIKE CONCAT('%', :search, '%') " +
            "ORDER BY b.bookingDate DESC")
     Page<Booking> searchBookings(@Param("search") String search, Pageable pageable);
+
+    /**
+     * Compte les réservations d'un client dans une période donnée (pour anti-fraude)
+     * Exclut les réservations annulées
+     */
+    @Query("SELECT COUNT(b) FROM Booking b WHERE b.customer.id = :customerId " +
+           "AND b.bookingDate >= :startDate " +
+           "AND (b.status IS NULL OR b.status NOT IN ('CANCELLED_BY_CLIENT', 'CANCELLED_BY_TRAVELER', 'CANCELLED_NO_PAYMENT', 'CANCELLED_BY_ADMIN'))")
+    long countBookingsByCustomerInPeriod(@Param("customerId") Integer customerId, @Param("startDate") java.util.Date startDate);
+
+    /**
+     * Compte les réservations d'un client par email dans une période donnée
+     */
+    @Query("SELECT COUNT(b) FROM Booking b WHERE b.customer.email = :email " +
+           "AND b.bookingDate >= :startDate " +
+           "AND (b.status IS NULL OR b.status NOT IN ('CANCELLED_BY_CLIENT', 'CANCELLED_BY_TRAVELER', 'CANCELLED_NO_PAYMENT', 'CANCELLED_BY_ADMIN'))")
+    long countBookingsByEmailInPeriod(@Param("email") String email, @Param("startDate") java.util.Date startDate);
 }

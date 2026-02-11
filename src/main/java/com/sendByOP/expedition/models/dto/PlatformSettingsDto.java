@@ -133,6 +133,23 @@ public class PlatformSettingsDto implements Serializable {
     private BigDecimal refundRateBeforeDeadline;
     
     // ==========================================
+    // LIMITES ANTI-FRAUDE
+    // ==========================================
+    
+    @NotNull(message = "Le nombre maximum de réservations par semaine est requis")
+    @Min(value = 1, message = "Minimum 1 réservation par semaine")
+    @Max(value = 50, message = "Maximum 50 réservations par semaine")
+    private Integer maxBookingsPerWeek;
+    
+    @NotNull(message = "Le nombre maximum de voyages par semaine est requis")
+    @Min(value = 1, message = "Minimum 1 voyage par semaine")
+    @Max(value = 20, message = "Maximum 20 voyages par semaine")
+    private Integer maxFlightsPerWeek;
+    
+    @NotNull(message = "L'activation de la protection anti-fraude est requise")
+    private Boolean fraudProtectionEnabled;
+    
+    // ==========================================
     // AUDIT
     // ==========================================
     

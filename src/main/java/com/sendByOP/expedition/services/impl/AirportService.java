@@ -41,17 +41,19 @@ public class AirportService implements IAirPortService {
     @Cacheable(value = "airports:all")
     public List<AirportDto> getAllAirport() {
         log.info("Fetching all airports from database (cache miss)");
-        List<Airport> airportEntities = airportRepository.findAll();
+        // Utiliser findAllWithCityAndCountry pour charger toutes les relations en une seule requête
+        // et éviter les problèmes de lazy loading qui causent des connection leaks
+        List<Airport> airportEntities = airportRepository.findAllWithCityAndCountry();
         log.info("Airport number {}", airportEntities.size());
 
         return airportEntities.stream()
                 .map(airport -> {
                     // Conversion de base
                     AirportDto dto = airportMapper.toDto(airport);
-                    // Remplissage du nom de la ville
+                    // Remplissage du nom de la ville (déjà chargé via fetch join)
                     if (airport.getCity() != null) {
                         dto.setCity(airport.getCity().getName());
-                        // Remplissage du nom du pays
+                        // Remplissage du nom du pays (déjà chargé via fetch join)
                         if (airport.getCity().getCountry() != null) {
                             dto.setCountry(airport.getCity().getCountry().getName());
                         }

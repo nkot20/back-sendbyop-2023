@@ -44,6 +44,7 @@ public class AdminController {
     private final BookingRepository bookingRepository;
     private final IAdminPaymentService adminPaymentService;
     private final SecurityService securityService;
+    private final com.sendByOP.expedition.services.impl.FlightService flightService;
 
     @Operation(summary = "Get all users with customer info", description = "Admin endpoint to get all users with their customer information")
     @ApiResponse(responseCode = "200", description = "Users retrieved successfully")
@@ -374,6 +375,69 @@ public class AdminController {
             return ResponseEntity.ok(response);
         } catch (SendByOpException e) {
             log.error("Erreur lors du renvoi de l'OTP: {}", e.getMessage());
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    // ==================== FLIGHT VALIDATION ENDPOINTS ====================
+    
+    @Operation(summary = "Get pending flights", description = "Get all flights waiting for admin validation")
+    @ApiResponse(responseCode = "200", description = "Pending flights retrieved successfully")
+    @GetMapping("/flights/pending")
+    public ResponseEntity<List<FlightDto>> getPendingFlights() {
+        log.info("Admin: Récupération des vols en attente de validation");
+        List<FlightDto> pendingFlights = flightService.getPendingFlights();
+        return ResponseEntity.ok(pendingFlights);
+    }
+    
+    @Operation(summary = "Validate flight", description = "Validate a pending flight and notify the traveler")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Flight validated successfully"),
+        @ApiResponse(responseCode = "404", description = "Flight not found"),
+        @ApiResponse(responseCode = "400", description = "Flight is not pending validation")
+    })
+    @PostMapping("/flights/{flightId}/validate")
+    public ResponseEntity<Map<String, Object>> validateFlight(
+            @PathVariable Integer flightId) {
+        log.info("Admin: Validation du vol ID: {}", flightId);
+        Map<String, Object> response = new HashMap<>();
+        try {
+            FlightDto validatedFlight = flightService.validateFlight(flightId);
+            response.put("success", true);
+            response.put("message", "Vol validé avec succès. Le voyageur a été notifié par email.");
+            response.put("flight", validatedFlight);
+            return ResponseEntity.ok(response);
+        } catch (SendByOpException e) {
+            log.error("Erreur lors de la validation du vol {}: {}", flightId, e.getMessage());
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    @Operation(summary = "Reject flight", description = "Reject a pending flight with a reason and notify the traveler")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Flight rejected successfully"),
+        @ApiResponse(responseCode = "404", description = "Flight not found"),
+        @ApiResponse(responseCode = "400", description = "Flight is not pending validation")
+    })
+    @PostMapping("/flights/{flightId}/reject")
+    public ResponseEntity<Map<String, Object>> rejectFlight(
+            @PathVariable Integer flightId,
+            @RequestBody Map<String, String> payload) {
+        String reason = payload.get("reason");
+        log.info("Admin: Rejet du vol ID: {} - Raison: {}", flightId, reason);
+        Map<String, Object> response = new HashMap<>();
+        try {
+            FlightDto rejectedFlight = flightService.rejectFlight(flightId, reason);
+            response.put("success", true);
+            response.put("message", "Vol rejeté avec succès. Le voyageur a été notifié par email.");
+            response.put("flight", rejectedFlight);
+            return ResponseEntity.ok(response);
+        } catch (SendByOpException e) {
+            log.error("Erreur lors du rejet du vol {}: {}", flightId, e.getMessage());
             response.put("success", false);
             response.put("message", e.getMessage());
             return ResponseEntity.badRequest().body(response);
